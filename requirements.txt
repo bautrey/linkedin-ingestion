@@ -1,0 +1,24 @@
+# Core FastAPI dependencies
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+
+# HTTP client for Cassidy integration
+httpx
+tenacity  # For retry logic with exponential backoff
+
+# Testing
+pytest
+pytest-asyncio
+pytest-mock
+respx
+
+# Development tools
+black
+isort
+flake8
+
+# Logging and monitoring
+structlog
+python-json-logger
