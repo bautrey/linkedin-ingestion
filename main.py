@@ -69,6 +69,7 @@ async def root():
         "version": settings.VERSION,
         "status": "running",
         "docs_url": "/docs" if settings.ENVIRONMENT != "production" else None,
+        "deployment_timestamp": "2025-01-23T22:30:00Z"
     }
 
 
