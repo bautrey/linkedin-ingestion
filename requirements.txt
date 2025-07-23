@@ -1,7 +1,7 @@
 # Core FastAPI dependencies
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
-pydantic==2.7.1
+pydantic>=2.11.7,<3.0.0
 pydantic-settings==2.4.0
 
 # HTTP client with fixed version range for Supabase compatibility
