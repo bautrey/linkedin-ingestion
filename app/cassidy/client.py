@@ -210,4 +210,268 @@ class CassidyClient(LoggerMixin):
                     f"Executing {workflow_type} workflow",
                     url=url,
                     payload=payload
-                )\n                \n                response = await client.post(\n                    url=url,\n                    json=payload\n                )\n                \n                # Handle HTTP errors\n                if response.status_code == 429:\n                    retry_after = response.headers.get(\"Retry-After\", \"60\")\n                    raise CassidyRateLimitError(\n                        f\"Rate limit exceeded. Retry after {retry_after} seconds\",\n                        status_code=response.status_code,\n                        details={\"retry_after\": retry_after}\n                    )\n                \n                if response.status_code >= 400:\n                    error_details = {}\n                    try:\n                        error_details = response.json()\n                    except json.JSONDecodeError:\n                        pass\n                    \n                    raise CassidyAPIError(\n                        f\"Cassidy API error: HTTP {response.status_code}\",\n                        status_code=response.status_code,\n                        details=error_details\n                    )\n                \n                # Parse response JSON\n                try:\n                    response_data = response.json()\n                except json.JSONDecodeError as e:\n                    raise CassidyValidationError(\n                        f\"Invalid JSON response from Cassidy API: {str(e)}\",\n                        details={\"raw_response\": response.text[:1000]}\n                    )\n                \n                execution_time = (datetime.utcnow() - start_time).total_seconds()\n                \n                self.logger.debug(\n                    f\"Workflow {workflow_type} completed\",\n                    execution_time_seconds=execution_time,\n                    status_code=response.status_code\n                )\n                \n                return response_data\n                \n        except httpx.TimeoutException as e:\n            raise CassidyTimeoutError(\n                f\"Cassidy workflow timeout after {self.timeout} seconds\",\n                details={\"timeout_seconds\": self.timeout}\n            ) from e\n            \n        except httpx.ConnectError as e:\n            raise CassidyConnectionError(\n                f\"Failed to connect to Cassidy API: {str(e)}\",\n                details={\"url\": url}\n            ) from e\n    \n    def _extract_profile_data(self, response_data: Dict[str, Any]) -> Dict[str, Any]:\n        \"\"\"\n        Extract and normalize profile data from Cassidy workflow response\n        \n        Based on the blueprint structure:\n        - workflowRun.actionResults[].output.value contains the parsed JSON\n        \n        Args:\n            response_data: Raw response from Cassidy workflow\n            \n        Returns:\n            Dict containing normalized profile data\n            \n        Raises:\n            CassidyWorkflowError: If response structure is invalid\n        \"\"\"\n        try:\n            # Navigate through the workflow response structure\n            workflow_run = response_data.get(\"workflowRun\", {})\n            action_results = workflow_run.get(\"actionResults\", [])\n            \n            if not action_results:\n                raise CassidyWorkflowError(\n                    \"No action results found in workflow response\",\n                    details={\"response_keys\": list(response_data.keys())}\n                )\n            \n            # Find the action result with profile data\n            # Based on blueprint, this should be in the first action result's output.value\n            profile_data = None\n            for action_result in action_results:\n                output = action_result.get(\"output\", {})\n                value = output.get(\"value\")\n                \n                if value and isinstance(value, (dict, str)):\n                    # If value is a string, parse it as JSON\n                    if isinstance(value, str):\n                        try:\n                            profile_data = json.loads(value)\n                        except json.JSONDecodeError:\n                            continue\n                    else:\n                        profile_data = value\n                    break\n            \n            if not profile_data:\n                raise CassidyWorkflowError(\n                    \"No valid profile data found in workflow response\",\n                    details={\"action_results_count\": len(action_results)}\n                )\n            \n            # Handle case where profile_data might be wrapped in an array\n            if isinstance(profile_data, list) and len(profile_data) > 0:\n                profile_data = profile_data[0]\n            \n            return profile_data\n            \n        except (KeyError, ValueError, TypeError) as e:\n            raise CassidyWorkflowError(\n                f\"Failed to extract profile data from response: {str(e)}\",\n                details={\"response_structure\": str(response_data)[:500]}\n            ) from e\n    \n    def _extract_company_data(self, response_data: Dict[str, Any]) -> Dict[str, Any]:\n        \"\"\"\n        Extract and normalize company data from Cassidy workflow response\n        \n        Args:\n            response_data: Raw response from Cassidy workflow\n            \n        Returns:\n            Dict containing normalized company data\n            \n        Raises:\n            CassidyWorkflowError: If response structure is invalid\n        \"\"\"\n        try:\n            # Use similar extraction logic as profile data\n            workflow_run = response_data.get(\"workflowRun\", {})\n            action_results = workflow_run.get(\"actionResults\", [])\n            \n            if not action_results:\n                raise CassidyWorkflowError(\n                    \"No action results found in company workflow response\",\n                    details={\"response_keys\": list(response_data.keys())}\n                )\n            \n            # Find the action result with company data\n            company_data = None\n            for action_result in action_results:\n                output = action_result.get(\"output\", {})\n                value = output.get(\"value\")\n                \n                if value and isinstance(value, (dict, str)):\n                    if isinstance(value, str):\n                        try:\n                            company_data = json.loads(value)\n                        except json.JSONDecodeError:\n                            continue\n                    else:\n                        company_data = value\n                    break\n            \n            if not company_data:\n                # For company workflows, there might be an error fallback\n                # Check if this is an expected empty response\n                self.logger.warning(\"No company data found, using empty fallback\")\n                return {\n                    \"company_name\": \"Unknown Company\",\n                    \"description\": None,\n                    \"employee_count\": None,\n                    \"industries\": [],\n                }\n            \n            # Handle case where company_data might be wrapped in an array\n            if isinstance(company_data, list) and len(company_data) > 0:\n                company_data = company_data[0]\n            \n            return company_data\n            \n        except (KeyError, ValueError, TypeError) as e:\n            raise CassidyWorkflowError(\n                f\"Failed to extract company data from response: {str(e)}\",\n                details={\"response_structure\": str(response_data)[:500]}\n            ) from e\n    \n    async def batch_fetch_companies(\n        self, \n        company_urls: list[str], \n        delay_seconds: float = 10.0\n    ) -> list[CompanyProfile]:\n        \"\"\"\n        Fetch multiple company profiles with delay between requests\n        \n        Based on the blueprint, there's a 10-second sleep between company requests\n        to respect rate limits.\n        \n        Args:\n            company_urls: List of LinkedIn company URLs to fetch\n            delay_seconds: Delay between requests (default 10 seconds)\n            \n        Returns:\n            List of CompanyProfile objects (may contain None for failed fetches)\n        \"\"\"\n        self.logger.info(\n            \"Starting batch company fetch\",\n            company_count=len(company_urls),\n            delay_seconds=delay_seconds\n        )\n        \n        companies = []\n        \n        for i, company_url in enumerate(company_urls):\n            try:\n                company = await self.fetch_company(company_url)\n                companies.append(company)\n                \n                # Add delay between requests (except for the last one)\n                if i < len(company_urls) - 1:\n                    self.logger.debug(\n                        f\"Waiting {delay_seconds}s before next company fetch\",\n                        current_index=i,\n                        remaining=len(company_urls) - i - 1\n                    )\n                    await asyncio.sleep(delay_seconds)\n                    \n            except Exception as e:\n                self.logger.warning(\n                    \"Company fetch failed, continuing with batch\",\n                    company_url=company_url,\n                    error=str(e)\n                )\n                companies.append(None)  # Add None for failed fetches\n        \n        successful_fetches = sum(1 for c in companies if c is not None)\n        self.logger.info(\n            \"Batch company fetch completed\",\n            total_requested=len(company_urls),\n            successful=successful_fetches,\n            failed=len(company_urls) - successful_fetches\n        )\n        \n        return companies\n    \n    async def health_check(self) -> Dict[str, Any]:\n        \"\"\"\n        Check connectivity to Cassidy API\n        \n        Returns:\n            Dict with health check results\n        \"\"\"\n        try:\n            async with httpx.AsyncClient(timeout=5.0) as client:\n                response = await client.head(\"https://app.cassidyai.com\")\n                return {\n                    \"status\": \"healthy\" if response.status_code < 400 else \"unhealthy\",\n                    \"status_code\": response.status_code,\n                    \"response_time_ms\": response.elapsed.total_seconds() * 1000\n                }\n        except Exception as e:\n            return {\n                \"status\": \"unhealthy\",\n                \"error\": str(e),\n                \"error_type\": type(e).__name__\n            }"
+                )
+                
+                response = await client.post(
+                    url=url,
+                    json=payload
+                )
+                
+                # Handle HTTP errors
+                if response.status_code == 429:
+                    retry_after = response.headers.get("Retry-After", "60")
+                    raise CassidyRateLimitError(
+                        f"Rate limit exceeded. Retry after {retry_after} seconds",
+                        status_code=response.status_code,
+                        details={"retry_after": retry_after}
+                    )
+                
+                if response.status_code >= 400:
+                    error_details = {}
+                    try:
+                        error_details = response.json()
+                    except json.JSONDecodeError:
+                        pass
+                    
+                    raise CassidyAPIError(
+                        f"Cassidy API error: HTTP {response.status_code}",
+                        status_code=response.status_code,
+                        details=error_details
+                    )
+                
+                # Parse response JSON
+                try:
+                    response_data = response.json()
+                except json.JSONDecodeError as e:
+                    raise CassidyValidationError(
+                        f"Invalid JSON response from Cassidy API: {str(e)}",
+                        details={"raw_response": response.text[:1000]}
+                    )
+                
+                execution_time = (datetime.utcnow() - start_time).total_seconds()
+                
+                self.logger.debug(
+                    f"Workflow {workflow_type} completed",
+                    execution_time_seconds=execution_time,
+                    status_code=response.status_code
+                )
+                
+                return response_data
+                
+        except httpx.TimeoutException as e:
+            raise CassidyTimeoutError(
+                f"Cassidy workflow timeout after {self.timeout} seconds",
+                details={"timeout_seconds": self.timeout}
+            ) from e
+            
+        except httpx.ConnectError as e:
+            raise CassidyConnectionError(
+                f"Failed to connect to Cassidy API: {str(e)}",
+                details={"url": url}
+            ) from e
+    
+    def _extract_profile_data(self, response_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Extract and normalize profile data from Cassidy workflow response
+        
+        Based on the blueprint structure:
+        - workflowRun.actionResults[].output.value contains the parsed JSON
+        
+        Args:
+            response_data: Raw response from Cassidy workflow
+            
+        Returns:
+            Dict containing normalized profile data
+            
+        Raises:
+            CassidyWorkflowError: If response structure is invalid
+        """
+        try:
+            # Navigate through the workflow response structure
+            workflow_run = response_data.get("workflowRun", {})
+            action_results = workflow_run.get("actionResults", [])
+            
+            if not action_results:
+                raise CassidyWorkflowError(
+                    "No action results found in workflow response",
+                    details={"response_keys": list(response_data.keys())}
+                )
+            
+            # Find the action result with profile data
+            # Based on blueprint, this should be in the first action result's output.value
+            profile_data = None
+            for action_result in action_results:
+                output = action_result.get("output", {})
+                value = output.get("value")
+                
+                if value and isinstance(value, (dict, str)):
+                    # If value is a string, parse it as JSON
+                    if isinstance(value, str):
+                        try:
+                            profile_data = json.loads(value)
+                        except json.JSONDecodeError:
+                            continue
+                    else:
+                        profile_data = value
+                    break
+            
+            if not profile_data:
+                raise CassidyWorkflowError(
+                    "No valid profile data found in workflow response",
+                    details={"action_results_count": len(action_results)}
+                )
+            
+            # Handle case where profile_data might be wrapped in an array
+            if isinstance(profile_data, list) and len(profile_data) > 0:
+                profile_data = profile_data[0]
+            
+            return profile_data
+            
+        except (KeyError, ValueError, TypeError) as e:
+            raise CassidyWorkflowError(
+                f"Failed to extract profile data from response: {str(e)}",
+                details={"response_structure": str(response_data)[:500]}
+            ) from e
+    
+    def _extract_company_data(self, response_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Extract and normalize company data from Cassidy workflow response
+        
+        Args:
+            response_data: Raw response from Cassidy workflow
+            
+        Returns:
+            Dict containing normalized company data
+            
+        Raises:
+            CassidyWorkflowError: If response structure is invalid
+        """
+        try:
+            # Use similar extraction logic as profile data
+            workflow_run = response_data.get("workflowRun", {})
+            action_results = workflow_run.get("actionResults", [])
+            
+            if not action_results:
+                raise CassidyWorkflowError(
+                    "No action results found in company workflow response",
+                    details={"response_keys": list(response_data.keys())}
+                )
+            
+            # Find the action result with company data
+            company_data = None
+            for action_result in action_results:
+                output = action_result.get("output", {})
+                value = output.get("value")
+                
+                if value and isinstance(value, (dict, str)):
+                    if isinstance(value, str):
+                        try:
+                            company_data = json.loads(value)
+                        except json.JSONDecodeError:
+                            continue
+                    else:
+                        company_data = value
+                    break
+            
+            if not company_data:
+                # For company workflows, there might be an error fallback
+                # Check if this is an expected empty response
+                self.logger.warning("No company data found, using empty fallback")
+                return {
+                    "company_name": "Unknown Company",
+                    "description": None,
+                    "employee_count": None,
+                    "industries": [],
+                }
+            
+            # Handle case where company_data might be wrapped in an array
+            if isinstance(company_data, list) and len(company_data) > 0:
+                company_data = company_data[0]
+            
+            return company_data
+            
+        except (KeyError, ValueError, TypeError) as e:
+            raise CassidyWorkflowError(
+                f"Failed to extract company data from response: {str(e)}",
+                details={"response_structure": str(response_data)[:500]}
+            ) from e
+    
+    async def batch_fetch_companies(
+        self, 
+        company_urls: list[str], 
+        delay_seconds: float = 10.0
+    ) -> list[CompanyProfile]:
+        """
+        Fetch multiple company profiles with delay between requests
+        
+        Based on the blueprint, there's a 10-second sleep between company requests
+        to respect rate limits.
+        
+        Args:
+            company_urls: List of LinkedIn company URLs to fetch
+            delay_seconds: Delay between requests (default 10 seconds)
+            
+        Returns:
+            List of CompanyProfile objects (may contain None for failed fetches)
+        """
+        self.logger.info(
+            "Starting batch company fetch",
+            company_count=len(company_urls),
+            delay_seconds=delay_seconds
+        )
+        
+        companies = []
+        
+        for i, company_url in enumerate(company_urls):
+            try:
+                company = await self.fetch_company(company_url)
+                companies.append(company)
+                
+                # Add delay between requests (except for the last one)
+                if i < len(company_urls) - 1:
+                    self.logger.debug(
+                        f"Waiting {delay_seconds}s before next company fetch",
+                        current_index=i,
+                        remaining=len(company_urls) - i - 1
+                    )
+                    await asyncio.sleep(delay_seconds)
+                    
+            except Exception as e:
+                self.logger.warning(
+                    "Company fetch failed, continuing with batch",
+                    company_url=company_url,
+                    error=str(e)
+                )
+                companies.append(None)  # Add None for failed fetches
+        
+        successful_fetches = sum(1 for c in companies if c is not None)
+        self.logger.info(
+            "Batch company fetch completed",
+            total_requested=len(company_urls),
+            successful=successful_fetches,
+            failed=len(company_urls) - successful_fetches
+        )
+        
+        return companies
+    
+    async def health_check(self) -> Dict[str, Any]:
+        """
+        Check connectivity to Cassidy API
+        
+        Returns:
+            Dict with health check results
+        """
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                response = await client.head("https://app.cassidyai.com")
+                return {
+                    "status": "healthy" if response.status_code < 400 else "unhealthy",
+                    "status_code": response.status_code,
+                    "response_time_ms": response.elapsed.total_seconds() * 1000
+                }
+        except Exception as e:
+            return {
+                "status": "unhealthy",
+                "error": str(e),
+                "error_type": type(e).__name__
+            }
