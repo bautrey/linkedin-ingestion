@@ -33,15 +33,6 @@ class EducationEntry(BaseModel):
     school_linkedin_url: Optional[str] = None
     start_month: Optional[str] = None
     start_year: Optional[int] = None
-    
-    @validator('end_year', 'start_year', pre=True)
-    def handle_empty_year(cls, v):
-        """Handle empty string years"""
-        if v == "":
-            return None
-        if isinstance(v, str) and v.isdigit():
-            return int(v)
-        return v
 
 
 # Experience Entry from actual API
@@ -60,22 +51,6 @@ class ExperienceEntry(BaseModel):
     location: Optional[str] = None
     start_month: Optional[str] = None
     start_year: Optional[int] = None
-    
-    @validator('end_year', 'start_year', pre=True)
-    def handle_empty_year(cls, v):
-        """Handle empty string years"""
-        if v == "":
-            return None
-        if isinstance(v, str) and v.isdigit():
-            return int(v)
-        return v
-    
-    @validator('start_month', 'end_month', pre=True)
-    def handle_month(cls, v):
-        """Handle month fields that might be int or string"""
-        if isinstance(v, int):
-            return str(v)
-        return v
 
 
 # Current Company Info

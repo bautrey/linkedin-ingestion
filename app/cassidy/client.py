@@ -107,7 +107,7 @@ class CassidyClient(LoggerMixin):
                 "Profile fetch completed successfully",
                 linkedin_url=linkedin_url,
                 profile_id=profile.id,
-                experience_count=len(profile.experience)
+                experience_count=len(profile.experience) if profile.experience else 0
             )
             
             return profile
@@ -250,6 +250,13 @@ class CassidyClient(LoggerMixin):
                 
                 execution_time = (datetime.utcnow() - start_time).total_seconds()
                 
+                # DEBUG: Log the actual response structure to understand format
+                self.logger.info(
+                    f"DEBUG: Cassidy {workflow_type} response structure",
+                    response_keys=list(response_data.keys()),
+                    response_sample=str(response_data)[:500]
+                )
+                
                 self.logger.debug(
                     f"Workflow {workflow_type} completed",
                     execution_time_seconds=execution_time,
@@ -274,8 +281,10 @@ class CassidyClient(LoggerMixin):
         """
         Extract and normalize profile data from Cassidy workflow response
         
-        Based on the blueprint structure:
-        - workflowRun.actionResults[].output.value contains the parsed JSON
+        Real Cassidy API structure:
+        - workflowRun.status indicates success/failure
+        - workflowRun.actionResults[].output.value contains the parsed JSON on success
+        - workflowRun.actionResults[].error contains error message on failure
         
         Args:
             response_data: Raw response from Cassidy workflow
@@ -284,12 +293,26 @@ class CassidyClient(LoggerMixin):
             Dict containing normalized profile data
             
         Raises:
-            CassidyWorkflowError: If response structure is invalid
+            CassidyWorkflowError: If response structure is invalid or workflow failed
         """
         try:
             # Navigate through the workflow response structure
             workflow_run = response_data.get("workflowRun", {})
+            workflow_status = workflow_run.get("status", "UNKNOWN")
             action_results = workflow_run.get("actionResults", [])
+            
+            # Check if workflow failed  
+            if workflow_status in ["FAILED", "failed"]:
+                error_messages = []
+                for action_result in action_results:
+                    if action_result.get("status") in ["FAILED", "failed"] and "error" in action_result:
+                        error_messages.append(action_result["error"])
+                
+                error_summary = "; ".join(error_messages) if error_messages else "Workflow failed with no specific error"
+                raise CassidyWorkflowError(
+                    f"Cassidy workflow failed: {error_summary}",
+                    details={"workflow_status": workflow_status, "action_results": action_results}
+                )
             
             if not action_results:
                 raise CassidyWorkflowError(
@@ -298,27 +321,33 @@ class CassidyClient(LoggerMixin):
                 )
             
             # Find the action result with profile data
-            # Based on blueprint, this should be in the first action result's output.value
+            # Look for successful action with output.value (case-insensitive)
             profile_data = None
             for action_result in action_results:
-                output = action_result.get("output", {})
-                value = output.get("value")
-                
-                if value and isinstance(value, (dict, str)):
-                    # If value is a string, parse it as JSON
-                    if isinstance(value, str):
-                        try:
-                            profile_data = json.loads(value)
-                        except json.JSONDecodeError:
-                            continue
-                    else:
-                        profile_data = value
-                    break
+                status = action_result.get("status", "").lower()
+                if status in ["success", "SUCCESS", "completed"]:
+                    output = action_result.get("output", {})
+                    value = output.get("value")
+                    
+                    if value and isinstance(value, (dict, str)):
+                        # If value is a string, parse it as JSON
+                        if isinstance(value, str):
+                            try:
+                                profile_data = json.loads(value)
+                            except json.JSONDecodeError:
+                                continue
+                        else:
+                            profile_data = value
+                        break
             
             if not profile_data:
                 raise CassidyWorkflowError(
-                    "No valid profile data found in workflow response",
-                    details={"action_results_count": len(action_results)}
+                    "No valid profile data found in successful workflow response",
+                    details={
+                        "action_results_count": len(action_results),
+                        "workflow_status": workflow_status,
+                        "action_statuses": [ar.get("status") for ar in action_results]
+                    }
                 )
             
             # Handle case where profile_data might be wrapped in an array
