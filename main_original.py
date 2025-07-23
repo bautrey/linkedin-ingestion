@@ -1,33 +1,20 @@
 """
-LinkedIn Ingestion Service - Standalone Version for Railway Deployment
+LinkedIn Ingestion Service
 
 A FastAPI microservice for ingesting LinkedIn profiles and company data
 using Cassidy AI workflows and storing in Supabase with pgvector.
 """
 
-import os
+import asyncio
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, HttpUrl
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from datetime import datetime
-import httpx
-from supabase import create_client, Client
 
-# Configuration
-class Settings:
-    VERSION = "1.0.0"
-    ENVIRONMENT = os.getenv("ENVIRONMENT", "development")
-    
-    # Supabase
-    SUPABASE_URL = os.getenv("SUPABASE_URL")
-    SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY")
-    SUPABASE_SERVICE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
-    
-    # CORS
-    ALLOWED_ORIGINS = ["*"]  # Configure appropriately for production
-
-settings = Settings()
+from app.cassidy.client import CassidyClient
+from app.database.supabase_client import SupabaseClient
+from app.core.config import settings
 
 # Create FastAPI application
 app = FastAPI(
@@ -47,14 +34,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize Supabase client
-supabase_client: Optional[Client] = None
+# Client instances (initialized lazily)
+cassidy_client = None
+db_client = None
 
-def get_supabase_client():
-    global supabase_client
-    if supabase_client is None and settings.SUPABASE_URL and settings.SUPABASE_ANON_KEY:
-        supabase_client = create_client(settings.SUPABASE_URL, settings.SUPABASE_ANON_KEY)
-    return supabase_client
+def get_cassidy_client():
+    global cassidy_client
+    if cassidy_client is None:
+        cassidy_client = CassidyClient()
+    return cassidy_client
+
+def get_db_client():
+    global db_client
+    if db_client is None:
+        db_client = SupabaseClient()
+    return db_client
 
 # Request/Response models
 class ProfileIngestRequest(BaseModel):
@@ -63,8 +57,9 @@ class ProfileIngestRequest(BaseModel):
 class ProfileIngestResponse(BaseModel):
     success: bool
     message: str
-    profile_id: Optional[str] = None
-    record_id: Optional[str] = None
+    profile_id: str = None
+    record_id: str = None
+
 
 @app.get("/")
 async def root():
@@ -74,30 +69,22 @@ async def root():
         "version": settings.VERSION,
         "status": "running",
         "docs_url": "/docs" if settings.ENVIRONMENT != "production" else None,
-        "deployment_timestamp": datetime.utcnow().isoformat()
+        "deployment_timestamp": "2025-01-23T22:30:00Z"
     }
+
 
 @app.get("/api/v1/health")
 async def health_check():
     """Health check endpoint"""
     try:
-        # Basic health check
-        db_status = "not_configured"
-        if settings.SUPABASE_URL and settings.SUPABASE_ANON_KEY:
-            try:
-                client = get_supabase_client()
-                if client:
-                    # Simple test query
-                    result = client.from_("profiles").select("id").limit(1).execute()
-                    db_status = "connected"
-            except Exception as db_error:
-                db_status = f"error: {str(db_error)}"
+        # Check database connectivity
+        db_health = await get_db_client().health_check()
         
         return {
             "status": "healthy",
             "timestamp": datetime.utcnow().isoformat(),
             "version": settings.VERSION,
-            "database": {"status": db_status, "provider": "supabase"},
+            "database": db_health,
             "environment": settings.ENVIRONMENT
         }
     except Exception as e:
@@ -107,16 +94,22 @@ async def health_check():
             "timestamp": datetime.utcnow().isoformat()
         })
 
+
 @app.post("/api/v1/profiles/ingest", response_model=ProfileIngestResponse)
 async def ingest_profile(request: ProfileIngestRequest):
     """Ingest a LinkedIn profile"""
     try:
-        # For now, return a mock response since we need to configure Cassidy and database
+        # Fetch profile from Cassidy
+        profile = await get_cassidy_client().fetch_profile(str(request.linkedin_url))
+        
+        # Store in database
+        record_id = await get_db_client().store_profile(profile)
+        
         return ProfileIngestResponse(
             success=True,
-            message=f"Profile ingestion endpoint is working. LinkedIn URL: {request.linkedin_url}",
-            profile_id="mock_profile_id",
-            record_id="mock_record_id"
+            message="Profile ingested successfully",
+            profile_id=profile.id,
+            record_id=record_id
         )
         
     except Exception as e:
@@ -126,21 +119,16 @@ async def ingest_profile(request: ProfileIngestRequest):
             "error_type": type(e).__name__
         })
 
+
 @app.get("/api/v1/profiles/recent")
 async def get_recent_profiles(limit: int = 10):
     """Get recently ingested profiles"""
     try:
-        # Mock response for now
+        profiles = await get_db_client().list_recent_profiles(limit=limit)
+        
         return {
-            "profiles": [
-                {
-                    "id": "mock_profile_1",
-                    "name": "Test Profile",
-                    "linkedin_url": "https://linkedin.com/in/test",
-                    "created_at": datetime.utcnow().isoformat()
-                }
-            ],
-            "count": 1,
+            "profiles": profiles,
+            "count": len(profiles),
             "timestamp": datetime.utcnow().isoformat()
         }
         
@@ -150,12 +138,14 @@ async def get_recent_profiles(limit: int = 10):
             "message": "Failed to retrieve recent profiles"
         })
 
+
 if __name__ == "__main__":
     import uvicorn
     
     uvicorn.run(
-        "main_standalone:app",
+        "main:app",
         host="0.0.0.0",
-        port=int(os.getenv("PORT", 8000)),
-        reload=False,
+        port=8000,
+        reload=False,  # Disabled for testing
+        log_config=None,  # Use structlog instead
     )

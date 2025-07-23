@@ -1,18 +1,7 @@
-# Core FastAPI dependencies
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-pydantic==2.7.1
-pydantic-settings==2.4.0
-
-# HTTP client (compatible with supabase)
-httpx>=0.26,<0.29
-
-# Database
-supabase==2.17.0
-
-# Environment and configuration
-python-dotenv==1.0.0
-
-# Logging
-structlog==23.2.0
-python-json-logger
+# Essential dependencies only - let pip resolve versions
+fastapi
+uvicorn[standard]
+pydantic
+pydantic-settings
+supabase
+python-dotenv
