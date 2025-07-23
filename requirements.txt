@@ -18,3 +18,4 @@ tenacity==8.2.3
 
 # For logging
 structlog==23.2.0
+python-json-logger==3.3.0
