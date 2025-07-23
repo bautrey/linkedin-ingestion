@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     )
 
     # Application
-    VERSION: str = "1.0.0"
+    VERSION: str = "2.0.0-cassidy-integration"
     ENVIRONMENT: str = Field(default="development", description="Environment: development, staging, production")
     DEBUG: bool = Field(default=True, description="Enable debug mode")
     

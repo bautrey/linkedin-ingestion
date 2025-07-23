@@ -1,0 +1,11 @@
+Starting Container
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+INFO:     100.64.0.2:41461 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.3:28442 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.4:25928 - "GET / HTTP/1.1" 200 OK
+INFO:     100.64.0.3:35046 - "GET /api/v1/profiles/recent HTTP/1.1" 200 OK
+INFO:     100.64.0.3:27270 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.4:22030 - "GET /api/v1/profiles/recent HTTP/1.1" 200 OK
