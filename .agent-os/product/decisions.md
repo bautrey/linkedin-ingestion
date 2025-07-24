@@ -176,3 +176,50 @@ Leveraging existing Cassidy AI workflows provides proven data collection capabil
 - Dependency on Cassidy AI platform
 - Limited control over data collection methodology
 - Potential vendor lock-in for data source
+
+## 2025-07-24: Session Hibernation - Validation Layer Issues
+
+**ID:** DEC-005
+**Status:** Pending
+**Category:** Technical Debt
+**Stakeholders:** Development Team
+
+### Decision
+
+Project hibernated in partially complete state due to critical Pydantic model validation issues requiring architectural review before proceeding with deployment finalization.
+
+### Context
+
+After resolving Railway deployment dependency conflicts and implementing full Cassidy AI integration, discovered fundamental field mapping issues between Cassidy API responses and Pydantic model expectations. The core functionality is implemented but blocked by validation layer problems.
+
+### Current Issues
+
+1. **Field Name Mismatches**: API returns `id`, `name`, `url` but models expect `profile_id`, `full_name`, `linkedin_url`
+2. **Type Validation Errors**: `year_founded` expects string but API returns integer
+3. **Test Suite Failures**: Multiple validation failures blocking comprehensive testing
+4. **Unpushed Dependencies**: openai dependency required for embeddings not pushed to remote
+
+### Next Actions Required
+
+1. Implement field aliases in Pydantic models or response transformation layer
+2. Fix type coercion for integer->string fields like `year_founded`
+3. Push pending commits with openai dependency
+4. Verify full deployment functionality after validation fixes
+
+### Hibernation State
+
+- **Deployment**: ✅ Running on Railway with health checks
+- **Integration**: ✅ Full Cassidy AI integration implemented
+- **Dependencies**: ✅ All conflicts resolved locally
+- **Validation**: ❌ Field mapping errors blocking core functionality
+- **Tests**: ❌ Multiple failures due to validation issues
+- **Git State**: ⚠️ 2 commits ahead, critical openai dependency not pushed
+
+### Recovery Instructions
+
+```bash
+# Fix validation errors first
+python test_complete_data_capture.py  # Shows actual API structure
+# Then push dependencies and verify deployment
+git push origin master && railway up --detach
+```
