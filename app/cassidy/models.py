@@ -89,10 +89,10 @@ class CurrentCompanyInfo(BaseModel):
 class LinkedInProfile(BaseModel):
     """LinkedIn profile matching actual Cassidy API response structure"""
     
-    # Core fields - mapped from actual API response
-    profile_id: str = Field(..., description="LinkedIn profile ID")
-    full_name: str = Field(..., description="Full name")
-    linkedin_url: HttpUrl = Field(..., description="LinkedIn profile URL")
+    # Core fields - mapped from actual API response with aliases
+    profile_id: str = Field(..., alias="id", description="LinkedIn profile ID")
+    full_name: str = Field(..., alias="name", description="Full name")
+    linkedin_url: HttpUrl = Field(..., alias="url", description="LinkedIn profile URL")
     
     # Additional profile fields from actual API
     about: Optional[str] = None
@@ -257,7 +257,7 @@ class CompanyProfile(BaseModel):
     """Company profile matching actual Cassidy API response structure"""
     
     # Core fields from actual API
-    company_id: str = Field(..., description="LinkedIn company ID")
+    company_id: str = Field(default="unknown", description="LinkedIn company ID")
     company_name: str = Field(..., description="Company name")
     
     # Optional company information
@@ -292,11 +292,13 @@ class CompanyProfile(BaseModel):
     
     @validator('year_founded', pre=True)
     def handle_empty_year_founded(cls, v):
-        """Handle empty string year_founded"""
-        if v == "":
+        """Handle year_founded - convert int to string, handle empty strings"""
+        if v == "" or v is None:
             return None
+        if isinstance(v, int):
+            return str(v)
         if isinstance(v, str) and v.isdigit():
-            return int(v)
+            return v  # Keep as string
         return v
     
     @validator('funding_info', pre=True)
