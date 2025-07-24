@@ -51,15 +51,18 @@ class ExperienceEntry(BaseModel):
     company_id: Optional[str] = None
     company_linkedin_url: Optional[str] = None
     company_logo_url: Optional[str] = None
-    current_job: Optional[bool] = None
     date_range: Optional[str] = None
     description: Optional[str] = None
+    duration: Optional[str] = None  # NEW: e.g., "11 yrs 6 mos"
     end_month: Optional[str] = None
     end_year: Optional[int] = None
-    job_title: Optional[str] = None
+    is_current: Optional[bool] = None  # RENAMED from current_job
+    job_type: Optional[str] = None  # NEW: job type classification
     location: Optional[str] = None
-    start_month: Optional[str] = None
+    skills: Optional[str] = None  # NEW: skills associated with role
+    start_month: Optional[int] = None  # Changed: can be int or str
     start_year: Optional[int] = None
+    title: Optional[str] = None  # RENAMED from job_title
     
     @validator('end_year', 'start_year', pre=True)
     def handle_empty_year(cls, v):
@@ -73,9 +76,24 @@ class ExperienceEntry(BaseModel):
     @validator('start_month', 'end_month', pre=True)
     def handle_month(cls, v):
         """Handle month fields that might be int or string"""
+        if v == "":
+            return None
         if isinstance(v, int):
-            return str(v)
+            return v  # Keep as int for start_month since API sends int
+        if isinstance(v, str) and v.isdigit():
+            return int(v)
         return v
+    
+    # Backward compatibility properties
+    @property
+    def job_title(self) -> Optional[str]:
+        """Alias for title for backward compatibility"""
+        return self.title
+    
+    @property
+    def current_job(self) -> Optional[bool]:
+        """Alias for is_current for backward compatibility"""
+        return self.is_current
 
 
 # Current Company Info
@@ -89,10 +107,13 @@ class CurrentCompanyInfo(BaseModel):
 class LinkedInProfile(BaseModel):
     """LinkedIn profile matching actual Cassidy API response structure"""
     
-    # Core fields - mapped from actual API response with aliases
-    profile_id: str = Field(..., alias="id", description="LinkedIn profile ID")
-    full_name: str = Field(..., alias="name", description="Full name")
-    linkedin_url: HttpUrl = Field(..., alias="url", description="LinkedIn profile URL")
+    class Config:
+        extra = "allow"  # Allow extra fields like _certifications
+    
+    # Core fields - now optional since API format has changed
+    profile_id: Optional[str] = None
+    full_name: Optional[str] = None
+    linkedin_url: Optional[str] = None
     
     # Additional profile fields from actual API
     about: Optional[str] = None
@@ -159,17 +180,17 @@ class LinkedInProfile(BaseModel):
     
     # Convenience properties to maintain compatibility with existing code
     @property
-    def id(self) -> str:
+    def id(self) -> Optional[str]:
         """Alias for profile_id for backward compatibility"""
         return self.profile_id
     
     @property
-    def name(self) -> str:
+    def name(self) -> Optional[str]:
         """Alias for full_name for backward compatibility"""
         return self.full_name
         
     @property
-    def url(self) -> HttpUrl:
+    def url(self) -> Optional[str]:
         """Alias for linkedin_url for backward compatibility"""
         return self.linkedin_url
     
@@ -205,8 +226,8 @@ class LinkedInProfile(BaseModel):
         
     @property
     def certifications(self) -> List[Dict]:
-        """Empty list for backward compatibility"""
-        return []
+        """Return certifications from stored data or empty list"""
+        return getattr(self, '_certifications', [])
     
     @property
     def current_company(self) -> Optional[Dict[str, str]]:

@@ -206,7 +206,8 @@ railway logs
 
 3. Test the deployed API:
 ```bash
-curl https://your-railway-app.railway.app/health
+# Production URL (Railway project: smooth-mailbox)
+curl https://smooth-mailbox.railway.app/api/v1/health
 ```
 
 ## Step 5: Alternative Deployment Options
@@ -272,10 +273,10 @@ Monitor Cassidy API usage and OpenAI token consumption:
 
 ```bash
 # Check pipeline health
-curl https://your-app.railway.app/api/v1/pipeline/health
+curl https://smooth-mailbox.railway.app/api/v1/pipeline/health
 
 # View recent ingestion stats
-curl https://your-app.railway.app/api/v1/profiles/recent
+curl https://smooth-mailbox.railway.app/api/v1/profiles/recent
 ```
 
 ## Step 7: Usage Examples
@@ -283,7 +284,7 @@ curl https://your-app.railway.app/api/v1/profiles/recent
 ### 7.1 Single Profile Ingestion
 
 ```bash
-curl -X POST "https://your-app.railway.app/api/v1/profiles/ingest" \
+curl -X POST "https://smooth-mailbox.railway.app/api/v1/profiles/ingest" \
   -H "Content-Type: application/json" \
   -d '{"linkedin_url": "https://linkedin.com/in/example"}'
 ```
@@ -291,7 +292,7 @@ curl -X POST "https://your-app.railway.app/api/v1/profiles/ingest" \
 ### 7.2 Batch Profile Ingestion
 
 ```bash
-curl -X POST "https://your-app.railway.app/api/v1/profiles/batch" \
+curl -X POST "https://smooth-mailbox.railway.app/api/v1/profiles/batch" \
   -H "Content-Type: application/json" \
   -d '{
     "linkedin_urls": [
@@ -304,7 +305,7 @@ curl -X POST "https://your-app.railway.app/api/v1/profiles/batch" \
 ### 7.3 Similarity Search
 
 ```bash
-curl -X POST "https://your-app.railway.app/api/v1/profiles/similar" \
+curl -X POST "https://smooth-mailbox.railway.app/api/v1/profiles/similar" \
   -H "Content-Type: application/json" \
   -d '{
     "profile_id": "stored-profile-id",

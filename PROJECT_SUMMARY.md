@@ -158,6 +158,12 @@ app/core/
 
 ## 🚀 Production Deployment Ready
 
+### Current Production Environment:
+- **Platform**: Railway
+- **Project**: smooth-mailbox  
+- **URL**: https://smooth-mailbox.railway.app
+- **Status**: ❌ Down (needs redeploy with model fixes)
+
 ### Deployment Assets Created:
 - ✅ **Complete requirements.txt** - All production dependencies
 - ✅ **Database schema (schema.sql)** - PostgreSQL + pgvector setup
