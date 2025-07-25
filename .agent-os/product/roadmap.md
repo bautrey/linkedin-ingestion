@@ -1,8 +1,29 @@
 # Product Roadmap
 
-> Last Updated: 2025-01-23
-> Version: 1.0.0
-> Status: Planning
+> Last Updated: 2025-07-25
+> Version: 2.0.0
+> Status: API Refactor Phase
+
+## Current Status (July 2025)
+
+**✅ COMPLETED PHASES:**
+- **Phase 1**: Core MVP - LinkedIn profile ingestion with SQLite storage, FastAPI deployment
+- **Phase 2**: Basic API endpoints - POST /ingest, GET /recent with API key authentication
+- **Phase 3**: Production deployment - Railway hosting, API security, Make.com integration
+
+**🚧 CURRENT PHASE: REST API Refactor**
+- **Goal**: Convert action-based endpoints to resource-oriented design following Google AIP-121
+- **Status**: Specification complete, ready for implementation
+- **Spec**: @.agent-os/specs/2025-07-25-rest-api-refactor/
+
+**📋 PHASE PROGRESS:**
+- [x] Requirements gathering and specification
+- [x] Technical architecture design
+- [x] API endpoint specification
+- [x] Comprehensive test planning
+- [ ] Implementation (Next: Task breakdown creation)
+- [ ] Make.com integration update
+- [ ] Testing and deployment
 
 ## Phase 1: Core MVP Functionality (2-3 weeks)
 
