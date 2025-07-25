@@ -8,6 +8,7 @@ Tests the SupabaseClient and EmbeddingService with mock data
 import asyncio
 import json
 import uuid
+import pytest
 from typing import Dict, Any, List
 from unittest.mock import Mock, patch, AsyncMock
 from datetime import datetime
@@ -39,7 +40,8 @@ def create_mock_company() -> CompanyProfile:
 class TestEmbeddingService:
     """Test cases for EmbeddingService"""
     
-    def __init__(self):
+    @pytest.fixture(autouse=True)
+    def _init_test_service(self):
         self.embedding_service = EmbeddingService()
     
     def test_profile_to_text(self):
@@ -190,19 +192,53 @@ class MockSupabaseClient:
 class TestSupabaseClient:
     """Test cases for SupabaseClient"""
     
-    def __init__(self):
-        # Mock the settings for testing
-        with patch.object(settings, 'SUPABASE_URL', 'https://mock.supabase.co'):
-            with patch.object(settings, 'SUPABASE_ANON_KEY', 'mock_key'):
-                with patch('app.database.supabase_client.create_client') as mock_create:
-                    mock_create.return_value = MockSupabaseClient()
-                    self.client = SupabaseClient()
+    @pytest.fixture(autouse=True)
+    async def _init_test_client(self):
+        # Mock the acreate_client function at the module level  
+        self.mock_patch = patch('app.database.supabase_client.acreate_client')
+        mock_create = self.mock_patch.__enter__()
+        mock_create.return_value = MockSupabaseClient()
+        
+        # Also patch the settings to avoid configuration errors
+        self.settings_url_patch = patch.object(settings, 'SUPABASE_URL', 'https://mock.supabase.co')
+        self.settings_key_patch = patch.object(settings, 'SUPABASE_ANON_KEY', 'mock_key')
+        self.settings_url_patch.__enter__()
+        self.settings_key_patch.__enter__()
+        
+        self.client = SupabaseClient()
+        
+        # Yield control back to the test
+        yield
+        
+        # Clean up patches after test
+        self.mock_patch.__exit__(None, None, None)
+        self.settings_url_patch.__exit__(None, None, None)
+        self.settings_key_patch.__exit__(None, None, None)
     
+    @pytest.mark.asyncio
     async def test_store_profile(self):
         """Test storing LinkedIn profile"""
         print("Testing profile storage...")
         
-        profile = create_mock_profile()
+        # Create a unique profile for this test
+        import time
+        unique_id = f"test-profile-{int(time.time() * 1000)}"
+        mock_data = {
+            "id": unique_id,
+            "name": "Test User Profile",
+            "url": f"https://linkedin.com/in/{unique_id}",
+            "headline": "Test Engineer",
+            "about": "Test profile for storage testing",
+            "city": "Test City",
+            "country": "US",
+            "follower_count": 100,
+            "connection_count": 50,
+            "experiences": [],
+            "educations": [],
+            "languages": ["English"],
+            "timestamp": "2024-07-24T11:46:51Z"
+        }
+        profile = LinkedInProfile(**mock_data)
         embedding = [0.1] * settings.VECTOR_DIMENSION  # Mock embedding
         
         record_id = await self.client.store_profile(profile, embedding)
@@ -212,11 +248,31 @@ class TestSupabaseClient:
         
         print(f"✓ Profile stored with ID: {record_id}")
     
+    @pytest.mark.asyncio
     async def test_store_company(self):
         """Test storing company profile"""
         print("Testing company storage...")
         
-        company = create_mock_company()
+        # Create a unique company for this test
+        import time
+        unique_id = f"test-company-{int(time.time() * 1000)}"
+        mock_data = {
+            "company_id": unique_id,
+            "company_name": "Test Company Corp",
+            "description": "Test company for storage testing",
+            "website": f"https://{unique_id}.com",
+            "linkedin_url": f"https://linkedin.com/company/{unique_id}",
+            "employee_count": 100,
+            "employee_range": "51-100",
+            "year_founded": 2020,
+            "industries": ["Testing"],
+            "hq_city": "Test City",
+            "hq_region": "Test State",
+            "hq_country": "United States",
+            "locations": [],
+            "funding_info": None
+        }
+        company = CompanyProfile(**mock_data)
         embedding = [0.2] * settings.VECTOR_DIMENSION  # Mock embedding
         
         record_id = await self.client.store_company(company, embedding)
@@ -226,12 +282,30 @@ class TestSupabaseClient:
         
         print(f"✓ Company stored with ID: {record_id}")
     
+    @pytest.mark.asyncio
     async def test_get_profile_by_linkedin_id(self):
         """Test retrieving profile by LinkedIn ID"""
         print("Testing profile retrieval...")
         
-        # First store a profile
-        profile = create_mock_profile()
+        # Create a unique profile for this test
+        import time
+        unique_id = f"retrieval-test-{int(time.time() * 1000)}"
+        mock_data = {
+            "id": unique_id,
+            "name": "Jane Smith",
+            "url": f"https://linkedin.com/in/{unique_id}",
+            "headline": "Data Scientist",
+            "about": "Experienced data scientist with ML expertise",
+            "city": "New York",
+            "country": "US",
+            "follower_count": 800,
+            "connection_count": 400,
+            "experiences": [],
+            "educations": [],
+            "languages": ["English"],
+            "timestamp": "2024-07-24T11:46:51Z"
+        }
+        profile = LinkedInProfile(**mock_data)
         await self.client.store_profile(profile)
         
         # Then try to retrieve it
@@ -241,6 +315,7 @@ class TestSupabaseClient:
         # In real implementation, this would return the stored profile
         print(f"✓ Profile retrieval test completed (returned: {retrieved is not None})")
     
+    @pytest.mark.asyncio
     async def test_find_similar_profiles(self):
         """Test vector similarity search for profiles"""
         print("Testing similar profile search...")
@@ -258,6 +333,7 @@ class TestSupabaseClient:
         for profile in similar_profiles:
             print(f"  - {profile.get('name', 'Unknown')} (similarity: {profile.get('similarity', 0):.2f})")
     
+    @pytest.mark.asyncio
     async def test_health_check(self):
         """Test database health check"""
         print("Testing database health check...")

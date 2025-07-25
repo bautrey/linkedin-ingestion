@@ -8,6 +8,7 @@ through database storage with vector embeddings and similarity search.
 
 import asyncio
 import json
+import pytest
 from typing import Dict, Any, List
 from unittest.mock import Mock, patch, AsyncMock
 from datetime import datetime
@@ -257,6 +258,7 @@ class MockLinkedInPipeline:
         }
 
 
+@pytest.mark.asyncio
 async def test_single_profile_ingestion():
     """Test ingesting a single LinkedIn profile"""
     print("=" * 60)
@@ -276,7 +278,7 @@ async def test_single_profile_ingestion():
         
         print(f"✓ Profile ingested successfully")
         print(f"  Pipeline ID: {result['pipeline_id']}")
-        print(f"  Profile Name: {result['profile']['name']}")
+        print(f"  Profile Name: {result['profile']['full_name']}")
         print(f"  Storage ID: {result['storage_ids'].get('profile', 'None')}")
         print(f"  Embedding Dimension: {result['embeddings']['profile']}")
         
@@ -285,6 +287,7 @@ async def test_single_profile_ingestion():
         raise
 
 
+@pytest.mark.asyncio
 async def test_batch_profile_ingestion():
     """Test batch processing of multiple profiles"""
     print("\n" + "=" * 60)
@@ -318,6 +321,7 @@ async def test_batch_profile_ingestion():
         raise
 
 
+@pytest.mark.asyncio
 async def test_similarity_search():
     """Test vector similarity search"""
     print("\n" + "=" * 60)
@@ -330,7 +334,8 @@ async def test_similarity_search():
         # First, ingest a profile to search with
         linkedin_url = "https://linkedin.com/in/reference-profile"
         ingest_result = await pipeline.ingest_profile(linkedin_url)
-        reference_profile = LinkedInProfile(**ingest_result["profile"])
+        # Use the profile object from the pipeline, not the dict
+        reference_profile = await pipeline.cassidy_client.fetch_profile(linkedin_url)
         
         # Now search for similar profiles
         similar_profiles = await pipeline.find_similar_profiles(
@@ -353,6 +358,7 @@ async def test_similarity_search():
         raise
 
 
+@pytest.mark.asyncio
 async def test_pipeline_health_check():
     """Test pipeline health monitoring"""
     print("\n" + "=" * 60)
@@ -381,6 +387,7 @@ async def test_pipeline_health_check():
         raise
 
 
+@pytest.mark.asyncio
 async def test_error_handling():
     """Test error handling and recovery"""
     print("\n" + "=" * 60)
@@ -404,6 +411,7 @@ async def test_error_handling():
         print(f"✓ Error handling working - caught exception: {type(e).__name__}")
 
 
+@pytest.mark.asyncio
 async def test_configuration_scenarios():
     """Test different configuration scenarios"""
     print("\n" + "=" * 60)

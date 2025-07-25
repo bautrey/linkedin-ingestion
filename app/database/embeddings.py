@@ -227,9 +227,17 @@ class EmbeddingService(LoggerMixin):
         if profile.experience:
             exp_texts = []
             for exp in profile.experience[:5]:  # Limit to recent experience
-                exp_text = f"{exp.get('position', '')} at {exp.get('company', '')}"
-                if exp.get('description'):
-                    exp_text += f": {exp['description'][:200]}..."  # Truncate long descriptions
+                # Handle both dict and Pydantic model formats
+                if hasattr(exp, 'job_title') and hasattr(exp, 'company'):
+                    exp_text = f"{getattr(exp, 'job_title', '')} at {getattr(exp, 'company', '')}"
+                    if hasattr(exp, 'description') and exp.description:
+                        exp_text += f": {exp.description[:200]}..."  # Truncate long descriptions
+                elif isinstance(exp, dict):
+                    exp_text = f"{exp.get('position', '')} at {exp.get('company', '')}"
+                    if exp.get('description'):
+                        exp_text += f": {exp['description'][:200]}..."  # Truncate long descriptions
+                else:
+                    exp_text = str(exp)
                 exp_texts.append(exp_text)
             text_parts.append(f"Experience: {'; '.join(exp_texts)}")
         
@@ -237,9 +245,17 @@ class EmbeddingService(LoggerMixin):
         if profile.education:
             edu_texts = []
             for edu in profile.education[:3]:  # Limit to recent education
-                edu_text = f"{edu.get('degree', '')} from {edu.get('school', '')}"
-                if edu.get('field_of_study'):
-                    edu_text += f" in {edu['field_of_study']}"
+                # Handle both dict and Pydantic model formats
+                if hasattr(edu, 'degree') and hasattr(edu, 'school'):
+                    edu_text = f"{getattr(edu, 'degree', '')} from {getattr(edu, 'school', '')}"
+                    if hasattr(edu, 'field_of_study') and edu.field_of_study:
+                        edu_text += f" in {edu.field_of_study}"
+                elif isinstance(edu, dict):
+                    edu_text = f"{edu.get('degree', '')} from {edu.get('school', '')}"
+                    if edu.get('field_of_study'):
+                        edu_text += f" in {edu['field_of_study']}"
+                else:
+                    edu_text = str(edu)
                 edu_texts.append(edu_text)
             text_parts.append(f"Education: {'; '.join(edu_texts)}")
         

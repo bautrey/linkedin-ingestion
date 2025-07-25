@@ -53,14 +53,14 @@ async def detailed_health_check():
     """
     Detailed health check with dependency verification
     
-    Checks external service connectivity and database status
+    Checks external service connectivity, database status, and LinkedIn integration
     """
     logger.info("Detailed health check requested")
     
     checks = {}
     overall_status = "healthy"
     
-    # Check Cassidy API connectivity
+    # Check Cassidy API connectivity (legacy check)
     cassidy_check = await _check_cassidy_connectivity()
     checks["cassidy"] = cassidy_check
     if cassidy_check.status != "healthy":
@@ -71,6 +71,20 @@ async def detailed_health_check():
     checks["database"] = database_check
     if database_check.status != "healthy":
         overall_status = "unhealthy"
+    
+    # Enhanced LinkedIn integration check
+    from app.cassidy.health_checker import health_checker
+    linkedin_check = await health_checker.quick_health_check()
+    checks["linkedin_integration"] = {
+        "status": linkedin_check["status"],
+        "response_time_ms": linkedin_check["response_time_ms"],
+        "error": linkedin_check.get("error")
+    }
+    
+    if linkedin_check["status"] == "unhealthy":
+        overall_status = "unhealthy"
+    elif linkedin_check["status"] == "degraded" and overall_status == "healthy":
+        overall_status = "degraded"
     
     return HealthResponse(
         status=overall_status,
@@ -163,3 +177,48 @@ async def liveness_check():
     Returns 200 if service is alive
     """
     return {"status": "alive"}
+
+
+@router.get("/health/linkedin")
+async def linkedin_integration_health_check():
+    """
+    Comprehensive LinkedIn integration health check
+    
+    Tests actual LinkedIn data ingestion using public test profiles
+    WITHOUT saving data to the database. Detects API format changes,
+    authentication issues, and service availability.
+    
+    Returns detailed metrics about:
+    - API connectivity
+    - Profile ingestion capability  
+    - Company ingestion capability
+    - Data quality metrics
+    - Performance metrics
+    """
+    logger.info("Comprehensive LinkedIn integration health check requested")
+    
+    try:
+        from app.cassidy.health_checker import health_checker
+        
+        # Run comprehensive health check
+        result = await health_checker.comprehensive_health_check()
+        
+        # Log the result for monitoring
+        logger.info(
+            "LinkedIn integration health check completed",
+            status=result["overall_status"],
+            execution_time=result.get("execution_time_seconds", 0),
+            errors_count=len(result.get("errors", [])),
+            warnings_count=len(result.get("warnings", []))
+        )
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"LinkedIn integration health check failed: {e}")
+        return {
+            "overall_status": "unhealthy",
+            "timestamp": datetime.utcnow().isoformat(),
+            "error": str(e),
+            "service": "linkedin_integration_health_check"
+        }

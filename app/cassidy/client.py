@@ -101,7 +101,10 @@ class CassidyClient(LoggerMixin):
             
             # Parse and validate response
             profile_data = self._extract_profile_data(response_data)
-            profile = LinkedInProfile(**profile_data)
+            
+            # Transform API response to match LinkedInProfile model
+            transformed_data = self._transform_profile_data(profile_data)
+            profile = LinkedInProfile(**transformed_data)
             
             self.logger.info(
                 "Profile fetch completed successfully",
@@ -151,7 +154,10 @@ class CassidyClient(LoggerMixin):
             
             # Parse and validate response
             company_data = self._extract_company_data(response_data)
-            company = CompanyProfile(**company_data)
+            
+            # Transform API response to match CompanyProfile model
+            transformed_data = self._transform_company_data(company_data)
+            company = CompanyProfile(**transformed_data)
             
             self.logger.info(
                 "Company fetch completed successfully",
@@ -180,7 +186,7 @@ class CassidyClient(LoggerMixin):
             httpx.TimeoutException,
             httpx.ConnectError,
         )),
-        before_sleep=before_sleep_log(None, log_level="WARNING"),
+        # Note: before_sleep logging removed due to initialization order
     )
     async def _execute_workflow_with_retry(
         self, 
@@ -504,3 +510,250 @@ class CassidyClient(LoggerMixin):
                 "error": str(e),
                 "error_type": type(e).__name__
             }
+    
+    def _transform_profile_data(self, profile_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Transform raw API response to match LinkedInProfile model fields
+        
+        The API returns fields like 'id', 'name', 'url' but the model expects
+        'profile_id', 'full_name', 'linkedin_url' (with aliases).
+        
+        Args:
+            profile_data: Raw profile data from API
+            
+        Returns:
+            Dict with transformed field names and processed nested data
+        """
+        from datetime import datetime
+        
+        # Handle the core field mapping - Pydantic aliases will handle this,
+        # but we need to ensure nested data is properly structured
+        transformed = profile_data.copy()
+        
+        # Transform experience array
+        if 'experience' in profile_data and isinstance(profile_data['experience'], list):
+            transformed_experiences = []
+            for exp in profile_data['experience']:
+                if isinstance(exp, dict):
+                    # Transform experience entry to match ExperienceEntry model
+                    transformed_exp = {
+                        'title': exp.get('title'),
+                        'company': exp.get('company'),
+                        'company_id': exp.get('company_id'),
+                        'location': exp.get('location'),
+                        'description': exp.get('description'),
+                        'start_date': exp.get('start_date'),
+                        'end_date': exp.get('end_date'),
+                        'start_year': self._parse_year(exp.get('start_date')),
+                        'end_year': self._parse_year(exp.get('end_date')),
+                        'start_month': self._parse_month(exp.get('start_date')),
+                        'end_month': self._parse_month(exp.get('end_date')),
+                        'url': exp.get('url'),
+                        'company_logo_url': exp.get('company_logo_url')
+                    }
+                    transformed_experiences.append(transformed_exp)
+            transformed['experiences'] = transformed_experiences
+        else:
+            transformed['experiences'] = []
+        
+        # Transform education array
+        if 'education' in profile_data and isinstance(profile_data['education'], list):
+            transformed_educations = []
+            for edu in profile_data['education']:
+                if isinstance(edu, dict):
+                    # Transform education entry to match EducationEntry model
+                    transformed_edu = {
+                        'school': edu.get('title'),  # API uses 'title' for school name
+                        'degree': edu.get('degree'),
+                        'field_of_study': edu.get('field'),
+                        'start_year': self._parse_year(edu.get('start_date')),
+                        'end_year': self._parse_year(edu.get('end_date')),
+                        'start_month': self._parse_month(edu.get('start_date')),
+                        'end_month': self._parse_month(edu.get('end_date')),
+                        'url': edu.get('url'),
+                        'institute_logo_url': edu.get('institute_logo_url')
+                    }
+                    transformed_educations.append(transformed_edu)
+            transformed['educations'] = transformed_educations
+        else:
+            transformed['educations'] = []
+        
+        # Map position field to headline for the alias to work
+        if 'position' in profile_data:
+            transformed['headline'] = profile_data['position']
+        
+        # Map country_code to country for the model
+        if 'country_code' in profile_data:
+            transformed['country'] = profile_data['country_code']
+        
+        # Handle timestamp conversion
+        if 'timestamp' in profile_data and profile_data['timestamp']:
+            try:
+                # Parse ISO timestamp
+                if isinstance(profile_data['timestamp'], str):
+                    transformed['timestamp'] = datetime.fromisoformat(profile_data['timestamp'].replace('Z', '+00:00'))
+            except (ValueError, TypeError):
+                transformed['timestamp'] = None
+        
+        # Transform certifications array and store in model
+        # Note: The model returns certifications via property, but we store raw data 
+        # for the property to access
+        if 'certifications' in profile_data and isinstance(profile_data['certifications'], list):
+            # Store certifications in a field the model can access
+            transformed['_certifications'] = profile_data['certifications']
+        else:
+            transformed['_certifications'] = []
+        
+        # Map additional social fields
+        if 'followers' in profile_data:
+            transformed['follower_count'] = profile_data['followers']
+        
+        if 'connections' in profile_data:
+            transformed['connection_count'] = profile_data['connections']
+        
+        return transformed
+    
+    def _transform_company_data(self, company_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Transform raw company API response to match CompanyProfile model fields
+        
+        Args:
+            company_data: Raw company data from API
+            
+        Returns:
+            Dict with transformed field names and processed nested data
+        """
+        transformed = company_data.copy()
+        
+        # Ensure required fields have defaults
+        if 'company_name' not in transformed:
+            transformed['company_name'] = transformed.get('name', 'Unknown Company')
+        
+        if 'company_id' not in transformed:
+            transformed['company_id'] = transformed.get('id', 'unknown')
+        
+        # Convert year_founded to integer if it's a string
+        if 'year_founded' in transformed and transformed['year_founded']:
+            try:
+                if isinstance(transformed['year_founded'], str):
+                    transformed['year_founded'] = int(transformed['year_founded'])
+            except (ValueError, TypeError):
+                transformed['year_founded'] = None
+        
+        # Ensure industries is a list
+        if 'industries' not in transformed or not isinstance(transformed['industries'], list):
+            transformed['industries'] = []
+        
+        # Transform locations array
+        if 'locations' in transformed and isinstance(transformed['locations'], list):
+            transformed_locations = []
+            for loc in transformed['locations']:
+                if isinstance(loc, dict):
+                    # Ensure location has required fields
+                    transformed_loc = {
+                        'city': loc.get('city'),
+                        'country': loc.get('country'),
+                        'region': loc.get('region'),
+                        'is_headquarter': loc.get('is_headquarter', False),
+                        'full_address': loc.get('full_address'),
+                        'line1': loc.get('line1'),
+                        'line2': loc.get('line2'),
+                        'zipcode': loc.get('zipcode')
+                    }
+                    transformed_locations.append(transformed_loc)
+            transformed['locations'] = transformed_locations
+        else:
+            transformed['locations'] = []
+        
+        # Transform funding_info
+        if 'funding_info' in transformed and isinstance(transformed['funding_info'], dict):
+            funding = transformed['funding_info']
+            transformed_funding = {
+                'crunchbase_url': funding.get('crunchbase_url'),
+                'last_funding_round_amount': funding.get('last_funding_round_amount'),
+                'last_funding_round_currency': funding.get('last_funding_round_currency'),
+                'last_funding_round_investor_count': funding.get('last_funding_round_investor_count'),
+                'last_funding_round_month': funding.get('last_funding_round_month'),
+                'last_funding_round_type': funding.get('last_funding_round_type'),
+                'last_funding_round_year': funding.get('last_funding_round_year')
+            }
+            transformed['funding_info'] = transformed_funding
+        else:
+            transformed['funding_info'] = {}
+        
+        # Ensure affiliated_companies is a list
+        if 'affiliated_companies' not in transformed:
+            transformed['affiliated_companies'] = []
+        
+        return transformed
+    
+    def _parse_year(self, date_str: str) -> Optional[int]:
+        """
+        Parse year from date string like '2021' or 'Present'
+        
+        Args:
+            date_str: Date string from API
+            
+        Returns:
+            Parsed year as integer or None
+        """
+        if not date_str or date_str.lower() in ['present', 'current', 'now']:
+            return None
+        
+        try:
+            # Try to extract year from string
+            if date_str.isdigit() and len(date_str) == 4:
+                return int(date_str)
+            # Handle formats like "Jan 2021" or "2021-01"
+            import re
+            year_match = re.search(r'(\d{4})', date_str)
+            if year_match:
+                return int(year_match.group(1))
+        except (ValueError, TypeError):
+            pass
+        
+        return None
+    
+    def _parse_month(self, date_str: str) -> Optional[int]:
+        """
+        Parse month from date string
+        
+        Args:
+            date_str: Date string from API
+            
+        Returns:
+            Parsed month as integer (1-12) or None
+        """
+        if not date_str or date_str.lower() in ['present', 'current', 'now']:
+            return None
+        
+        try:
+            # Handle formats like "2021-01" or "01/2021"
+            import re
+            month_match = re.search(r'(\d{1,2})[/-](\d{4})', date_str)
+            if month_match:
+                return int(month_match.group(1))
+            
+            # Handle month names
+            month_names = {
+                'jan': 1, 'january': 1,
+                'feb': 2, 'february': 2,
+                'mar': 3, 'march': 3,
+                'apr': 4, 'april': 4,
+                'may': 5,
+                'jun': 6, 'june': 6,
+                'jul': 7, 'july': 7,
+                'aug': 8, 'august': 8,
+                'sep': 9, 'september': 9,
+                'oct': 10, 'october': 10,
+                'nov': 11, 'november': 11,
+                'dec': 12, 'december': 12
+            }
+            
+            for month_name, month_num in month_names.items():
+                if month_name in date_str.lower():
+                    return month_num
+        except (ValueError, TypeError):
+            pass
+        
+        return None

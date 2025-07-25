@@ -8,11 +8,13 @@ ALL available data from both personal and company profiles without filtering.
 
 import json
 import asyncio
+import pytest
 from typing import Dict, Any
 
 from app.cassidy.client import CassidyClient
 from app.core.config import settings
 
+@pytest.mark.asyncio
 async def test_complete_profile_capture():
     """Test complete LinkedIn profile data capture"""
     

@@ -1,0 +1,36 @@
+{
+  "profile": {
+    "id": "mock-profile-id",
+    "name": "John Doe",
+    "url": "https://linkedin.com/in/johndoe",
+    "headline": "Software Engineer",
+    "about": "Experienced software engineer with expertise in Python and AI",
+    "city": "San Francisco",
+    "country": "US",
+    "follower_count": 1000,
+    "connection_count": 500,
+    "experiences": [
+      {
+        "company": "TechCorp",
+        "job_title": "Senior Software Engineer",
+        "start_year": 2020,
+        "start_month": "1",
+        "end_year": null,
+        "end_month": null,
+        "current_job": true,
+        "description": "Building scalable web applications"
+      }
+    ],
+    "educations": [
+      {
+        "school": "University of California",
+        "degree": "Bachelor of Science",
+        "field_of_study": "Computer Science",
+        "start_year": 2016,
+        "end_year": 2020
+      }
+    ],
+    "languages": ["English", "Spanish"],
+    "timestamp": "2024-07-24T11:46:51Z"
+  }
+}

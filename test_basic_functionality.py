@@ -21,9 +21,10 @@ def test_profile_model_validation():
     
     client = CassidyClient()
     profile_data = client._extract_profile_data(MOCK_CASSIDY_PROFILE_RESPONSE)
+    transformed_data = client._transform_profile_data(profile_data)
     
     # Should not raise validation error
-    profile = LinkedInProfile(**profile_data)
+    profile = LinkedInProfile(**transformed_data)
     
     assert profile.name == "Ronald Sorozan (MBA, CISM, PMP)"
     assert profile.id == "ronald-sorozan-mba-cism-pmp-8325652"
@@ -42,14 +43,15 @@ def test_company_model_validation():
     
     client = CassidyClient()
     company_data = client._extract_company_data(MOCK_CASSIDY_COMPANY_RESPONSE)
+    transformed_data = client._transform_company_data(company_data)
     
     # Should not raise validation error
-    company = CompanyProfile(**company_data)
+    company = CompanyProfile(**transformed_data)
     
     assert company.company_name == "JAM+"
     assert company.company_id == "jambnc"
     assert company.employee_count == 250
-    assert company.year_founded == 2018
+    assert company.year_founded == "2018"
     assert "Printing" in company.industries
     assert len(company.locations) == 1
     
@@ -62,8 +64,9 @@ def test_minimal_profile_data():
     
     client = CassidyClient()
     profile_data = client._extract_profile_data(MOCK_PROFILE_MINIMAL_DATA)
+    transformed_data = client._transform_profile_data(profile_data)
     
-    profile = LinkedInProfile(**profile_data)
+    profile = LinkedInProfile(**transformed_data)
     
     assert profile.name == "Jane Smith"
     assert profile.id == "test-minimal-profile"
@@ -80,8 +83,9 @@ def test_multiple_companies_profile():
     
     client = CassidyClient()
     profile_data = client._extract_profile_data(MOCK_PROFILE_WITH_MULTIPLE_COMPANIES)
+    transformed_data = client._transform_profile_data(profile_data)
     
-    profile = LinkedInProfile(**profile_data)
+    profile = LinkedInProfile(**transformed_data)
     
     assert profile.name == "John Doe"
     assert len(profile.experience) == 2

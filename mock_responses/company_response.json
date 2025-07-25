@@ -1,0 +1,25 @@
+{
+  "company": {
+    "company_id": "mock-company-id",
+    "company_name": "TechCorp",
+    "description": "Leading technology company specializing in AI and machine learning solutions",
+    "website": "https://techcorp.com",
+    "linkedin_url": "https://linkedin.com/company/techcorp",
+    "employee_count": 500,
+    "employee_range": "201-500",
+    "year_founded": 2015,
+    "industries": ["Technology", "Artificial Intelligence"],
+    "hq_city": "San Francisco",
+    "hq_region": "California",
+    "hq_country": "United States",
+    "locations": [
+      {
+        "city": "San Francisco",
+        "region": "California",
+        "country": "United States",
+        "is_headquarter": true
+      }
+    ],
+    "funding_info": null
+  }
+}

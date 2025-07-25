@@ -59,6 +59,9 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = Field(default="INFO", description="Logging level")
     LOG_FORMAT: str = Field(default="json", description="Log format: json or plain")
     
+    # Security
+    API_KEY: str = Field(default="li_HieZz-IjBp0uE7d-rZkRE0qyy12r5_ZJS_FR4jMvv0I", description="API key for authentication")
+    
     # Feature Flags
     ENABLE_COMPANY_INGESTION: bool = Field(default=True, description="Enable automatic company data ingestion")
     ENABLE_VECTOR_SEARCH: bool = Field(default=True, description="Enable vector similarity search")

@@ -6,10 +6,11 @@ using Cassidy AI workflows and storing in Supabase with pgvector.
 """
 
 import asyncio
-from fastapi import FastAPI, HTTPException
+import os
+from fastapi import FastAPI, HTTPException, Header, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, HttpUrl
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from datetime import datetime
 
 from app.cassidy.client import CassidyClient
@@ -49,6 +50,19 @@ def get_db_client():
     if db_client is None:
         db_client = SupabaseClient()
     return db_client
+
+# Security dependency
+def verify_api_key(x_api_key: Optional[str] = Header(None)):
+    """Verify API key from header"""
+    if x_api_key != settings.API_KEY:
+        raise HTTPException(
+            status_code=403, 
+            detail={
+                "error": "Unauthorized",
+                "message": "Invalid or missing API key"
+            }
+        )
+    return x_api_key
 
 # Request/Response models
 class ProfileIngestRequest(BaseModel):
@@ -96,7 +110,7 @@ async def health_check():
 
 
 @app.post("/api/v1/profiles/ingest", response_model=ProfileIngestResponse)
-async def ingest_profile(request: ProfileIngestRequest):
+async def ingest_profile(request: ProfileIngestRequest, api_key: str = Depends(verify_api_key)):
     """Ingest a LinkedIn profile"""
     try:
         # Fetch profile from Cassidy
