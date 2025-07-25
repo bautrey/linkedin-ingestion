@@ -206,8 +206,10 @@ railway logs
 
 3. Test the deployed API:
 ```bash
-# Production URL (Railway project: smooth-mailbox)
-curl https://smooth-mailbox.railway.app/api/v1/health
+# CORRECT Production URL (found via railway variables command)
+curl https://smooth-mailbox-production.up.railway.app/api/v1/health
+
+# DO NOT USE: https://smooth-mailbox.railway.app (this is wrong)
 ```
 
 ## Step 5: Alternative Deployment Options
