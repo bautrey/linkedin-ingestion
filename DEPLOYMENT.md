@@ -180,8 +180,15 @@ npm install -g @railway/cli
 ```bash
 railway login
 railway init
-railway up
+
+# Deploy with timeout protection (prevents hanging)
+timeout 90s railway up
+
+# OR use smart completion detection:
+railway up | (grep -q -E "(Healthcheck succeeded|Starting Container)" && killall railway)
 ```
+
+**Important**: `railway up` streams logs indefinitely after deployment completes. Always use timeout or completion detection to prevent hanging.
 
 3. Add environment variables:
 ```bash
