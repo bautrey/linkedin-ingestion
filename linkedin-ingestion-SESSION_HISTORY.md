@@ -77,3 +77,30 @@
 
 ---
 *This navigation hub provides systematic access to all project context and history.*
+
+## Session 
+
+Session File: ./sessions/linkedin-ingestion-session-2025-07-25-161159.md
+
+---
+
+
+## Session 2025-07-25 16:12:23
+
+Session File: ./sessions/linkedin-ingestion-session-2025-07-25-161223.md
+
+---
+
+
+## Session 2025-07-25 16:14:33
+
+Session File: ./sessions/linkedin-ingestion-session-2025-07-25-161433.md
+
+---
+
+## Session 2025-07-25 16:47:46
+
+Session File: ./sessions/linkedin-ingestion-session-2025-07-25-164633.md
+
+---
+

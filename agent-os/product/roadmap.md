@@ -14,7 +14,7 @@
 **🚧 CURRENT PHASE: REST API Refactor**
 - **Goal**: Convert action-based endpoints to resource-oriented design following Google AIP-121
 - **Status**: Specification complete, ready for implementation
-- **Spec**: @.agent-os/specs/2025-07-25-rest-api-refactor/
+- **Spec**: @agent-os/specs/2025-07-25-rest-api-refactor/
 
 **📋 PHASE PROGRESS:**
 - [x] Requirements gathering and specification

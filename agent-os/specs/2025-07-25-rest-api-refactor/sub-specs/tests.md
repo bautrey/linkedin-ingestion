@@ -1,6 +1,6 @@
 # Tests Specification
 
-This is the tests coverage details for the spec detailed in @.agent-os/specs/2025-07-25-rest-api-refactor/spec.md
+This is the tests coverage details for the spec detailed in @agent-os/specs/2025-07-25-rest-api-refactor/spec.md
 
 > Created: 2025-07-25
 > Version: 1.0.0
