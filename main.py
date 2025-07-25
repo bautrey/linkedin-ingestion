@@ -135,7 +135,7 @@ async def ingest_profile(request: ProfileIngestRequest, api_key: str = Depends(v
 
 
 @app.get("/api/v1/profiles/recent")
-async def get_recent_profiles(limit: int = 10):
+async def get_recent_profiles(limit: int = 10, api_key: str = Depends(verify_api_key)):
     """Get recently ingested profiles"""
     try:
         profiles = await get_db_client().list_recent_profiles(limit=limit)
