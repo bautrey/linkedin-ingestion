@@ -136,6 +136,15 @@ class LinkedInProfile(BaseModel):
     company_website: Optional[str] = None
     company_year_founded: Optional[str] = None  # Note: comes as string, might be empty
     
+    @validator('company_year_founded', pre=True)
+    def handle_company_year_founded(cls, v):
+        """Handle company_year_founded that might come as int or string"""
+        if v is None or v == "":
+            return None
+        if isinstance(v, int):
+            return str(v)
+        return v
+    
     # Social metrics
     follower_count: Optional[int] = None
     connection_count: Optional[int] = None
