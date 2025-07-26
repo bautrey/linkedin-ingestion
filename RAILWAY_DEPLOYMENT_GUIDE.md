@@ -32,22 +32,21 @@ railway variables
 # Railway does NOT auto-deploy on git push
 # You must manually trigger deployment:
 
-# ⚡ STREAMLINED METHOD (90 seconds total):
-railway redeploy &
-DEPLOY_PID=$!
-sleep 60  # Wait for deployment
-kill $DEPLOY_PID 2>/dev/null || true
-sleep 30  # Wait for container startup
+# ✅ PROVEN WORKING METHOD:
+railway up &
+# 🚨 THIS COMMAND WILL HANG - YOU MUST CTRL+C TO EXIT
+# Watch for these success messages:
+# "Deploy complete"
+# "INFO:     Uvicorn running on http://0.0.0.0:8080"
+# "[1/1] Healthcheck succeeded!"
+# When you see "Healthcheck succeeded!", press Ctrl+C to exit
 
-# Alternative methods:
-# Method 1: Use railway redeploy (monitor and cancel manually)
-railway redeploy
+# Alternative automated approach (if available):
+# railway up & sleep 90 && kill %1 2>/dev/null || true
 
-# Method 2: Use railway up with timeout protection
-gtimeout 90s railway up || killall railway
-
-# DO NOT USE: railway up without timeout (it hangs indefinitely)
-# DO NOT EXPECT: automatic deployment on git push (it doesn't exist)
+# FAILED METHODS (don't work reliably):
+# railway redeploy (often fails silently)
+# railway redeploy --yes (doesn't actually deploy)
 ```
 
 ### 3. Wait for Deployment (60+ seconds)
