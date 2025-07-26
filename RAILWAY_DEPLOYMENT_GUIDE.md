@@ -32,12 +32,18 @@ railway variables
 # Railway does NOT auto-deploy on git push
 # You must manually trigger deployment:
 
-# Method 1: Use railway redeploy (stops when complete)
-# But monitor output and cancel if it hangs
+# ⚡ STREAMLINED METHOD (90 seconds total):
+railway redeploy &
+DEPLOY_PID=$!
+sleep 60  # Wait for deployment
+kill $DEPLOY_PID 2>/dev/null || true
+sleep 30  # Wait for container startup
+
+# Alternative methods:
+# Method 1: Use railway redeploy (monitor and cancel manually)
 railway redeploy
 
 # Method 2: Use railway up with timeout protection
-# This command WILL hang at the end, so use timeout
 gtimeout 90s railway up || killall railway
 
 # DO NOT USE: railway up without timeout (it hangs indefinitely)
