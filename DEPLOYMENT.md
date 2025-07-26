@@ -182,13 +182,23 @@ railway login
 railway init
 
 # Deploy with timeout protection (prevents hanging)
-timeout 90s railway up
+# Note: Railway does NOT auto-deploy on git push
+# You must manually trigger deployment:
 
-# OR use smart completion detection:
+# Method 1: Use railway redeploy (may hang, monitor and cancel if needed)
+railway redeploy
+
+# Method 2: Use railway up with timeout (for macOS use gtimeout)
+gtimeout 90s railway up || killall railway
+
+# Method 3: Use railway up with completion detection
 railway up | (grep -q -E "(Healthcheck succeeded|Starting Container)" && killall railway)
 ```
 
-**Important**: `railway up` streams logs indefinitely after deployment completes. Always use timeout or completion detection to prevent hanging.
+**Important**: 
+- Railway does NOT auto-deploy on git push - you must manually trigger deployment
+- `railway up` streams logs indefinitely after deployment completes
+- Always use timeout or completion detection to prevent hanging
 
 3. Add environment variables:
 ```bash

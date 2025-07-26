@@ -29,16 +29,19 @@ railway variables
 
 ### 2. Deploy Code Changes
 ```bash
-# Method 1: Automatic deployment via git push
-git add .
-git commit -m "Your changes"
-git push
+# Railway does NOT auto-deploy on git push
+# You must manually trigger deployment:
 
-# Method 2: Force deployment if auto-deploy isn't working
-git commit --allow-empty -m "Force Railway redeploy"
-git push
+# Method 1: Use railway redeploy (stops when complete)
+# But monitor output and cancel if it hangs
+railway redeploy
 
-# DO NOT USE: railway up (it hangs)
+# Method 2: Use railway up with timeout protection
+# This command WILL hang at the end, so use timeout
+gtimeout 90s railway up || killall railway
+
+# DO NOT USE: railway up without timeout (it hangs indefinitely)
+# DO NOT EXPECT: automatic deployment on git push (it doesn't exist)
 ```
 
 ### 3. Wait for Deployment (60+ seconds)
