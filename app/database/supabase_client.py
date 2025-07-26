@@ -358,6 +358,117 @@ class SupabaseClient(LoggerMixin):
             self.logger.error("Failed to fetch recent profiles", error=str(e))
             raise
     
+    async def get_profile_by_url(self, linkedin_url: str) -> Optional[Dict[str, Any]]:
+        """
+        Retrieve profile by LinkedIn URL
+        
+        Args:
+            linkedin_url: LinkedIn profile URL
+            
+        Returns:
+            Profile data or None if not found
+        """
+        await self._ensure_client()
+        self.logger.info("Retrieving profile by LinkedIn URL", linkedin_url=linkedin_url)
+        
+        try:
+            result = await self.client.table("linkedin_profiles").select("*").eq("url", linkedin_url).execute()
+            
+            if result.data:
+                self.logger.info("Profile found by URL", linkedin_url=linkedin_url)
+                return result.data[0]
+            else:
+                self.logger.info("Profile not found by URL", linkedin_url=linkedin_url)
+                return None
+                
+        except Exception as e:
+            self.logger.error(
+                "Failed to retrieve profile by URL",
+                linkedin_url=linkedin_url,
+                error=str(e)
+            )
+            raise
+    
+    async def get_profile_by_id(self, profile_id: str) -> Optional[Dict[str, Any]]:
+        """
+        Retrieve profile by record ID
+        
+        Args:
+            profile_id: Profile record ID
+            
+        Returns:
+            Profile data or None if not found
+        """
+        await self._ensure_client()
+        self.logger.info("Retrieving profile by ID", profile_id=profile_id)
+        
+        try:
+            result = await self.client.table("linkedin_profiles").select("*").eq("id", profile_id).execute()
+            
+            if result.data:
+                self.logger.info("Profile found by ID", profile_id=profile_id)
+                return result.data[0]
+            else:
+                self.logger.info("Profile not found by ID", profile_id=profile_id)
+                return None
+                
+        except Exception as e:
+            self.logger.error(
+                "Failed to retrieve profile by ID",
+                profile_id=profile_id,
+                error=str(e)
+            )
+            raise
+    
+    async def search_profiles(
+        self,
+        name: Optional[str] = None,
+        company: Optional[str] = None,
+        limit: int = 50,
+        offset: int = 0
+    ) -> List[Dict[str, Any]]:
+        """
+        Search profiles with optional filters
+        
+        Args:
+            name: Partial name search (case-insensitive)
+            company: Partial company name search (case-insensitive)
+            limit: Maximum number of profiles to return
+            offset: Number of profiles to skip
+            
+        Returns:
+            List of matching profiles
+        """
+        await self._ensure_client()
+        self.logger.info("Searching profiles", name=name, company=company, limit=limit, offset=offset)
+        
+        try:
+            # Start with base query
+            query = self.client.table("linkedin_profiles").select("*")
+            
+            # Add name filter if provided (case-insensitive)
+            if name:
+                query = query.ilike("name", f"%{name}%")
+            
+            # Add company filter if provided (search in current_company and experience)
+            if company:
+                # This is a simplified approach - in production you might want more sophisticated JSON searching
+                query = query.or_(f"current_company->>company_name.ilike.%{company}%,position.ilike.%{company}%")
+            
+            # Add ordering, limit, and offset
+            query = query.order("created_at", desc=True).range(offset, offset + limit - 1)
+            
+            result = await query.execute()
+            
+            profiles = result.data or []
+            self.logger.info("Profile search completed", count=len(profiles))
+            
+            return profiles
+            
+        except Exception as e:
+            self.logger.error("Failed to search profiles", error=str(e))
+            raise
+    
     async def health_check(self) -> Dict[str, Any]:
         """
         Check database connectivity and health

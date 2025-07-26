@@ -2,11 +2,11 @@
 
 > Spec: REST API Refactor to Google AIP-121 Standards
 > Created: 2025-07-25
-> Status: Planning
+> Status: Ready for Implementation
 
 ## Overview
 
-Refactor the LinkedIn Ingestion Service API from action-based endpoints to resource-oriented design following Google AIP-121 standards, enabling flexible profile search by LinkedIn URL, profile ID, and other parameters while maintaining backward compatibility during transition.
+Refactor the LinkedIn Ingestion Service API from action-based endpoints to resource-oriented design following Google AIP-121 standards, enabling flexible profile search by LinkedIn URL, profile ID, and other parameters. This will be a clean refactor that replaces existing endpoints with new REST-compliant endpoints.
 
 ## User Stories
 
@@ -33,6 +33,18 @@ As a developer using the LinkedIn Ingestion Service, I want all endpoints to fol
 4. **Response Format Standardization** - Ensure consistent response structures across all endpoints
 5. **Query Parameter Support** - Implement filtering, pagination, and sorting capabilities
 
+## Implementation Approach
+
+**Clean Refactor Strategy**: This specification implements a complete refactor approach that replaces existing action-based endpoints (`/ingest`, `/recent`) with new resource-oriented endpoints (`/api/v1/profiles`, `/api/v1/profiles/{id}`).
+
+**Impact on Existing Integrations**:
+- **Make.com Integration**: Will be updated to use new REST endpoints during implementation
+- **Old Endpoints**: Will be completely removed (`/ingest`, `/recent`)
+- **API Responses**: New endpoints will return equivalent data in REST-compliant format
+- **Deployment**: Single coordinated deployment replaces old API with new API
+
+**Rationale**: Since Make.com is the only existing integration, a clean refactor eliminates technical debt and results in a maintainable, standards-compliant API without the complexity of supporting legacy endpoints.
+
 ## Out of Scope
 
 - Changes to database schema or data storage format
@@ -40,6 +52,7 @@ As a developer using the LinkedIn Ingestion Service, I want all endpoints to fol
 - FIT assessment service integration (separate future spec)
 - Company profile search (focus on LinkedIn profiles only)
 - Real-time data updates or webhooks
+- Backward compatibility with old action-based endpoints
 
 ## Expected Deliverable
 
