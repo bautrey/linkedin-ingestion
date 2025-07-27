@@ -116,8 +116,9 @@ class SupabaseClient(LoggerMixin):
         try:
             result = await self.client.table("linkedin_profiles").delete().eq("id", profile_id).execute()
 
-            if result.count:
-                self.logger.info("Profile deleted", profile_id=profile_id)
+            # Check if any rows were deleted (result.data will contain deleted rows)
+            if result.data and len(result.data) > 0:
+                self.logger.info("Profile deleted", profile_id=profile_id, deleted_count=len(result.data))
                 return True
             else:
                 self.logger.warning("Profile not found for deletion", profile_id=profile_id)
