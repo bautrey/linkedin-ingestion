@@ -9,9 +9,11 @@ in the deployed FastAPI application.
 import asyncio
 import httpx
 import json
+import pytest
 from datetime import datetime
 
 
+@pytest.mark.asyncio
 async def test_health_endpoints():
     """Test all health check endpoints"""
     

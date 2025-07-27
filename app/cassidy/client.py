@@ -530,6 +530,14 @@ class CassidyClient(LoggerMixin):
         # but we need to ensure nested data is properly structured
         transformed = profile_data.copy()
         
+        # Map API fields to model fields
+        if 'name' in profile_data:
+            transformed['full_name'] = profile_data['name']
+        if 'id' in profile_data:
+            transformed['profile_id'] = profile_data['id']
+        if 'url' in profile_data:
+            transformed['linkedin_url'] = profile_data['url']
+        
         # Transform experience array
         if 'experience' in profile_data and isinstance(profile_data['experience'], list):
             transformed_experiences = []
