@@ -170,7 +170,7 @@ class LinkedInWorkflow(LoggerMixin):
         # Extract unique company URLs from experience entries
         company_urls = []
         for experience in profile.experience:
-            company_url = experience.company_linkedin_url or experience.url
+            company_url = experience.company_linkedin_url
             if company_url and str(company_url) not in company_urls:
                 company_urls.append(str(company_url))
         
