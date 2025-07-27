@@ -334,6 +334,21 @@ async def create_profile(
     return await controller.create_profile(request)
 
 
+@app.delete("/api/v1/profiles/{profile_id}", status_code=204)
+async def delete_profile(
+    profile_id: str,
+    api_key: str = Depends(verify_api_key)
+):
+    """Delete an individual profile by ID"""
+    controller = get_profile_controller()
+    deleted = await controller.db_client.delete_profile(profile_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail={
+            "error": "Not Found",
+            "message": f"Profile with ID {profile_id} not found"
+        })
+
+
 if __name__ == "__main__":
     import uvicorn
     

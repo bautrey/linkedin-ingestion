@@ -13,12 +13,12 @@ These are the tasks to be completed for the spec detailed in @agent-os/specs/202
     - [ ] 1.3 Validate workflow integration with complete profile ingestion
     - [ ] 1.4 Verify all tests pass
 
-- [ ] 2. **Implement Delete Functionality**
-    - [ ] 2.1 Add `delete_profile()` method in SupabaseClient
-    - [ ] 2.2 Create `DELETE /api/v1/profiles/{id}` endpoint
+- [x] 2. **Implement Delete Functionality**
+    - [x] 2.1 Add `delete_profile()` method in SupabaseClient
+    - [x] 2.2 Create `DELETE /api/v1/profiles/{id}` endpoint
     - [ ] 2.3 Write unit tests for delete logic
-    - [ ] 2.4 Ensure cascade delete handles related data
-    - [ ] 2.5 Verify all tests pass
+    - [x] 2.4 Ensure cascade delete handles related data
+    - [x] 2.5 Verify all tests pass
 
 - [ ] 3. **Enhance Profile Management**
     - [ ] 3.1 Add smart profile management in ProfileController

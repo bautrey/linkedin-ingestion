@@ -99,7 +99,38 @@ class SupabaseClient(LoggerMixin):
                 error_type=type(e).__name__
             )
             raise
-    
+
+    async def delete_profile(self, profile_id: str) -> bool:
+        """
+        Delete profile by record ID
+
+        Args:
+            profile_id: Profile record ID
+
+        Returns:
+            bool: True if deletion was successful, False otherwise
+        """
+        await self._ensure_client()
+        self.logger.info("Deleting profile by ID", profile_id=profile_id)
+
+        try:
+            result = await self.client.table("linkedin_profiles").delete().eq("id", profile_id).execute()
+
+            if result.count:
+                self.logger.info("Profile deleted", profile_id=profile_id)
+                return True
+            else:
+                self.logger.warning("Profile not found for deletion", profile_id=profile_id)
+                return False
+
+        except Exception as e:
+            self.logger.error(
+                "Failed to delete profile",
+                profile_id=profile_id,
+                error=str(e)
+            )
+            raise
+        
     async def store_company(
         self, 
         company: CompanyProfile, 
