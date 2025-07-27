@@ -106,6 +106,8 @@ def verify_api_key(x_api_key: Optional[str] = Header(None)):
 class ProfileCreateRequest(BaseModel):
     linkedin_url: HttpUrl
     name: Optional[str] = None
+    include_companies: bool = Field(default=True, description="Include company profiles for all experience entries")
+    force_create: bool = Field(default=False, description="Create new profile even if one exists with same LinkedIn URL")
 
 class PaginationMetadata(BaseModel):
     limit: int
@@ -227,23 +229,43 @@ class ProfileController:
         return self._convert_db_profile_to_response(profile)
     
     async def create_profile(self, request: ProfileCreateRequest) -> ProfileResponse:
-        """Create a new profile using LinkedInWorkflow for complete data collection"""
+        """Create or update profile with smart duplicate handling"""
         # Normalize LinkedIn URL to consistent format
         linkedin_url = normalize_linkedin_url(str(request.linkedin_url))
         
         # Check for existing profile with normalized URL
         existing = await self.db_client.get_profile_by_url(linkedin_url)
-        if existing:
-            raise HTTPException(status_code=409, detail={
-                "error": "Conflict",
-                "message": f"Profile with LinkedIn URL {linkedin_url} already exists",
-                "existing_profile_id": existing["id"]
-            })
         
-        # Create workflow request with company inclusion by default
+        if existing and not request.force_create:
+            # Smart profile management: Update existing profile instead of conflict
+            # Delete the existing profile and create fresh one with latest data
+            await self.db_client.delete_profile(existing["id"])
+            
+            # Create workflow request with user's company inclusion preference
+            workflow_request = ProfileIngestionRequest(
+                linkedin_url=request.linkedin_url,
+                include_companies=request.include_companies
+            )
+            
+            # Process profile through workflow for complete data
+            request_id, enriched_profile = await self.linkedin_workflow.process_profile(workflow_request)
+            
+            # Store in database using the enriched profile data
+            record_id = await self.db_client.store_profile(enriched_profile.profile)
+            
+            # Retrieve the stored profile to return consistent data
+            stored_profile = await self.db_client.get_profile_by_id(record_id)
+            return self._convert_db_profile_to_response(stored_profile)
+            
+        elif existing and request.force_create:
+            # User explicitly wants to create duplicate - proceed with creation
+            pass  # Continue to normal creation flow below
+            
+        # Normal creation flow (no existing profile or force_create=True)
+        # Create workflow request with user's company inclusion preference
         workflow_request = ProfileIngestionRequest(
             linkedin_url=request.linkedin_url,
-            include_companies=True  # Default to True for complete data collection
+            include_companies=request.include_companies
         )
         
         # Process profile through workflow for complete data

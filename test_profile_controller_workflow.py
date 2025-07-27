@@ -163,24 +163,46 @@ class TestProfileControllerWorkflowIntegration:
     async def test_create_profile_duplicate_detection_with_normalization(
         self,
         profile_controller,
-        mock_db_client
+        mock_db_client,
+        mock_linkedin_workflow,
+        sample_enriched_profile
     ):
-        """Test that duplicate detection works with URL normalization"""
+        """Test that duplicate detection works with URL normalization and updates existing profile"""
         
         # Setup - existing profile with normalized URL
         request = ProfileCreateRequest(linkedin_url="https://linkedin.com/in/testuser")  # Valid URL format
         existing_profile = {"id": "existing123", "url": "https://www.linkedin.com/in/testuser/"}
         mock_db_client.get_profile_by_url.return_value = existing_profile
         
-        # Execute & Verify - expecting HTTPException from FastAPI
-        from fastapi import HTTPException
-        with pytest.raises(HTTPException) as exc_info:
-            await profile_controller.create_profile(request)
+        # Mock the delete operation and workflow
+        from unittest.mock import AsyncMock
+        mock_db_client.delete_profile = AsyncMock(return_value=True)
+        mock_linkedin_workflow.process_profile.return_value = ("request123", sample_enriched_profile)
+        mock_db_client.store_profile.return_value = "updated_id"
+        mock_db_client.get_profile_by_id.return_value = {
+            "id": "updated_id", 
+            "url": "https://www.linkedin.com/in/testuser/", 
+            "name": "Updated User", 
+            "created_at": "2025-07-27T14:50:00Z", 
+            "experience": [], 
+            "education": [], 
+            "certifications": []
+        }
+        
+        # Execute - should update instead of throwing exception
+        result = await profile_controller.create_profile(request)
         
         # Should detect duplicate with normalized URL
         mock_db_client.get_profile_by_url.assert_called_once_with("https://www.linkedin.com/in/testuser/")
-        assert exc_info.value.status_code == 409
-        assert "already exists" in exc_info.value.detail["message"]
+        
+        # Should delete existing profile and create new one (smart update)
+        mock_db_client.delete_profile.assert_called_once_with("existing123")
+        mock_linkedin_workflow.process_profile.assert_called_once()
+        mock_db_client.store_profile.assert_called_once()
+        
+        # Should return updated profile
+        assert result.id == "updated_id"
+        assert result.name == "Updated User"
 
     def test_normalize_linkedin_url_function(self):
         """Test the normalize_linkedin_url utility function"""
