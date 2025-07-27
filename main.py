@@ -20,6 +20,34 @@ from app.cassidy.models import ProfileIngestionRequest
 from app.database.supabase_client import SupabaseClient
 from app.core.config import settings
 
+
+def normalize_linkedin_url(url: str) -> str:
+    """
+    Normalize LinkedIn profile URLs to consistent format:
+    https://www.linkedin.com/in/username/
+    
+    Handles variations like:
+    - linkedin.com/in/user -> https://www.linkedin.com/in/user/
+    - https://linkedin.com/in/user -> https://www.linkedin.com/in/user/
+    - https://www.linkedin.com/in/user -> https://www.linkedin.com/in/user/
+    """
+    # Remove trailing whitespace
+    url = url.strip()
+    
+    # Ensure https protocol
+    if not url.startswith('http'):
+        url = 'https://' + url
+    
+    # Ensure www subdomain for linkedin.com
+    if '://linkedin.com' in url:
+        url = url.replace('://linkedin.com', '://www.linkedin.com')
+    
+    # Ensure trailing slash
+    if not url.endswith('/'):
+        url += '/'
+    
+    return url
+
 # Create FastAPI application
 app = FastAPI(
     title="LinkedIn Ingestion Service",
@@ -152,9 +180,10 @@ class ProfileController:
     ) -> ProfileListResponse:
         """List profiles with optional filtering and pagination"""
         
-        # If linkedin_url is provided, do exact search
+        # If linkedin_url is provided, do exact search with normalized URL
         if linkedin_url:
-            profile = await self.db_client.get_profile_by_url(linkedin_url)
+            normalized_url = normalize_linkedin_url(linkedin_url)
+            profile = await self.db_client.get_profile_by_url(normalized_url)
             if profile:
                 return ProfileListResponse(
                     data=[self._convert_db_profile_to_response(profile)],
@@ -199,9 +228,10 @@ class ProfileController:
     
     async def create_profile(self, request: ProfileCreateRequest) -> ProfileResponse:
         """Create a new profile using LinkedInWorkflow for complete data collection"""
-        linkedin_url = str(request.linkedin_url)
+        # Normalize LinkedIn URL to consistent format
+        linkedin_url = normalize_linkedin_url(str(request.linkedin_url))
         
-        # Check for existing profile with this LinkedIn URL
+        # Check for existing profile with normalized URL
         existing = await self.db_client.get_profile_by_url(linkedin_url)
         if existing:
             raise HTTPException(status_code=409, detail={
