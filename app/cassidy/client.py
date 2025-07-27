@@ -360,6 +360,17 @@ class CassidyClient(LoggerMixin):
             if isinstance(profile_data, list) and len(profile_data) > 0:
                 profile_data = profile_data[0]
             
+            # ENHANCED DEBUG: Log the actual profile data structure to understand what's missing
+            self.logger.info(
+                "DEBUG: Extracted profile data structure",
+                profile_keys=list(profile_data.keys()) if isinstance(profile_data, dict) else "NOT_DICT",
+                has_experience=('experience' in profile_data) if isinstance(profile_data, dict) else False,
+                experience_type=type(profile_data.get('experience', None)).__name__ if isinstance(profile_data, dict) else "N/A",
+                experience_length=len(profile_data.get('experience', [])) if isinstance(profile_data, dict) and isinstance(profile_data.get('experience'), list) else "N/A",
+                has_education=('education' in profile_data) if isinstance(profile_data, dict) else False,
+                sample_fields={k: str(v)[:100] + "..." if isinstance(v, str) and len(str(v)) > 100 else v for k, v in list(profile_data.items())[:5]} if isinstance(profile_data, dict) else "NOT_DICT"
+            )
+            
             return profile_data
             
         except (KeyError, ValueError, TypeError) as e:
@@ -539,9 +550,9 @@ class CassidyClient(LoggerMixin):
             transformed['linkedin_url'] = profile_data['url']
         
         # Transform experience array
-        if 'experience' in profile_data and isinstance(profile_data['experience'], list):
+        if 'experiences' in profile_data and isinstance(profile_data['experiences'], list):
             transformed_experiences = []
-            for exp in profile_data['experience']:
+            for exp in profile_data['experiences']:
                 if isinstance(exp, dict):
                     # Transform experience entry to match ExperienceEntry model
                     transformed_exp = {
@@ -565,15 +576,15 @@ class CassidyClient(LoggerMixin):
             transformed['experiences'] = []
         
         # Transform education array
-        if 'education' in profile_data and isinstance(profile_data['education'], list):
+        if 'educations' in profile_data and isinstance(profile_data['educations'], list):
             transformed_educations = []
-            for edu in profile_data['education']:
+            for edu in profile_data['educations']:
                 if isinstance(edu, dict):
                     # Transform education entry to match EducationEntry model
                     transformed_edu = {
-                        'school': edu.get('title'),  # API uses 'title' for school name
+                        'school': edu.get('school'),  # API uses 'school' for school name
                         'degree': edu.get('degree'),
-                        'field_of_study': edu.get('field'),
+                        'field_of_study': edu.get('field_of_study'),
                         'start_year': self._parse_year(edu.get('start_date')),
                         'end_year': self._parse_year(edu.get('end_date')),
                         'start_month': self._parse_month(edu.get('start_date')),
