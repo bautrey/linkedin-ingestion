@@ -15,6 +15,8 @@ from typing import Dict, Any, Optional, List
 from datetime import datetime
 
 from app.cassidy.client import CassidyClient
+from app.cassidy.workflows import LinkedInWorkflow
+from app.cassidy.models import ProfileIngestionRequest
 from app.database.supabase_client import SupabaseClient
 from app.core.config import settings
 
@@ -39,6 +41,7 @@ app.add_middleware(
 # Client instances (initialized lazily)
 cassidy_client = None
 db_client = None
+linkedin_workflow = None
 
 def get_cassidy_client():
     global cassidy_client
@@ -51,6 +54,12 @@ def get_db_client():
     if db_client is None:
         db_client = SupabaseClient()
     return db_client
+
+def get_linkedin_workflow():
+    global linkedin_workflow
+    if linkedin_workflow is None:
+        linkedin_workflow = LinkedInWorkflow()
+    return linkedin_workflow
 
 # Security dependency
 def verify_api_key(x_api_key: Optional[str] = Header(None)):
@@ -107,9 +116,10 @@ class ProfileListResponse(BaseModel):
 class ProfileController:
     """Controller for profile-related REST operations"""
     
-    def __init__(self, db_client, cassidy_client):
+    def __init__(self, db_client, cassidy_client, linkedin_workflow):
         self.db_client = db_client
         self.cassidy_client = cassidy_client
+        self.linkedin_workflow = linkedin_workflow
     
     def _convert_db_profile_to_response(self, db_profile: Dict[str, Any]) -> ProfileResponse:
         """Convert database profile to ProfileResponse model"""
@@ -188,7 +198,7 @@ class ProfileController:
         return self._convert_db_profile_to_response(profile)
     
     async def create_profile(self, request: ProfileCreateRequest) -> ProfileResponse:
-        """Create a new profile"""
+        """Create a new profile using LinkedInWorkflow for complete data collection"""
         linkedin_url = str(request.linkedin_url)
         
         # Check for existing profile with this LinkedIn URL
@@ -200,11 +210,17 @@ class ProfileController:
                 "existing_profile_id": existing["id"]
             })
         
-        # Fetch profile from Cassidy
-        profile = await self.cassidy_client.fetch_profile(linkedin_url)
+        # Create workflow request with company inclusion by default
+        workflow_request = ProfileIngestionRequest(
+            linkedin_url=request.linkedin_url,
+            include_companies=True  # Default to True for complete data collection
+        )
         
-        # Store in database
-        record_id = await self.db_client.store_profile(profile)
+        # Process profile through workflow for complete data
+        request_id, enriched_profile = await self.linkedin_workflow.process_profile(workflow_request)
+        
+        # Store in database using the enriched profile data
+        record_id = await self.db_client.store_profile(enriched_profile.profile)
         
         # Retrieve the stored profile to return consistent data
         stored_profile = await self.db_client.get_profile_by_id(record_id)
@@ -247,7 +263,7 @@ async def health_check():
 
 # Initialize ProfileController
 def get_profile_controller():
-    return ProfileController(get_db_client(), get_cassidy_client())
+    return ProfileController(get_db_client(), get_cassidy_client(), get_linkedin_workflow())
 
 # New REST API endpoints
 @app.get("/api/v1/profiles", response_model=ProfileListResponse)

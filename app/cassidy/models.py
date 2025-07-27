@@ -357,6 +357,41 @@ class WorkflowRun(BaseModel):
     actionResults: List[ActionResult]
 
 
+# Request/Response Models for API Endpoints
+
+class ProfileIngestionRequest(BaseModel):
+    """Request to ingest a LinkedIn profile"""
+    linkedin_url: HttpUrl = Field(..., description="LinkedIn profile URL to ingest")
+    include_companies: bool = Field(True, description="Whether to fetch company data for experiences")
+    force_refresh: bool = Field(False, description="Force refresh even if profile exists")
+
+
+class CompanyIngestionRequest(BaseModel):
+    """Request to ingest a company profile"""
+    linkedin_url: HttpUrl = Field(..., description="LinkedIn company URL to ingest")
+    force_refresh: bool = Field(False, description="Force refresh even if company exists")
+
+
+class IngestionStatus(BaseModel):
+    """Status of an ingestion process"""
+    request_id: str = Field(..., description="Unique request identifier")
+    status: WorkflowStatus = Field(..., description="Current status")
+    profile_url: HttpUrl = Field(..., description="LinkedIn URL being processed")
+    started_at: datetime = Field(..., description="Process start time")
+    completed_at: Optional[datetime] = Field(None, description="Process completion time")
+    progress: Dict[str, Any] = Field(default={}, description="Progress details")
+    error_message: Optional[str] = Field(None, description="Error message if failed")
+
+
+class IngestionResponse(BaseModel):
+    """Response from profile/company ingestion"""
+    request_id: str = Field(..., description="Unique request identifier")
+    status: WorkflowStatus = Field(..., description="Initial status")
+    message: str = Field(..., description="Response message")
+    estimated_completion_time: Optional[datetime] = Field(None, description="Estimated completion time")
+    status_url: Optional[str] = Field(None, description="URL to check status")
+
+
 class CassidyWorkflowResponse(BaseModel):
     """Top-level Cassidy workflow response"""
     message: str
