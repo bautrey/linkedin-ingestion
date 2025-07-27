@@ -364,10 +364,10 @@ class CassidyClient(LoggerMixin):
             self.logger.info(
                 "DEBUG: Extracted profile data structure",
                 profile_keys=list(profile_data.keys()) if isinstance(profile_data, dict) else "NOT_DICT",
-                has_experience=('experience' in profile_data) if isinstance(profile_data, dict) else False,
-                experience_type=type(profile_data.get('experience', None)).__name__ if isinstance(profile_data, dict) else "N/A",
-                experience_length=len(profile_data.get('experience', [])) if isinstance(profile_data, dict) and isinstance(profile_data.get('experience'), list) else "N/A",
-                has_education=('education' in profile_data) if isinstance(profile_data, dict) else False,
+                has_experiences=('experiences' in profile_data) if isinstance(profile_data, dict) else False,
+                experiences_type=type(profile_data.get('experiences', None)).__name__ if isinstance(profile_data, dict) else "N/A",
+                experiences_length=len(profile_data.get('experiences', [])) if isinstance(profile_data, dict) and isinstance(profile_data.get('experiences'), list) else "N/A",
+                has_educations=('educations' in profile_data) if isinstance(profile_data, dict) else False,
                 sample_fields={k: str(v)[:100] + "..." if isinstance(v, str) and len(str(v)) > 100 else v for k, v in list(profile_data.items())[:5]} if isinstance(profile_data, dict) else "NOT_DICT"
             )
             
