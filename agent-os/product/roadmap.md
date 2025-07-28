@@ -1,6 +1,6 @@
 # Product Roadmap
 
-> Last Updated: 2025-07-25
+> Last Updated: 2025-07-27
 > Version: 2.0.0
 > Status: API Refactor Phase
 
@@ -13,8 +13,9 @@
 
 **✅ COMPLETED: REST API Refactor**
 - **Goal**: Convert action-based endpoints to resource-oriented design following Google AIP-121
-- **Status**: Implementation complete, deployed to production
-- **Spec**: @agent-os/specs/2025-07-25-rest-api-refactor/
+- **Status**: ✅ FULLY COMPLETE - All tasks finished, Make.com integration updated
+- **Spec**: @agent-os/specs/2025-07-25-rest-api-refactor/ (✅ COMPLETE)
+- **Deliverables**: New REST endpoints, Make.com integration updated, production deployment verified
 
 **🚧 CURRENT PHASE: Critical Workflow & API Integration Fixes**
 - **Goal**: Fix fundamental workflow bypass issues and enhance API functionality
@@ -81,23 +82,42 @@
 - Company profile data source integration
 - Enhanced database schema
 
-## Phase 3: API Hardening & Performance (1-2 weeks)
+## Phase 3: Testing & Documentation (1 week)
+
+**Goal:** Comprehensive testing coverage and developer-friendly API documentation
+**Success Criteria:** Reliable test coverage prevents production issues and API is well-documented
+
+### Must-Have Features
+
+- [ ] Comprehensive API Integration Tests - Full endpoint testing with pytest-asyncio `M`
+- [ ] Error Scenario Testing - Test all failure modes and edge cases `M`
+- [ ] End-to-End Workflow Testing - Complete LinkedIn → DB → API flow validation `M`
+- [ ] OpenAPI/Swagger Documentation - Auto-generated interactive API docs `S`
+
+### Should-Have Features
+
+- [ ] Postman Collection - Ready-to-use API testing collection `S`
+- [ ] Test Data Fixtures - Realistic test data that matches production scenarios `S`
+- [ ] Performance Testing - Load testing for production readiness `M`
+- [ ] API Response Examples - Comprehensive examples for all endpoints `S`
+
+## Phase 4: API Hardening & Performance (1-2 weeks)
 
 **Goal:** Production-ready API with proper error handling and performance optimization
-**Success Criteria:** Reliable API that can handle production loads with comprehensive monitoring
+**Success Criteria:** Reliable API that can handle production loads with basic monitoring
 
 ### Must-Have Features
 
 - [ ] Comprehensive Error Handling - Proper error responses for all failure scenarios `M`
-- [ ] Rate Limiting - Respect LinkedIn API limits and implement backoff `M`
-- [ ] Async Processing - Non-blocking ingestion with status tracking `L`
-- [ ] API Authentication - Secure API access for internal services `S`
+- [ ] Request/Response Logging - Detailed logging for debugging and audit `S`
+- [ ] Health Check Enhancements - Component-level health monitoring `S`
+- [ ] Input Validation - Enhanced security beyond Pydantic validation `S`
 
 ### Should-Have Features
 
 - [ ] Request Logging - Structured logging for debugging and monitoring `S`
 - [ ] Performance Metrics - Basic performance and usage tracking `S`
-- [ ] OpenAPI Documentation - Complete API documentation generation `XS`
+- [ ] API Usage Analytics - Track endpoint usage patterns `XS`
 
 ### Dependencies
 
@@ -105,7 +125,7 @@
 - Production environment setup
 - Authentication system design
 
-## Phase 4: Advanced Features & Integration (2 weeks)
+## Phase 5: Advanced Features & Integration (2 weeks)
 
 **Goal:** Enhanced functionality for downstream system integration
 **Success Criteria:** Ready for integration with FIT scoring and PartnerConnect systems
@@ -129,7 +149,7 @@
 - Vector embedding strategy finalization
 - Downstream system integration requirements
 
-## Phase 5: MCP Server & AI Integration (1-2 weeks)
+## Phase 6: MCP Server & AI Integration (1-2 weeks)
 
 **Goal:** AI-ready service layer for LLM and MCP server integration
 **Success Criteria:** Seamless integration with AI systems and LLM workflows
@@ -151,6 +171,52 @@
 - Phase 4 completion
 - MCP server architecture decisions
 - AI integration requirements from consuming systems
+
+## 🚀 Future Vision & Strategic Direction
+
+### **AI-Powered Talent Intelligence Platform**
+Evolution beyond basic LinkedIn ingestion toward comprehensive candidate matching and assessment system for Fortium.
+
+#### **Enhanced Search Capabilities**
+- **Semantic Industry Matching**: OpenAI embeddings for nuanced "fintech" = "financial technology" understanding
+- **Multi-Vector Search**: Combine job titles, companies, industries, skills for complex queries
+- **Natural Language Queries**: "Find senior consultants similar to John who can travel internationally"
+- **Experience-Level Awareness**: Distinguish senior vs junior roles in search results
+- **Industry Clustering**: Advanced sector-based candidate groupings
+
+#### **Professional Bio Generation Pipeline**
+- **Data Fusion**: Merge LinkedIn + resume + personal preferences seamlessly
+- **AI Content Generation**: GPT-4/Claude integration for professional bio creation
+- **Template System**: Multiple format outputs for different use cases
+- **PartnerConnect Integration**: Replace manual bio creation process
+
+#### **Advanced Profile Management**
+- **Periodic Re-ingestion**: Smart update routines for profile freshness
+- **Change Detection**: Differential ingestion to preserve manual additions
+- **Extended Schema**: Support non-LinkedIn data (availability, travel willingness)
+- **Profile Merging**: Combine LinkedIn + PartnerConnect data intelligently
+
+#### **Integration Architecture**
+- **Fortium Candidate Fit Assessment**: Direct API integration for AI assessment
+- **Fortium Engagement Fit Assessment**: Short-list evaluation capabilities
+- **PartnerConnect Unified Profiles**: Seamless data flow between systems
+- **Multi-Source Search**: Query across LinkedIn + PartnerConnect data simultaneously
+
+#### **Use Case Examples**
+- **Candidate Discovery**: "Who do we have with healthcare startup experience?"
+- **Similarity Matching**: "Find people with experience similar to this prospect"
+- **Complex Filtering**: "Senior developers with fintech experience at remote-friendly companies"
+- **Bio Generation**: LinkedIn + resume + preferences → professional bio variants
+
+#### **Technical Architecture Considerations**
+- **Multiple Embedding Strategies**: Profile-level, skill-level, company-level vectors
+- **Query Parsing Engine**: Natural language → structured search parameters
+- **Real-time Updates**: Balance freshness vs API rate limits
+- **Data Consistency**: Ensure reliable ingestion for mission-critical assessments
+
+*This vision guides long-term architectural decisions while maintaining focus on current implementation priorities.*
+
+---
 
 ## Cross-Phase Considerations
 

@@ -7,12 +7,12 @@ These are the tasks to be completed for the spec detailed in @agent-os/specs/202
 
 ## Tasks
 
-- [ ] 1. **Create Custom Exception Classes**
-    - [ ] 1.1 Write tests for custom exception classes
-    - [ ] 1.2 Create base LinkedInIngestionError exception class
-    - [ ] 1.3 Create specific exception classes (InvalidLinkedInURLError, ProfileAlreadyExistsError)
-    - [ ] 1.4 Add proper error codes and messages to each exception
-    - [ ] 1.5 Verify all tests pass
+- [x] 1. **Create Custom Exception Classes**
+    - [x] 1.1 Write tests for custom exception classes
+    - [x] 1.2 Create base LinkedInIngestionError exception class
+    - [x] 1.3 Create specific exception classes (InvalidLinkedInURLError, ProfileAlreadyExistsError)
+    - [x] 1.4 Add proper error codes and messages to each exception
+    - [x] 1.5 Verify all tests pass
 
 - [ ] 2. **Implement Error Response Model**
     - [ ] 2.1 Write tests for ErrorResponse model
