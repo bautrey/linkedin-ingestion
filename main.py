@@ -107,7 +107,6 @@ class ProfileCreateRequest(BaseModel):
     linkedin_url: HttpUrl
     name: Optional[str] = None
     include_companies: bool = Field(default=True, description="Include company profiles for all experience entries")
-    force_create: bool = Field(default=False, description="Create new profile even if one exists with same LinkedIn URL")
 
 class PaginationMetadata(BaseModel):
     limit: int
@@ -236,32 +235,11 @@ class ProfileController:
         # Check for existing profile with normalized URL
         existing = await self.db_client.get_profile_by_url(linkedin_url)
         
-        if existing and not request.force_create:
-            # Smart profile management: Update existing profile instead of conflict
-            # Delete the existing profile and create fresh one with latest data
+        if existing:
+            # Smart profile management: Update existing profile with latest data
+            # Delete the existing profile and create fresh one with latest LinkedIn data
             await self.db_client.delete_profile(existing["id"])
-            
-            # Create workflow request with user's company inclusion preference
-            workflow_request = ProfileIngestionRequest(
-                linkedin_url=request.linkedin_url,
-                include_companies=request.include_companies
-            )
-            
-            # Process profile through workflow for complete data
-            request_id, enriched_profile = await self.linkedin_workflow.process_profile(workflow_request)
-            
-            # Store in database using the enriched profile data
-            record_id = await self.db_client.store_profile(enriched_profile.profile)
-            
-            # Retrieve the stored profile to return consistent data
-            stored_profile = await self.db_client.get_profile_by_id(record_id)
-            return self._convert_db_profile_to_response(stored_profile)
-            
-        elif existing and request.force_create:
-            # User explicitly wants to create duplicate - proceed with creation
-            pass  # Continue to normal creation flow below
-            
-        # Normal creation flow (no existing profile or force_create=True)
+        
         # Create workflow request with user's company inclusion preference
         workflow_request = ProfileIngestionRequest(
             linkedin_url=request.linkedin_url,
@@ -362,13 +340,34 @@ async def delete_profile(
     api_key: str = Depends(verify_api_key)
 ):
     """Delete an individual profile by ID"""
-    controller = get_profile_controller()
-    deleted = await controller.db_client.delete_profile(profile_id)
-    if not deleted:
-        raise HTTPException(status_code=404, detail={
-            "error": "Not Found",
-            "message": f"Profile with ID {profile_id} not found"
-        })
+    try:
+        controller = get_profile_controller()
+        deleted = await controller.db_client.delete_profile(profile_id)
+        
+        if not deleted:
+            raise HTTPException(
+                status_code=404, 
+                detail={
+                    "error": "Not Found",
+                    "message": f"Profile with ID {profile_id} not found"
+                }
+            )
+        
+        # Return empty response for 204 No Content
+        return None
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions (like 404)
+        raise
+    except Exception as e:
+        # Handle database and other errors
+        raise HTTPException(
+            status_code=500,
+            detail={
+                "error": "Internal Server Error",
+                "message": f"Failed to delete profile: {str(e)}"
+            }
+        )
 
 
 if __name__ == "__main__":

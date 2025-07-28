@@ -140,10 +140,6 @@ class MockSupabaseResponse:
     
     async def execute(self):
         return self
-    
-    def __await__(self):
-        # Make this awaitable for direct await usage
-        return self.execute().__await__()
 
 
 class MockSupabaseTable:
@@ -154,7 +150,7 @@ class MockSupabaseTable:
         self._stored_data = []
     
     def insert(self, data: Dict[str, Any]):
-        # Simulate successful insert
+        # Simulate successful insert - return object with execute method
         record_id = data.get("id", str(uuid.uuid4()))
         stored_record = {**data, "id": record_id}
         self._stored_data.append(stored_record)
@@ -194,7 +190,7 @@ class MockSupabaseClient:
         self._tables = {}
         self._rpc_responses = {}
     
-    def table(self, table_name: str):
+    async def table(self, table_name: str):
         if table_name not in self._tables:
             self._tables[table_name] = MockSupabaseTable(table_name)
         return self._tables[table_name]

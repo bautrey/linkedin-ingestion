@@ -271,7 +271,7 @@ class TestDataExtraction(TestCassidyClient):
         assert isinstance(profile_data, dict)
         assert profile_data["name"] == "Ronald Sorozan (MBA, CISM, PMP)"
         assert profile_data["id"] == "ronald-sorozan-mba-cism-pmp-8325652"
-        assert len(profile_data["experience"]) == 1
+        assert len(profile_data["experiences"]) == 1
     
     def test_extract_profile_data_invalid_structure(self, client):
         """Test profile extraction with invalid response structure"""

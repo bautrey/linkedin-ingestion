@@ -23,7 +23,6 @@ class TestProfileCreateRequest:
         request = ProfileCreateRequest(linkedin_url="https://linkedin.com/in/test")
         
         assert request.include_companies is True
-        assert request.force_create is False
         assert request.name is None
 
     def test_custom_values(self):
@@ -31,12 +30,10 @@ class TestProfileCreateRequest:
         request = ProfileCreateRequest(
             linkedin_url="https://linkedin.com/in/test",
             name="Test User",
-            include_companies=False,
-            force_create=True
+            include_companies=False
         )
         
         assert request.include_companies is False
-        assert request.force_create is True
         assert request.name == "Test User"
 
 
@@ -78,8 +75,7 @@ class TestSmartProfileManagement:
         # Test request
         request = ProfileCreateRequest(
             linkedin_url="https://linkedin.com/in/test",
-            include_companies=True,
-            force_create=False
+            include_companies=True
         )
         
         # Execute
@@ -130,7 +126,7 @@ class TestSmartProfileManagement:
             "created_at": "2025-07-27T10:00:00"
         }
         
-        # Test request (default force_create=False)
+        # Test request
         request = ProfileCreateRequest(
             linkedin_url="https://linkedin.com/in/test",
             include_companies=False  # Test custom value
@@ -154,56 +150,6 @@ class TestSmartProfileManagement:
         assert result.id == "updated-profile-id"
         assert result.name == "Updated Data"
 
-    @pytest.mark.asyncio
-    async def test_force_create_with_existing_profile(self, mock_controller):
-        """Test force_create=True creates duplicate even when profile exists"""
-        controller, mock_db, mock_workflow = mock_controller
-        
-        # Mock existing profile
-        existing_profile = {
-            "id": "existing-id",
-            "name": "Existing User",
-            "url": "https://www.linkedin.com/in/test/",
-            "created_at": "2025-07-26T10:00:00"
-        }
-        mock_db.get_profile_by_url.return_value = existing_profile
-        
-        # Mock workflow response
-        mock_result = MagicMock()
-        mock_result.profile = MagicMock()
-        mock_workflow.process_profile.return_value = ("request-id", mock_result)
-        
-        # Mock database operations
-        mock_db.store_profile.return_value = "duplicate-profile-id"
-        mock_db.get_profile_by_id.return_value = {
-            "id": "duplicate-profile-id",
-            "name": "Duplicate User",
-            "url": "https://www.linkedin.com/in/test/",
-            "created_at": "2025-07-27T10:00:00"
-        }
-        
-        # Test request with force_create=True
-        request = ProfileCreateRequest(
-            linkedin_url="https://linkedin.com/in/test",
-            force_create=True,
-            include_companies=True
-        )
-        
-        # Execute
-        result = await controller.create_profile(request)
-        
-        # Verify existing profile was NOT deleted
-        mock_db.delete_profile.assert_not_called()
-        
-        # Verify workflow was called
-        mock_workflow.process_profile.assert_called_once()
-        
-        # Verify new profile was stored (creating duplicate)
-        mock_db.store_profile.assert_called_once()
-        
-        # Verify response
-        assert result.id == "duplicate-profile-id"
-        assert result.name == "Duplicate User"
 
     @pytest.mark.asyncio
     async def test_include_companies_parameter_passed_correctly(self, mock_controller):
@@ -263,9 +209,7 @@ class TestEndpointIntegration:
         async def mock_create_profile(request):
             # Verify request has new fields
             assert hasattr(request, 'include_companies')
-            assert hasattr(request, 'force_create')
             assert request.include_companies is False
-            assert request.force_create is True
             
             # Return mock response
             from main import ProfileResponse
@@ -284,8 +228,7 @@ class TestEndpointIntegration:
             "/api/v1/profiles",
             json={
                 "linkedin_url": "https://linkedin.com/in/test",
-                "include_companies": False,
-                "force_create": True
+                "include_companies": False
             },
             headers={"x-api-key": settings.API_KEY}
         )
@@ -301,7 +244,6 @@ class TestEndpointIntegration:
         async def mock_create_profile(request):
             # Verify default values
             assert request.include_companies is True  # Default
-            assert request.force_create is False      # Default
             
             # Return mock response
             from main import ProfileResponse

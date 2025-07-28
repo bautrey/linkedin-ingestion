@@ -80,7 +80,8 @@ class SupabaseClient(LoggerMixin):
         
         try:
             # Insert into profiles table
-            result = await self.client.table("linkedin_profiles").insert(profile_data).execute()
+            table = await self.client.table("linkedin_profiles")
+            result = await table.insert(profile_data).execute()
             
             self.logger.info(
                 "Profile stored successfully",
@@ -114,7 +115,10 @@ class SupabaseClient(LoggerMixin):
         self.logger.info("Deleting profile by ID", profile_id=profile_id)
 
         try:
-            result = await self.client.table("linkedin_profiles").delete().eq("id", profile_id).execute()
+            table = await self.client.table("linkedin_profiles")
+            delete_query = await table.delete()
+            filtered_query = await delete_query.eq("id", profile_id)
+            result = await filtered_query.execute()
 
             # Check if any rows were deleted (result.data will contain deleted rows)
             if result.data and len(result.data) > 0:
@@ -176,7 +180,8 @@ class SupabaseClient(LoggerMixin):
         
         try:
             # Insert into companies table
-            result = await self.client.table("companies").insert(company_data).execute()
+            table = await self.client.table("companies")
+            result = await table.insert(company_data).execute()
             
             self.logger.info(
                 "Company stored successfully",
@@ -210,7 +215,8 @@ class SupabaseClient(LoggerMixin):
         self.logger.info("Retrieving profile by LinkedIn ID", linkedin_id=linkedin_id)
         
         try:
-            result = await self.client.table("linkedin_profiles").select("*").eq("linkedin_id", linkedin_id).execute()
+            table = await self.client.table("linkedin_profiles")
+            result = await table.select("*").eq("linkedin_id", linkedin_id).execute()
             
             if result.data:
                 self.logger.info("Profile found", linkedin_id=linkedin_id)
@@ -241,7 +247,8 @@ class SupabaseClient(LoggerMixin):
         self.logger.info("Retrieving company by LinkedIn ID", company_id=company_id)
         
         try:
-            result = await self.client.table("companies").select("*").eq("linkedin_company_id", company_id).execute()
+            table = await self.client.table("companies")
+            result = await table.select("*").eq("linkedin_company_id", company_id).execute()
             
             if result.data:
                 self.logger.info("Company found", company_id=company_id)
@@ -379,7 +386,8 @@ class SupabaseClient(LoggerMixin):
         self.logger.info("Fetching recent profiles", limit=limit)
         
         try:
-            result = await self.client.table("linkedin_profiles").select("*").order("created_at", desc=True).limit(limit).execute()
+            table = await self.client.table("linkedin_profiles")
+            result = await table.order("created_at", desc=True).limit(limit).execute()
             
             profiles = result.data or []
             self.logger.info("Recent profiles retrieved", count=len(profiles))
@@ -404,7 +412,8 @@ class SupabaseClient(LoggerMixin):
         self.logger.info("Retrieving profile by LinkedIn URL", linkedin_url=linkedin_url)
         
         try:
-            result = await self.client.table("linkedin_profiles").select("*").eq("url", linkedin_url).execute()
+            table = await self.client.table("linkedin_profiles")
+            result = await table.select("*").eq("url", linkedin_url).execute()
             
             if result.data:
                 self.logger.info("Profile found by URL", linkedin_url=linkedin_url)
@@ -435,7 +444,8 @@ class SupabaseClient(LoggerMixin):
         self.logger.info("Retrieving profile by ID", profile_id=profile_id)
         
         try:
-            result = await self.client.table("linkedin_profiles").select("*").eq("id", profile_id).execute()
+            table = await self.client.table("linkedin_profiles")
+            result = await table.select("*").eq("id", profile_id).execute()
             
             if result.data:
                 self.logger.info("Profile found by ID", profile_id=profile_id)
@@ -476,7 +486,8 @@ class SupabaseClient(LoggerMixin):
         
         try:
             # Start with base query
-            query = self.client.table("linkedin_profiles").select("*")
+            table = await self.client.table("linkedin_profiles")
+            query = table.select("*")
             
             # Add name filter if provided (case-insensitive)
             if name:
@@ -511,7 +522,8 @@ class SupabaseClient(LoggerMixin):
         try:
             await self._ensure_client()
             # Simple query to test connectivity - use a basic select without count
-            result = await self.client.table("linkedin_profiles").select("id").limit(1).execute()
+            table = await self.client.table("linkedin_profiles")
+            result = await table.select("id").limit(1).execute()
             
             # Check if we can access the result data
             data_count = len(result.data) if hasattr(result, 'data') and result.data else 0

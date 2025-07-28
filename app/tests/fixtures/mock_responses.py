@@ -30,7 +30,7 @@ MOCK_CASSIDY_PROFILE_RESPONSE: Dict[str, Any] = {
                             "title": "Global Chief Information Officer and Chief Operating Officer (TZP Private Equity)",
                             "location": "Northvale, New Jersey and Houston, Texas"
                         },
-                        "experience": [
+                        "experiences": [
                             {
                                 "title": "Global Chief Information Officer and Chief Operating Officer (TZP Private Equity)",
                                 "location": "Northvale, New Jersey and Houston, Texas",
@@ -43,7 +43,7 @@ MOCK_CASSIDY_PROFILE_RESPONSE: Dict[str, Any] = {
                                 "company_logo_url": "https://media.licdn.com/dms/image/v2/D4E0BAQGkFJ5c-Ht1Tg/company-logo_100_100/company-logo_100_100/0/1716332314357/jambnc_logo"
                             }
                         ],
-                        "education": [
+                        "educations": [
                             {
                                 "title": "Drexel University's LeBow College of Business",
                                 "degree": "Master of Business Administration - MBA",
@@ -156,8 +156,8 @@ MOCK_PROFILE_MINIMAL_DATA: Dict[str, Any] = {
                         "name": "Jane Smith",
                         "position": "Software Engineer",
                         "url": "https://www.linkedin.com/in/jane-smith/",
-                        "experience": [],
-                        "education": [],
+                        "experiences": [],
+                        "educations": [],
                         "certifications": []
                     }"""
                 }
@@ -181,7 +181,7 @@ MOCK_PROFILE_WITH_MULTIPLE_COMPANIES: Dict[str, Any] = {
                         "name": "John Doe",
                         "position": "Senior Developer",
                         "url": "https://www.linkedin.com/in/john-doe/",
-                        "experience": [
+                        "experiences": [
                             {
                                 "title": "Senior Developer",
                                 "company": "Tech Corp",
@@ -199,7 +199,7 @@ MOCK_PROFILE_WITH_MULTIPLE_COMPANIES: Dict[str, Any] = {
                                 "end_date": "2022"
                             }
                         ],
-                        "education": [],
+                        "educations": [],
                         "certifications": []
                     }"""
                 }
