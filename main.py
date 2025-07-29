@@ -8,17 +8,21 @@ using Cassidy AI workflows and storing in Supabase with pgvector.
 import asyncio
 import os
 import uuid
-from fastapi import FastAPI, HTTPException, Header, Depends, Query
+from fastapi import FastAPI, HTTPException, Header, Depends, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, HttpUrl, Field
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, HttpUrl, Field, ValidationError
 from typing import Dict, Any, Optional, List
 from datetime import datetime
+import traceback
 
 from app.cassidy.client import CassidyClient
 from app.cassidy.workflows import LinkedInWorkflow
 from app.cassidy.models import ProfileIngestionRequest
 from app.database.supabase_client import SupabaseClient
 from app.core.config import settings
+from app.models.errors import ErrorResponse, ValidationErrorResponse
 
 
 def normalize_linkedin_url(url: str) -> str:
@@ -66,6 +70,76 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Global exception handlers
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Handle Pydantic validation errors with standardized error response"""
+    validation_errors = []
+    for error in exc.errors():
+        validation_errors.append({
+            "field": ".".join(str(loc) for loc in error["loc"]),
+            "message": error["msg"],
+            "invalid_value": error.get("input"),
+            "error_type": error["type"]
+        })
+    
+    error_response = ValidationErrorResponse(
+        error_code="VALIDATION_ERROR",
+        message="Request validation failed",
+        details={
+            "endpoint": str(request.url),
+            "method": request.method,
+            "total_errors": len(validation_errors)
+        },
+        validation_errors=validation_errors
+    )
+    
+    return JSONResponse(
+        status_code=422,
+        content=error_response.dict()
+    )
+
+@app.exception_handler(ValueError)
+async def value_error_handler(request: Request, exc: ValueError):
+    """Handle ValueError exceptions with standardized error response"""
+    error_response = ErrorResponse(
+        error_code="INVALID_VALUE",
+        message=str(exc),
+        details={
+            "endpoint": str(request.url),
+            "method": request.method,
+            "exception_type": "ValueError"
+        }
+    )
+    
+    return JSONResponse(
+        status_code=400,
+        content=error_response.dict()
+    )
+
+@app.exception_handler(Exception)
+async def general_exception_handler(request: Request, exc: Exception):
+    """Handle all other exceptions with standardized error response"""
+    # Don't catch HTTPExceptions - let FastAPI handle them
+    if isinstance(exc, HTTPException):
+        raise exc
+    
+    error_response = ErrorResponse(
+        error_code="INTERNAL_SERVER_ERROR",
+        message="An unexpected error occurred",
+        details={
+            "endpoint": str(request.url),
+            "method": request.method,
+            "exception_type": type(exc).__name__,
+            "exception_message": str(exc) if settings.ENVIRONMENT != "production" else None
+        }
+    )
+    
+    return JSONResponse(
+        status_code=500,
+        content=error_response.dict()
+    )
+
 # Client instances (initialized lazily)
 cassidy_client = None
 db_client = None
@@ -93,12 +167,17 @@ def get_linkedin_workflow():
 def verify_api_key(x_api_key: Optional[str] = Header(None)):
     """Verify API key from header"""
     if x_api_key != settings.API_KEY:
+        error_response = ErrorResponse(
+            error_code="UNAUTHORIZED",
+            message="Invalid or missing API key",
+            details={
+                "provided_key_length": len(x_api_key) if x_api_key else 0,
+                "expected_key_present": bool(settings.API_KEY)
+            }
+        )
         raise HTTPException(
             status_code=403, 
-            detail={
-                "error": "Unauthorized",
-                "message": "Invalid or missing API key"
-            }
+            detail=error_response.dict()
         )
     return x_api_key
 
@@ -114,10 +193,7 @@ class PaginationMetadata(BaseModel):
     total: Optional[int] = None
     has_more: bool = False
 
-class ErrorResponse(BaseModel):
-    error: str
-    message: str
-    details: Optional[Dict[str, Any]] = None
+# ErrorResponse models now imported from app.models.errors
 
 class ProfileResponse(BaseModel):
     id: str
@@ -220,10 +296,15 @@ class ProfileController:
         """Get individual profile by ID"""
         profile = await self.db_client.get_profile_by_id(profile_id)
         if not profile:
-            raise HTTPException(status_code=404, detail={
-                "error": "Not Found",
-                "message": f"Profile with ID {profile_id} not found"
-            })
+            error_response = ErrorResponse(
+                error_code="PROFILE_NOT_FOUND",
+                message=f"Profile with ID {profile_id} not found",
+                details={
+                    "profile_id": profile_id,
+                    "operation": "get_profile"
+                }
+            )
+            raise HTTPException(status_code=404, detail=error_response.dict())
         
         return self._convert_db_profile_to_response(profile)
     
@@ -284,11 +365,16 @@ async def health_check():
             "environment": settings.ENVIRONMENT
         }
     except Exception as e:
-        raise HTTPException(status_code=503, detail={
-            "status": "unhealthy",
-            "error": str(e),
-            "timestamp": datetime.utcnow().isoformat()
-        })
+        error_response = ErrorResponse(
+            error_code="HEALTH_CHECK_FAILED",
+            message=f"Health check failed: {str(e)}",
+            details={
+                "service": "linkedin-ingestion",
+                "component": "health_check",
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=503, detail=error_response.dict())
 
 
 # Initialize ProfileController
@@ -296,7 +382,14 @@ def get_profile_controller():
     return ProfileController(get_db_client(), get_cassidy_client(), get_linkedin_workflow())
 
 # New REST API endpoints
-@app.get("/api/v1/profiles", response_model=ProfileListResponse)
+@app.get(
+    "/api/v1/profiles", 
+    response_model=ProfileListResponse,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
 async def list_profiles(
     linkedin_url: Optional[str] = Query(None, description="Exact LinkedIn URL search"),
     name: Optional[str] = Query(None, description="Partial name search (case-insensitive)"),
@@ -315,7 +408,15 @@ async def list_profiles(
         offset=offset
     )
 
-@app.get("/api/v1/profiles/{profile_id}", response_model=ProfileResponse)
+@app.get(
+    "/api/v1/profiles/{profile_id}", 
+    response_model=ProfileResponse,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Profile not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
 async def get_profile(
     profile_id: str,
     api_key: str = Depends(verify_api_key)
@@ -324,7 +425,16 @@ async def get_profile(
     controller = get_profile_controller()
     return await controller.get_profile(profile_id)
 
-@app.post("/api/v1/profiles", response_model=ProfileResponse, status_code=201)
+@app.post(
+    "/api/v1/profiles", 
+    response_model=ProfileResponse, 
+    status_code=201,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        422: {"model": ValidationErrorResponse, "description": "Validation error"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
 async def create_profile(
     request: ProfileCreateRequest,
     api_key: str = Depends(verify_api_key)
@@ -334,7 +444,15 @@ async def create_profile(
     return await controller.create_profile(request)
 
 
-@app.delete("/api/v1/profiles/{profile_id}", status_code=204)
+@app.delete(
+    "/api/v1/profiles/{profile_id}", 
+    status_code=204,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Profile not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
 async def delete_profile(
     profile_id: str,
     api_key: str = Depends(verify_api_key)
@@ -345,12 +463,17 @@ async def delete_profile(
         deleted = await controller.db_client.delete_profile(profile_id)
         
         if not deleted:
+            error_response = ErrorResponse(
+                error_code="PROFILE_NOT_FOUND",
+                message=f"Profile with ID {profile_id} not found",
+                details={
+                    "profile_id": profile_id,
+                    "operation": "delete_profile"
+                }
+            )
             raise HTTPException(
                 status_code=404, 
-                detail={
-                    "error": "Not Found",
-                    "message": f"Profile with ID {profile_id} not found"
-                }
+                detail=error_response.dict()
             )
         
         # Return empty response for 204 No Content
@@ -361,12 +484,18 @@ async def delete_profile(
         raise
     except Exception as e:
         # Handle database and other errors
+        error_response = ErrorResponse(
+            error_code="DATABASE_ERROR",
+            message=f"Failed to delete profile: {str(e)}",
+            details={
+                "profile_id": profile_id,
+                "operation": "delete_profile",
+                "exception_type": type(e).__name__
+            }
+        )
         raise HTTPException(
             status_code=500,
-            detail={
-                "error": "Internal Server Error",
-                "message": f"Failed to delete profile: {str(e)}"
-            }
+            detail=error_response.dict()
         )
 
 
