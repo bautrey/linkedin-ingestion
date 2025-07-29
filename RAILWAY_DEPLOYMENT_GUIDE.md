@@ -1,19 +1,10 @@
 # Railway Deployment Guide - LinkedIn Ingestion Service
 
-## 🚨 CRITICAL DEPLOYMENT RULES
+## ✅ AUTO-DEPLOY ENABLED
 
-### NEVER USE THESE COMMANDS (THEY HANG):
-- `railway logs` (always streams, requires Ctrl+C)
-- `railway up` (streams deployment output, hangs at end)
-- Any command that streams without explicit termination
+**Good News:** This project now uses Railway's GitHub auto-deploy feature!
 
-### ALWAYS USE THESE INSTEAD:
-- `railway status` - shows current project status
-- `railway variables` - shows environment variables AND correct URLs
-- `railway open` - opens dashboard in browser
-- `curl` commands to test endpoints directly
-
-## 🎯 Correct Deployment Process
+## 🎯 Current Deployment Process
 
 ### 1. Find the Correct Railway URL
 ```bash
@@ -27,35 +18,35 @@ railway variables
 **CORRECT URL:** `https://smooth-mailbox-production.up.railway.app`
 **WRONG URL:** `https://smooth-mailbox.railway.app` (this doesn't work)
 
-### 2. Deploy Code Changes
+### 2. Deploy Code Changes (AUTO-DEPLOY)
 ```bash
-# Railway does NOT auto-deploy on git push
-# You must manually trigger deployment:
+# ✅ SIMPLE AUTO-DEPLOY PROCESS:
 
-# ✅ PROVEN WORKING METHOD:
-railway up &
-# 🚨 THIS COMMAND WILL HANG - YOU MUST CTRL+C TO EXIT
-# Watch for these success messages:
-# "Deploy complete"
-# "INFO:     Uvicorn running on http://0.0.0.0:8080"
-# "[1/1] Healthcheck succeeded!"
-# When you see "Healthcheck succeeded!", press Ctrl+C to exit
+# 1. Make your code changes
+# 2. Commit and push to GitHub
+git add .
+git commit -m "your changes"
+git push origin master
 
-# Alternative automated approach (if available):
-# railway up & sleep 90 && kill %1 2>/dev/null || true
+# 3. Railway automatically deploys (~60-70 seconds)
+# No manual railway commands needed!
 
-# FAILED METHODS (don't work reliably):
-# railway redeploy (often fails silently)
-# railway redeploy --yes (doesn't actually deploy)
+# 4. Wait for deployment to complete
+sleep 70
+
+# 5. Test the deployment
+curl -s "https://smooth-mailbox-production.up.railway.app/api/v1/health"
 ```
 
-### 3. Wait for Deployment (60+ seconds)
+### 3. Monitor Deployment
 ```bash
-# Wait for deployment to complete
-sleep 60
+# Check deployment status in Railway dashboard
+railway open
 
-# Or check status periodically
+# Or check status via CLI
 railway status
+
+# View recent deployments (will show "GitHub" as source)
 ```
 
 ### 4. Test Deployment

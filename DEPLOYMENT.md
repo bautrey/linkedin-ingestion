@@ -176,29 +176,35 @@ web: uvicorn app.main:app --host 0.0.0.0 --port $PORT
 npm install -g @railway/cli
 ```
 
-2. Login and deploy:
+2. Initial setup:
 ```bash
 railway login
 railway init
-
-# Deploy with timeout protection (prevents hanging)
-# Note: Railway does NOT auto-deploy on git push
-# You must manually trigger deployment:
-
-# Method 1: Use railway redeploy (may hang, monitor and cancel if needed)
-railway redeploy
-
-# Method 2: Use railway up with timeout (for macOS use gtimeout)
-gtimeout 90s railway up || killall railway
-
-# Method 3: Use railway up with completion detection
-railway up | (grep -q -E "(Healthcheck succeeded|Starting Container)" && killall railway)
 ```
 
-**Important**: 
-- Railway does NOT auto-deploy on git push - you must manually trigger deployment
-- `railway up` streams logs indefinitely after deployment completes
-- Always use timeout or completion detection to prevent hanging
+3. Connect GitHub repository for auto-deployment:
+   - Go to Railway dashboard → Project → Service → Settings
+   - Under "Source" section, click "Connect Repo"
+   - Select your GitHub repository
+   - Choose the branch (e.g., `master` or `main`)
+   - Railway will automatically deploy on every push to the connected branch
+
+4. Deploy changes:
+```bash
+# Make code changes
+git add .
+git commit -m "your changes"
+git push origin master
+
+# Railway automatically builds and deploys (~60-70 seconds)
+# No manual deployment commands needed!
+```
+
+**Benefits of Auto-Deploy:**
+- ✅ Automatic deployment on every git push
+- ✅ No hanging CLI commands
+- ✅ Consistent deployment process
+- ✅ Build logs and status visible in Railway dashboard
 
 3. Add environment variables:
 ```bash
