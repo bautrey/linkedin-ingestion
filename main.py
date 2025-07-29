@@ -96,7 +96,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     
     return JSONResponse(
         status_code=422,
-        content=error_response.dict()
+        content=error_response.model_dump()
     )
 
 @app.exception_handler(ValueError)
@@ -114,7 +114,7 @@ async def value_error_handler(request: Request, exc: ValueError):
     
     return JSONResponse(
         status_code=400,
-        content=error_response.dict()
+        content=error_response.model_dump()
     )
 
 @app.exception_handler(Exception)
@@ -137,7 +137,7 @@ async def general_exception_handler(request: Request, exc: Exception):
     
     return JSONResponse(
         status_code=500,
-        content=error_response.dict()
+        content=error_response.model_dump()
     )
 
 # Client instances (initialized lazily)
@@ -177,7 +177,7 @@ def verify_api_key(x_api_key: Optional[str] = Header(None)):
         )
         raise HTTPException(
             status_code=403, 
-            detail=error_response.dict()
+            detail=error_response.model_dump()
         )
     return x_api_key
 
@@ -304,7 +304,7 @@ class ProfileController:
                     "operation": "get_profile"
                 }
             )
-            raise HTTPException(status_code=404, detail=error_response.dict())
+            raise HTTPException(status_code=404, detail=error_response.model_dump())
         
         return self._convert_db_profile_to_response(profile)
     
@@ -374,7 +374,7 @@ async def health_check():
                 "exception_type": type(e).__name__
             }
         )
-        raise HTTPException(status_code=503, detail=error_response.dict())
+        raise HTTPException(status_code=503, detail=error_response.model_dump())
 
 
 # Initialize ProfileController
@@ -473,7 +473,7 @@ async def delete_profile(
             )
             raise HTTPException(
                 status_code=404, 
-                detail=error_response.dict()
+                detail=error_response.model_dump()
             )
         
         # Return empty response for 204 No Content
@@ -495,7 +495,7 @@ async def delete_profile(
         )
         raise HTTPException(
             status_code=500,
-            detail=error_response.dict()
+            detail=error_response.model_dump()
         )
 
 
