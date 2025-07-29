@@ -1,5 +1,7 @@
 # LinkedIn Ingestion Pipeline - Production Deployment Guide
 
+> 🚀 **Auto-deployment configured**: Documentation changes will not trigger deployments!
+
 ## Overview
 
 This guide covers deploying the complete LinkedIn data ingestion pipeline to production, including database setup, environment configuration, and platform deployment.
