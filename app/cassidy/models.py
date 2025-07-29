@@ -182,7 +182,7 @@ class LinkedInProfile(BaseModel):
     # Arrays
     educations: List[EducationEntry] = Field(default_factory=list)
     experiences: List[ExperienceEntry] = Field(default_factory=list)
-    languages: List[str] = Field(default_factory=list)
+    languages: List[Union[str, Dict[str, str]]] = Field(default_factory=list)
     
     # Timestamp
     timestamp: Optional[datetime] = None

@@ -191,3 +191,9 @@ Session File: ./sessions/linkedin-ingestion-session-2025-07-28-135832.md
 
 ---
 
+## Session 2025-07-28 08:08:01
+
+Session File: ./sessions/linkedin-ingestion-session-2025-07-28-080756.md
+
+---
+
