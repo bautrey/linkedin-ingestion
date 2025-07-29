@@ -1,6 +1,13 @@
 {
   "build": {
-    "builder": "NIXPACKS"
+    "builder": "NIXPACKS",
+    "watchPatterns": [
+      "app/**",
+      "main.py",
+      "requirements.txt",
+      "railway.json",
+      "Procfile"
+    ]
   },
   "deploy": {
     "startCommand": "uvicorn main:app --host 0.0.0.0 --port $PORT",
