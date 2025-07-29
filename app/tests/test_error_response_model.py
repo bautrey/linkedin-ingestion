@@ -143,11 +143,25 @@ class TestErrorResponseOpenAPI:
         assert properties["error_code"]["type"] == "string"
         assert properties["message"]["type"] == "string"
         
-        assert properties["details"]["type"] == "object"
-        assert "anyOf" in properties["details"] or "oneOf" in properties["details"] or "type" in properties["details"]
+        # In Pydantic V2, optional fields use anyOf for null | type
+        details_prop = properties["details"]
+        if "anyOf" in details_prop:
+            # Pydantic V2 format
+            assert any(item.get("type") == "object" for item in details_prop["anyOf"])
+        else:
+            # Fallback for other formats
+            assert details_prop["type"] == "object"
         
-        assert properties["suggestions"]["type"] == "array"
-        assert properties["suggestions"]["items"]["type"] == "string"
+        suggestions_prop = properties["suggestions"]
+        if "anyOf" in suggestions_prop:
+            # Pydantic V2 format - find the array type
+            array_type = next((item for item in suggestions_prop["anyOf"] if item.get("type") == "array"), None)
+            assert array_type is not None
+            assert array_type["items"]["type"] == "string"
+        else:
+            # Fallback for other formats
+            assert suggestions_prop["type"] == "array"
+            assert suggestions_prop["items"]["type"] == "string"
     
     def test_error_response_has_descriptions(self):
         """Test that ErrorResponse fields have proper descriptions"""

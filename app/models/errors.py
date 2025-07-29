@@ -6,8 +6,7 @@ for consistent error handling across all endpoints.
 """
 
 from typing import Optional, Dict, Any, List
-from pydantic import BaseModel, Field
-from datetime import datetime
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class ErrorResponse(BaseModel):
@@ -18,65 +17,8 @@ class ErrorResponse(BaseModel):
     providing clients with predictable error information including error codes,
     messages, and optional details for debugging.
     """
-    
-    error_code: str = Field(
-        ...,
-        description="Machine-readable error code identifying the specific error type",
-        example="LINKEDIN_API_ERROR",
-        min_length=1,
-        max_length=100
-    )
-    
-    message: str = Field(
-        ...,
-        description="Human-readable error message describing what went wrong",
-        example="Failed to retrieve LinkedIn profile data",
-        min_length=1,
-        max_length=500
-    )
-    
-    details: Optional[Dict[str, Any]] = Field(
-        None,
-        description="Optional additional details about the error for debugging purposes",
-        example={
-            "status_code": 500,
-            "endpoint": "/api/linkedin/profile",
-            "cassidy_error": "Connection timeout"
-        }
-    )
-    
-    timestamp: datetime = Field(
-        default_factory=datetime.utcnow,
-        description="UTC timestamp when the error occurred",
-        example="2024-01-15T10:30:00Z"
-    )
-    
-    request_id: Optional[str] = Field(
-        None,
-        description="Unique identifier for the request that caused this error",
-        example="req_abc123def456",
-        min_length=1,
-        max_length=50
-    )
-    
-    validation_errors: Optional[List[Dict[str, Any]]] = Field(
-        None,
-        description="List of validation errors when request data is invalid",
-        example=[
-            {
-                "field": "linkedin_url",
-                "message": "Invalid LinkedIn URL format",
-                "invalid_value": "not-a-url"
-            }
-        ]
-    )
-
-    class Config:
-        """Pydantic model configuration"""
-        json_encoders = {
-            datetime: lambda v: v.isoformat() + "Z"
-        }
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "error_code": "LINKEDIN_API_ERROR",
                 "message": "Failed to retrieve LinkedIn profile data",
@@ -85,11 +27,50 @@ class ErrorResponse(BaseModel):
                     "endpoint": "/api/linkedin/profile",
                     "cassidy_error": "Connection timeout"
                 },
-                "timestamp": "2024-01-15T10:30:00Z",
-                "request_id": "req_abc123def456",
-                "validation_errors": None
+                "suggestions": [
+                    "Check your internet connection",
+                    "Verify the LinkedIn profile URL is accessible",
+                    "Try again in a few minutes"
+                ]
             }
         }
+    )
+    
+    error_code: str = Field(
+        ...,
+        description="Machine-readable error code identifying the specific error type",
+        json_schema_extra={"example": "LINKEDIN_API_ERROR"}
+    )
+    
+    message: str = Field(
+        ...,
+        description="Human-readable error message describing what went wrong",
+        json_schema_extra={"example": "Failed to retrieve LinkedIn profile data"}
+    )
+    
+    details: Optional[Dict[str, Any]] = Field(
+        None,
+        description="Optional additional details about the error for debugging purposes",
+        json_schema_extra={
+            "example": {
+                "status_code": 500,
+                "endpoint": "/api/linkedin/profile",
+                "cassidy_error": "Connection timeout"
+            }
+        }
+    )
+    
+    suggestions: Optional[List[str]] = Field(
+        None,
+        description="List of actionable suggestions to help resolve the error",
+        json_schema_extra={
+            "example": [
+                "Use the format: https://www.linkedin.com/in/username",
+                "Check the URL for typos or missing components",
+                "Verify the profile is publicly accessible"
+            ]
+        }
+    )
 
 
 class ValidationErrorResponse(ErrorResponse):
@@ -99,30 +80,8 @@ class ValidationErrorResponse(ErrorResponse):
     Extends the base ErrorResponse with validation-specific defaults
     and ensures validation_errors field is always populated.
     """
-    
-    error_code: str = Field(
-        default="VALIDATION_ERROR",
-        description="Error code for validation failures",
-        example="VALIDATION_ERROR"
-    )
-    
-    validation_errors: List[Dict[str, Any]] = Field(
-        ...,
-        description="List of validation errors with field-specific details",
-        min_items=1,
-        example=[
-            {
-                "field": "linkedin_url",
-                "message": "Invalid LinkedIn URL format",
-                "invalid_value": "not-a-url",
-                "expected_format": "https://www.linkedin.com/in/username"
-            }
-        ]
-    )
-
-    class Config:
-        """Pydantic model configuration for validation errors"""
-        schema_extra = {
+    model_config = ConfigDict(
+        json_schema_extra={
             "example": {
                 "error_code": "VALIDATION_ERROR",
                 "message": "Request validation failed",
@@ -130,8 +89,6 @@ class ValidationErrorResponse(ErrorResponse):
                     "total_errors": 2,
                     "endpoint": "/api/linkedin/profile"
                 },
-                "timestamp": "2024-01-15T10:30:00Z",
-                "request_id": "req_validation_123",
                 "validation_errors": [
                     {
                         "field": "linkedin_url",
@@ -149,3 +106,26 @@ class ValidationErrorResponse(ErrorResponse):
                 ]
             }
         }
+    )
+    
+    error_code: str = Field(
+        default="VALIDATION_ERROR",
+        description="Error code for validation failures",
+        json_schema_extra={"example": "VALIDATION_ERROR"}
+    )
+    
+    validation_errors: List[Dict[str, Any]] = Field(
+        ...,
+        description="List of validation errors with field-specific details",
+        min_length=1,
+        json_schema_extra={
+            "example": [
+                {
+                    "field": "linkedin_url",
+                    "message": "Invalid LinkedIn URL format",
+                    "invalid_value": "not-a-url",
+                    "expected_format": "https://www.linkedin.com/in/username"
+                }
+            ]
+        }
+    )
