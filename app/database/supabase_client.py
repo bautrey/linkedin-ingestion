@@ -80,7 +80,7 @@ class SupabaseClient(LoggerMixin):
         
         try:
             # Insert into profiles table
-            table = await self.client.table("linkedin_profiles")
+            table = self.client.table("linkedin_profiles")
             result = await table.insert(profile_data).execute()
             
             self.logger.info(
@@ -115,7 +115,7 @@ class SupabaseClient(LoggerMixin):
         self.logger.info("Deleting profile by ID", profile_id=profile_id)
 
         try:
-            table = await self.client.table("linkedin_profiles")
+            table = self.client.table("linkedin_profiles")
             delete_query = await table.delete()
             filtered_query = await delete_query.eq("id", profile_id)
             result = await filtered_query.execute()
@@ -180,7 +180,7 @@ class SupabaseClient(LoggerMixin):
         
         try:
             # Insert into companies table
-            table = await self.client.table("companies")
+            table = self.client.table("companies")
             result = await table.insert(company_data).execute()
             
             self.logger.info(
@@ -215,7 +215,7 @@ class SupabaseClient(LoggerMixin):
         self.logger.info("Retrieving profile by LinkedIn ID", linkedin_id=linkedin_id)
         
         try:
-            table = await self.client.table("linkedin_profiles")
+            table = self.client.table("linkedin_profiles")
             result = await table.select("*").eq("linkedin_id", linkedin_id).execute()
             
             if result.data:
@@ -247,7 +247,7 @@ class SupabaseClient(LoggerMixin):
         self.logger.info("Retrieving company by LinkedIn ID", company_id=company_id)
         
         try:
-            table = await self.client.table("companies")
+            table = self.client.table("companies")
             result = await table.select("*").eq("linkedin_company_id", company_id).execute()
             
             if result.data:
@@ -386,7 +386,7 @@ class SupabaseClient(LoggerMixin):
         self.logger.info("Fetching recent profiles", limit=limit)
         
         try:
-            table = await self.client.table("linkedin_profiles")
+            table = self.client.table("linkedin_profiles")
             result = await table.order("created_at", desc=True).limit(limit).execute()
             
             profiles = result.data or []
@@ -412,7 +412,7 @@ class SupabaseClient(LoggerMixin):
         self.logger.info("Retrieving profile by LinkedIn URL", linkedin_url=linkedin_url)
         
         try:
-            table = await self.client.table("linkedin_profiles")
+            table = self.client.table("linkedin_profiles")
             result = await table.select("*").eq("url", linkedin_url).execute()
             
             if result.data:
@@ -444,7 +444,7 @@ class SupabaseClient(LoggerMixin):
         self.logger.info("Retrieving profile by ID", profile_id=profile_id)
         
         try:
-            table = await self.client.table("linkedin_profiles")
+            table = self.client.table("linkedin_profiles")
             result = await table.select("*").eq("id", profile_id).execute()
             
             if result.data:
@@ -486,7 +486,7 @@ class SupabaseClient(LoggerMixin):
         
         try:
             # Start with base query
-            table = await self.client.table("linkedin_profiles")
+            table = self.client.table("linkedin_profiles")
             query = table.select("*")
             
             # Add name filter if provided (case-insensitive)
@@ -522,7 +522,7 @@ class SupabaseClient(LoggerMixin):
         try:
             await self._ensure_client()
             # Simple query to test connectivity - use a basic select without count
-            table = await self.client.table("linkedin_profiles")
+            table = self.client.table("linkedin_profiles")
             result = await table.select("id").limit(1).execute()
             
             # Check if we can access the result data
