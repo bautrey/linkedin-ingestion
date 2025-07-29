@@ -116,9 +116,7 @@ class SupabaseClient(LoggerMixin):
 
         try:
             table = self.client.table("linkedin_profiles")
-            delete_query = await table.delete()
-            filtered_query = await delete_query.eq("id", profile_id)
-            result = await filtered_query.execute()
+            result = await table.delete().eq("id", profile_id).execute()
 
             # Check if any rows were deleted (result.data will contain deleted rows)
             if result.data and len(result.data) > 0:
