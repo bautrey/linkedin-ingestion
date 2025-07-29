@@ -10,6 +10,39 @@ from datetime import datetime
 from enum import Enum
 
 
+def safe_int_conversion(value: Any) -> Optional[int]:
+    """Safely convert various types to int, handling empty strings and nulls"""
+    if value is None or value == "" or value == {}:
+        return None
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str) and value.strip().isdigit():
+        return int(value.strip())
+    return None
+
+
+def safe_str_conversion(value: Any) -> Optional[str]:
+    """Safely convert various types to string, handling nulls and empties"""
+    if value is None or (isinstance(value, str) and value.strip() == ""):
+        return None
+    if isinstance(value, (int, float, bool)):
+        return str(value)
+    if isinstance(value, str):
+        return value.strip() or None
+    return str(value) if value else None
+
+
+def safe_list_conversion(value: Any, expected_type: type = dict) -> List[Any]:
+    """Safely convert various types to list, handling nulls and single items"""
+    if value is None:
+        return []
+    if isinstance(value, list):
+        return value
+    if isinstance(value, expected_type):
+        return [value]
+    return []
+
+
 class WorkflowStatus(str, Enum):
     """Workflow execution status"""
     PENDING = "pending"
@@ -145,14 +178,36 @@ class LinkedInProfile(BaseModel):
             return str(v)
         return v
     
-    # Social metrics
-    follower_count: Optional[int] = None
-    connection_count: Optional[int] = None
+    # Social metrics - flexible type handling
+    follower_count: Optional[Union[int, str]] = None
+    connection_count: Optional[Union[int, str]] = None
     
-    # Current job details
-    current_company_join_month: Optional[int] = None
-    current_company_join_year: Optional[int] = None
+    # Current job details - flexible type handling
+    current_company_join_month: Optional[Union[int, str]] = None
+    current_company_join_year: Optional[Union[int, str]] = None
     current_job_duration: Optional[str] = None
+    
+    # Flexible validators for common data type issues
+    @validator('follower_count', 'connection_count', 'current_company_join_month', 
+              'current_company_join_year', 'company_employee_count', pre=True)
+    def handle_flexible_ints(cls, v):
+        """Handle int fields that might come as strings or be empty"""
+        return safe_int_conversion(v)
+    
+    @validator('about', 'city', 'country', 'headline', 'location', 'state', 
+              'company', 'job_title', 'company_description', 'company_domain',
+              'company_employee_range', 'company_industry', 'company_linkedin_url',
+              'company_logo_url', 'company_website', 'email', 'phone',
+              'first_name', 'last_name', 'profile_image_url', 'public_id',
+              'hq_city', 'hq_country', 'hq_region', 'school', pre=True)
+    def handle_flexible_strings(cls, v):
+        """Handle string fields that might be null, empty, or other types"""
+        return safe_str_conversion(v)
+    
+    @validator('educations', 'experiences', pre=True)
+    def handle_flexible_arrays(cls, v):
+        """Handle array fields that might be null or single items"""
+        return safe_list_conversion(v, dict)
     
     # Profile flags
     is_creator: Optional[bool] = None
@@ -179,10 +234,21 @@ class LinkedInProfile(BaseModel):
     # Education info
     school: Optional[str] = None
     
-    # Arrays
+    # Arrays - more flexible handling
     educations: List[EducationEntry] = Field(default_factory=list)
     experiences: List[ExperienceEntry] = Field(default_factory=list)
-    languages: List[Union[str, Dict[str, str]]] = Field(default_factory=list)
+    languages: List[Union[str, Dict[str, Any]]] = Field(default_factory=list)
+    
+    @validator('languages', pre=True)
+    def handle_languages_field(cls, v):
+        """Handle languages that could be strings, dicts, or mixed formats"""
+        if v is None:
+            return []
+        if isinstance(v, list):
+            return v  # Accept any list format
+        if isinstance(v, (str, dict)):
+            return [v]  # Convert single item to list
+        return []
     
     # Timestamp
     timestamp: Optional[datetime] = None
