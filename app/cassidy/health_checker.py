@@ -6,7 +6,7 @@ LinkedIn data ingestion pipeline without saving data to the database.
 """
 
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
 import logging
@@ -68,7 +68,7 @@ class LinkedInHealthChecker:
             Dictionary with health check results and metrics
         """
         self.logger.info("Starting comprehensive LinkedIn integration health check")
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
         
         results = {
             "overall_status": "healthy",
@@ -130,7 +130,7 @@ class LinkedInHealthChecker:
                         "details": check.details
                     })
             
-            execution_time = (datetime.utcnow() - start_time).total_seconds()
+            execution_time = (datetime.now(timezone.utc) - start_time).total_seconds()
             results["execution_time_seconds"] = execution_time
             
             self.logger.info(
@@ -148,17 +148,17 @@ class LinkedInHealthChecker:
             results["errors"].append({
                 "service": "health_checker",
                 "error": str(e),
-                "timestamp": datetime.utcnow().isoformat()
+                "timestamp": datetime.now(timezone.utc).isoformat()
             })
             return results
     
     async def _check_api_connectivity(self) -> HealthCheckResult:
         """Test basic API connectivity"""
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
         
         try:
             health_result = await self.client.health_check()
-            end_time = datetime.utcnow()
+            end_time = datetime.now(timezone.utc)
             response_time = (end_time - start_time).total_seconds() * 1000
             
             status = "healthy" if health_result.get("status") == "healthy" else "degraded"
@@ -176,7 +176,7 @@ class LinkedInHealthChecker:
             )
             
         except Exception as e:
-            end_time = datetime.utcnow()
+            end_time = datetime.now(timezone.utc)
             response_time = (end_time - start_time).total_seconds() * 1000
             
             return HealthCheckResult(
@@ -190,7 +190,7 @@ class LinkedInHealthChecker:
     
     async def _check_profile_ingestion(self) -> HealthCheckResult:
         """Test profile ingestion using a public test profile"""
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
         test_url = self.TEST_PROFILES["microsoft_ceo"]
         
         try:
@@ -198,7 +198,7 @@ class LinkedInHealthChecker:
             
             # Fetch profile data (without saving to database)
             profile = await self.client.fetch_profile(test_url)
-            end_time = datetime.utcnow()
+            end_time = datetime.now(timezone.utc)
             response_time = (end_time - start_time).total_seconds() * 1000
             
             # Validate the profile data
@@ -227,7 +227,7 @@ class LinkedInHealthChecker:
             )
             
         except Exception as e:
-            end_time = datetime.utcnow()
+            end_time = datetime.now(timezone.utc)
             response_time = (end_time - start_time).total_seconds() * 1000
             
             return HealthCheckResult(
@@ -241,7 +241,7 @@ class LinkedInHealthChecker:
     
     async def _check_company_ingestion(self) -> HealthCheckResult:
         """Test company ingestion using a public test company"""
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
         test_url = self.TEST_COMPANIES["microsoft"]
         
         try:
@@ -249,7 +249,7 @@ class LinkedInHealthChecker:
             
             # Fetch company data (without saving to database)
             company = await self.client.fetch_company(test_url)
-            end_time = datetime.utcnow()
+            end_time = datetime.now(timezone.utc)
             response_time = (end_time - start_time).total_seconds() * 1000
             
             # Validate the company data
@@ -278,7 +278,7 @@ class LinkedInHealthChecker:
             )
             
         except Exception as e:
-            end_time = datetime.utcnow()
+            end_time = datetime.now(timezone.utc)
             response_time = (end_time - start_time).total_seconds() * 1000
             
             return HealthCheckResult(
@@ -297,8 +297,8 @@ class LinkedInHealthChecker:
             fields_with_data = []
             fields_api_provided = []  # Fields the API actually sends (non-None, non-empty)
             
-            # Use model_fields for Pydantic v2 compatibility
-            model_fields = getattr(profile, 'model_fields', getattr(profile, '__fields__', {}))
+            # Use model_fields for Pydantic v2
+            model_fields = getattr(profile.__class__, 'model_fields', {})
             
             for field_name, field_info in model_fields.items():
                 field_value = getattr(profile, field_name, None)
@@ -383,8 +383,8 @@ class LinkedInHealthChecker:
             fields_with_data = []
             fields_api_provided = []  # Fields the API actually sends (non-None, non-empty)
             
-            # Use model_fields for Pydantic v2 compatibility
-            model_fields = getattr(company, 'model_fields', getattr(company, '__fields__', {}))
+            # Use model_fields for Pydantic v2
+            model_fields = getattr(company.__class__, 'model_fields', {})
             
             for field_name, field_info in model_fields.items():
                 field_value = getattr(company, field_name, None)
@@ -518,7 +518,7 @@ class LinkedInHealthChecker:
             return {
                 "status": "unhealthy",
                 "response_time_ms": 0,
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
                 "service": "linkedin_integration",
                 "details": {},
                 "error": str(e)

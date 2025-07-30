@@ -359,6 +359,8 @@ class AffiliatedCompany(BaseModel):
 class CompanyProfile(BaseModel):
     """Company profile matching actual Cassidy API response structure"""
     
+    model_config = ConfigDict(extra="allow")  # Allow extra fields like raw_data
+    
     # Core fields from actual API
     company_id: str = Field(default="unknown", description="LinkedIn company ID")
     company_name: str = Field(..., description="Company name")

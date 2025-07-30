@@ -14,7 +14,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, HttpUrl, Field, ValidationError
 from typing import Dict, Any, Optional, List
-from datetime import datetime
+from datetime import datetime, timezone
 import traceback
 import logging
 
@@ -422,7 +422,7 @@ class ProfileController:
         return self._convert_db_profile_to_response(profile)
     
     async def create_profile(self, request: ProfileCreateRequest) -> ProfileResponse:
-        """Create a new profile - raises ProfileAlreadyExistsError if profile exists"""
+        """Create a new profile with smart update behavior - updates existing profiles with fresh data"""
         # Normalize LinkedIn URL to consistent format
         linkedin_url = normalize_linkedin_url(str(request.linkedin_url))
         
@@ -430,16 +430,8 @@ class ProfileController:
         existing = await self.db_client.get_profile_by_url(linkedin_url)
         
         if existing:
-            # Raise ProfileAlreadyExistsError with actionable suggestions
-            raise ProfileAlreadyExistsError(
-                profile_id=existing["id"],
-                existing_profile_data={
-                    "id": existing["id"],
-                    "name": existing.get("name"),
-                    "url": existing["url"],
-                    "created_at": existing.get("created_at")
-                }
-            )
+            # Smart update behavior: delete existing profile and create fresh one
+            await self.db_client.delete_profile(existing["id"])
         
         # Create workflow request with user's company inclusion preference
         workflow_request = ProfileIngestionRequest(
@@ -466,7 +458,7 @@ async def root():
         "version": settings.VERSION,
         "status": "running",
         "docs_url": "/docs" if settings.ENVIRONMENT != "production" else None,
-        "deployment_timestamp": datetime.utcnow().isoformat()
+        "deployment_timestamp": datetime.now(timezone.utc).isoformat()
     }
 
 
@@ -479,7 +471,7 @@ async def health_check():
         
         return {
             "status": "healthy",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "version": settings.VERSION,
             "database": db_health,
             "environment": settings.ENVIRONMENT

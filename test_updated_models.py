@@ -141,7 +141,9 @@ def test_model_validation():
         populated_fields = []
         total_fields = 0
         
-        for field_name in profile.__fields__.keys():
+        # Use model_fields for Pydantic v2
+        model_fields = getattr(profile.__class__, 'model_fields', {})
+        for field_name in model_fields.keys():
             if field_name == 'timestamp':  # Skip internal fields
                 continue
                 
@@ -176,13 +178,13 @@ def test_model_validation():
         
         print(f"\n✅ ALL TESTS PASSED! The model correctly handles the rich LinkedIn data.")
         
-        return True
+        assert True
         
     except Exception as e:
         print(f"❌ MODEL VALIDATION FAILED: {e}")
         import traceback
         traceback.print_exc()
-        return False
+        assert False, f"Model validation failed: {e}"
 
 if __name__ == "__main__":
     success = test_model_validation()

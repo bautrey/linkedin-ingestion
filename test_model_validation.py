@@ -49,19 +49,19 @@ def test_profile_data_extraction():
             print(f"   📊 Has raw data: {profile.raw_data is not None}")
             
             # Test that extra fields are captured
-            profile_dict = profile.dict()
+            profile_dict = profile.model_dump()
             extra_fields = [k for k in profile_dict.keys() if not hasattr(LinkedInProfile, k)]
             if extra_fields:
                 print(f"   🎯 Extra fields captured: {len(extra_fields)}")
             
         except ValidationError as e:
             print(f"   ❌ VALIDATION ERROR: {e}")
-            return False
+            assert False, f"Validation error: {e}"
         except Exception as e:
             print(f"   ❌ EXTRACTION ERROR: {e}")
-            return False
+            assert False, f"Extraction error: {e}"
     
-    return True
+    assert True
 
 
 def test_company_data_extraction():
@@ -89,19 +89,19 @@ def test_company_data_extraction():
         print(f"   📊 Has raw data: {company.raw_data is not None}")
         
         # Test that extra fields are captured
-        company_dict = company.dict()
+        company_dict = company.model_dump()
         extra_fields = [k for k in company_dict.keys() if not hasattr(CompanyProfile, k)]
         if extra_fields:
             print(f"   🎯 Extra fields captured: {len(extra_fields)}")
         
-        return True
+        assert True
         
     except ValidationError as e:
         print(f"   ❌ VALIDATION ERROR: {e}")
-        return False
+        assert False, f"Validation error: {e}"
     except Exception as e:
         print(f"   ❌ EXTRACTION ERROR: {e}")
-        return False
+        assert False, f"Extraction error: {e}"
 
 
 def test_edge_cases():
@@ -128,15 +128,15 @@ def test_edge_cases():
         print(f"   📊 AI Score (unknown field): {getattr(profile, 'ai_score', 'Not accessible')}")
         
         # Check if unknown fields are in the dict
-        profile_dict = profile.dict()
+        profile_dict = profile.model_dump()
         if 'ai_score' in profile_dict:
             print(f"   🎯 Unknown field preserved: ai_score = {profile_dict['ai_score']}")
         
-        return True
+        assert True
         
     except Exception as e:
         print(f"   ❌ ERROR with unknown fields: {e}")
-        return False
+        assert False, f"Error with unknown fields: {e}"
 
 
 def test_flexible_types():
@@ -179,9 +179,9 @@ def test_flexible_types():
             
         except Exception as e:
             print(f"   ❌ ERROR with {test_case['name']}: {e}")
-            return False
+            assert False, f"Error with {test_case['name']}: {e}"
     
-    return True
+    assert True
 
 
 if __name__ == "__main__":
