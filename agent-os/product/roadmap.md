@@ -22,8 +22,13 @@
 - **Status**: ✅ FULLY COMPLETE - All workflow and API fixes implemented and verified
 - **Priority**: HIGH - Production system has incomplete profile data due to workflow bypass
 
+**✅ COMPLETED: v1.6 Canonical Profile Models (Pydantic V2)**
+- **Goal**: Clean internal data structures decoupled from external API format
+- **Status**: ✅ FULLY COMPLETE - All Pydantic V2 models created, deprecation warnings resolved
+- **Spec**: @agent-os/specs/2025-07-30-v1.6-canonical-profile-models/ (✅ COMPLETE)
+- **Deliverables**: CanonicalProfile and CanonicalCompany models, zero deprecation warnings
+
 **🚧 NEXT PLANNED SEQUENCE: Profile Intelligence Platform**
-- **v1.6**: Canonical Profile Models (Pydantic V2) - Clean internal data structures
 - **v1.7**: Cassidy-to-Canonical Adapter - Decouple from external API format
 - **v1.8**: Candidate Fit Scoring API - Algorithm for Fortium partner fit assessment
 - **v1.9**: Basic Admin UI - shadcn/ui interface for profile management
