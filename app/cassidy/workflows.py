@@ -22,12 +22,15 @@ from .models import (
     WorkflowStatus,
 )
 from .exceptions import CassidyException
+from app.adapters.cassidy_adapter import CassidyAdapter
+from app.adapters.exceptions import IncompleteDataError
+from app.models.canonical import CanonicalProfile
 
 
 class EnrichedProfile:
     """Container for profile with associated company data"""
     
-    def __init__(self, profile: LinkedInProfile, companies: List[Optional[CompanyProfile]] = None):
+    def __init__(self, profile: CanonicalProfile, companies: List[Optional[CompanyProfile]] = None):
         self.profile = profile
         self.companies = companies or []
         self.created_at = datetime.now(timezone.utc)
@@ -53,6 +56,7 @@ class LinkedInWorkflow(LoggerMixin):
     
     def __init__(self):
         self.cassidy_client = CassidyClient()
+        self.adapter = CassidyAdapter()
         self._active_requests: Dict[str, IngestionStatus] = {}
     
     async def process_profile(
@@ -94,9 +98,20 @@ class LinkedInWorkflow(LoggerMixin):
         self._active_requests[request_id] = status
         
         try:
-            # Step 1: Fetch profile data
+            # Step 1: Fetch profile data from Cassidy API
             self.logger.info("Fetching profile data", request_id=request_id)
-            profile = await self.cassidy_client.fetch_profile(str(request.linkedin_url))
+            cassidy_data = await self.cassidy_client.fetch_profile(str(request.linkedin_url))
+            
+            # Use CassidyAdapter to transform the data
+            try:
+                canonical_profile = self.adapter.transform(cassidy_data)
+            except IncompleteDataError as e:
+                self.logger.error(
+                    "Transformation failed due to incomplete data",
+                    missing_fields=e.missing_fields,
+                    request_id=request_id
+                )
+                raise
             
             # Update progress
             status.progress = {"stage": "company_fetch", "step": 2, "total_steps": 2}
@@ -107,12 +122,12 @@ class LinkedInWorkflow(LoggerMixin):
                 self.logger.info(
                     "Fetching company data for experiences",
                     request_id=request_id,
-                    experience_count=len(profile.experience)
+                    experience_count=len(canonical_profile.experiences)
                 )
-                companies = await self._fetch_companies_for_profile(profile, request_id)
+                companies = await self._fetch_companies_for_profile(canonical_profile, request_id)
             
             # Complete the workflow
-            enriched_profile = EnrichedProfile(profile, companies)
+            enriched_profile = EnrichedProfile(canonical_profile, companies)
             
             # Update final status
             status.status = WorkflowStatus.SUCCESS
@@ -129,7 +144,7 @@ class LinkedInWorkflow(LoggerMixin):
             self.logger.info(
                 "Profile processing workflow completed successfully",
                 request_id=request_id,
-                profile_id=profile.id,
+                profile_id=canonical_profile.profile_id,
                 companies_fetched=enriched_profile.company_count,
                 execution_time_seconds=(
                     status.completed_at - status.started_at
@@ -154,14 +169,14 @@ class LinkedInWorkflow(LoggerMixin):
     
     async def _fetch_companies_for_profile(
         self, 
-        profile: LinkedInProfile, 
+        profile: CanonicalProfile, 
         request_id: str
     ) -> List[Optional[CompanyProfile]]:
         """
         Fetch company data for all experiences in a profile
         
         Args:
-            profile: LinkedIn profile with experience entries
+            profile: Canonical profile with experience entries
             request_id: Request ID for logging
             
         Returns:
@@ -169,7 +184,7 @@ class LinkedInWorkflow(LoggerMixin):
         """
         # Extract unique company URLs from experience entries
         company_urls = []
-        for experience in profile.experience:
+        for experience in profile.experiences:
             company_url = experience.company_linkedin_url
             if company_url and str(company_url) not in company_urls:
                 company_urls.append(str(company_url))
@@ -178,14 +193,14 @@ class LinkedInWorkflow(LoggerMixin):
             self.logger.info(
                 "No company URLs found in profile experiences",
                 request_id=request_id,
-                profile_id=profile.id
+                profile_id=profile.profile_id
             )
             return []
         
         self.logger.info(
             "Fetching companies for profile",
             request_id=request_id,
-            profile_id=profile.id,
+            profile_id=profile.profile_id,
             unique_companies=len(company_urls)
         )
         
@@ -199,7 +214,7 @@ class LinkedInWorkflow(LoggerMixin):
         self.logger.info(
             "Company fetch completed for profile",
             request_id=request_id,
-            profile_id=profile.id,
+            profile_id=profile.profile_id,
             total_requested=len(company_urls),
             successful=successful_count,
             failed=len(company_urls) - successful_count

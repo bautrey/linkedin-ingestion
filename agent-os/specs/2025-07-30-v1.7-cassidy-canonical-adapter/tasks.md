@@ -31,13 +31,13 @@ These are the tasks to be completed for the spec detailed in @agent-os/specs/202
   - [x] 3.6 Implement CassidyAdapter._transform_company() helper method
   - [x] 3.7 Verify all nested transformation tests pass
 
-- [ ] 4. **Integrate Adapter with Existing Workflow**
-  - [ ] 4.1 Write integration tests for LinkedInWorkflow using CassidyAdapter
-  - [ ] 4.2 Update LinkedInWorkflow.process_profile() to use CassidyAdapter.transform()
-  - [ ] 4.3 Update workflow error handling to catch and log IncompleteDataError
-  - [ ] 4.4 Write tests verifying API endpoints unchanged after adapter integration
-  - [ ] 4.5 Run full test suite to ensure no regressions
-  - [ ] 4.6 Verify all integration tests pass
+- [x] 4. **Integrate Adapter with Existing Workflow**
+  - [x] 4.1 Write integration tests for LinkedInWorkflow using CassidyAdapter
+  - [x] 4.2 Update LinkedInWorkflow.process_profile() to use CassidyAdapter.transform()
+  - [x] 4.3 Update workflow error handling to catch and log IncompleteDataError
+  - [x] 4.4 Write tests verifying API endpoints unchanged after adapter integration
+  - [x] 4.5 Run full test suite to ensure no regressions
+  - [x] 4.6 Verify all integration tests pass
 
 - [ ] 5. **Edge Case Handling and Production Readiness**
   - [ ] 5.1 Write tests for edge cases (empty arrays, null values, missing objects)
