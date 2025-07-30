@@ -7,8 +7,9 @@ Handles vector storage, retrieval, and similarity search using pgvector
 import json
 import uuid
 from typing import List, Dict, Any, Optional, Tuple
-from datetime import datetime
-from supabase import acreate_client, AsyncClient
+from datetime import datetime, timezone
+from supabase import acreate_client, AsyncClient, AsyncClientOptions
+import httpx
 
 from app.core.config import settings
 from app.core.logging import LoggerMixin
@@ -30,9 +31,21 @@ class SupabaseClient(LoggerMixin):
     async def _ensure_client(self):
         """Ensure the async client is initialized"""
         if not self._client_initialized:
+            # Create httpx client with proper configuration to avoid deprecation warnings
+            http_client = httpx.AsyncClient(
+                timeout=30.0,
+                verify=True
+            )
+            
+            # Create options with proper httpx client
+            options = AsyncClientOptions(
+                httpx_client=http_client
+            )
+            
             self.client = await acreate_client(
                 settings.SUPABASE_URL,
-                settings.SUPABASE_ANON_KEY
+                settings.SUPABASE_ANON_KEY,
+                options=options
             )
             self._client_initialized = True
     
@@ -69,12 +82,12 @@ class SupabaseClient(LoggerMixin):
             "country_code": profile.country_code,
             "followers": profile.followers,
             "connections": profile.connections,
-            "experience": [exp.model_dump() if hasattr(exp, 'model_dump') else (exp.dict() if hasattr(exp, 'dict') else exp) for exp in profile.experience],
-            "education": [edu.model_dump() if hasattr(edu, 'model_dump') else (edu.dict() if hasattr(edu, 'dict') else edu) for edu in profile.education],
-            "certifications": [cert.model_dump() if hasattr(cert, 'model_dump') else (cert.dict() if hasattr(cert, 'dict') else cert) for cert in profile.certifications],
-            "current_company": profile.current_company if isinstance(profile.current_company, dict) else (profile.current_company.model_dump() if hasattr(profile.current_company, 'model_dump') else profile.current_company.dict()) if profile.current_company else None,
-            "timestamp": profile.timestamp.isoformat() if profile.timestamp else datetime.utcnow().isoformat(),
-            "created_at": datetime.utcnow().isoformat(),
+            "experience": [exp.model_dump() for exp in profile.experience],
+            "education": [edu.model_dump() for edu in profile.education],
+            "certifications": [cert.model_dump() for cert in profile.certifications],
+            "current_company": profile.current_company.model_dump() if profile.current_company else None,
+            "timestamp": profile.timestamp.isoformat() if profile.timestamp else datetime.now(timezone.utc).isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "embedding": embedding
         }
         
@@ -170,9 +183,9 @@ class SupabaseClient(LoggerMixin):
             "hq_city": company.hq_city,
             "hq_region": company.hq_region,
             "hq_country": company.hq_country,
-            "locations": [loc.dict() if hasattr(loc, 'dict') else loc for loc in company.locations],
-            "funding_info": company.funding_info.dict() if company.funding_info else None,
-            "created_at": datetime.utcnow().isoformat(),
+            "locations": [loc.model_dump() for loc in company.locations],
+            "funding_info": company.funding_info.model_dump() if company.funding_info else None,
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "embedding": embedding
         }
         

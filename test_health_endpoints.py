@@ -10,7 +10,7 @@ import asyncio
 import httpx
 import json
 import pytest
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 @pytest.mark.asyncio
@@ -31,7 +31,7 @@ async def test_health_endpoints():
     basic_health = {
         "status": "healthy",
         "version": "2.0.0-cassidy-integration",
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(timezone.utc).isoformat(),
         "environment": "development",
         "checks": {}
     }
@@ -53,7 +53,7 @@ async def test_health_endpoints():
         detailed_health = {
             "status": "degraded" if quick_result["status"] != "healthy" else "healthy",
             "version": "2.0.0-cassidy-integration", 
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "environment": "development",
             "checks": {
                 "cassidy": {"status": "degraded", "response_time_ms": 5000},

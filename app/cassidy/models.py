@@ -5,7 +5,7 @@ Fixed models based on actual Cassidy API response structure observed in debug ou
 """
 
 from typing import List, Optional, Dict, Any, Union
-from pydantic import BaseModel, Field, HttpUrl, validator
+from pydantic import BaseModel, Field, HttpUrl, field_validator, ConfigDict
 from datetime import datetime
 from enum import Enum
 
@@ -67,7 +67,8 @@ class EducationEntry(BaseModel):
     start_month: Optional[str] = None
     start_year: Optional[int] = None
     
-    @validator('end_year', 'start_year', pre=True)
+    @field_validator('end_year', 'start_year', mode='before')
+    @classmethod
     def handle_empty_year(cls, v):
         """Handle empty string years"""
         if v == "":
@@ -97,7 +98,8 @@ class ExperienceEntry(BaseModel):
     start_year: Optional[int] = None
     title: Optional[str] = None  # RENAMED from job_title
     
-    @validator('end_year', 'start_year', pre=True)
+    @field_validator('end_year', 'start_year', mode='before')
+    @classmethod
     def handle_empty_year(cls, v):
         """Handle empty string years"""
         if v == "":
@@ -106,7 +108,8 @@ class ExperienceEntry(BaseModel):
             return int(v)
         return v
     
-    @validator('start_month', 'end_month', pre=True)
+    @field_validator('start_month', 'end_month', mode='before')
+    @classmethod
     def handle_month(cls, v):
         """Handle month fields that might be int or string"""
         if v == "":
@@ -140,8 +143,7 @@ class CurrentCompanyInfo(BaseModel):
 class LinkedInProfile(BaseModel):
     """LinkedIn profile matching actual Cassidy API response structure"""
     
-    class Config:
-        extra = "allow"  # Allow extra fields like _certifications
+    model_config = ConfigDict(extra="allow")  # Allow extra fields like _certifications
     
     # Core fields - now optional since API format has changed
     profile_id: Optional[str] = None
@@ -169,7 +171,8 @@ class LinkedInProfile(BaseModel):
     company_website: Optional[str] = None
     company_year_founded: Optional[str] = None  # Note: comes as string, might be empty
     
-    @validator('company_year_founded', pre=True)
+    @field_validator('company_year_founded', mode='before')
+    @classmethod
     def handle_company_year_founded(cls, v):
         """Handle company_year_founded that might come as int or string"""
         if v is None or v == "":
@@ -188,23 +191,26 @@ class LinkedInProfile(BaseModel):
     current_job_duration: Optional[str] = None
     
     # Flexible validators for common data type issues
-    @validator('follower_count', 'connection_count', 'current_company_join_month', 
-              'current_company_join_year', 'company_employee_count', pre=True)
+    @field_validator('follower_count', 'connection_count', 'current_company_join_month', 
+              'current_company_join_year', 'company_employee_count', mode='before')
+    @classmethod
     def handle_flexible_ints(cls, v):
         """Handle int fields that might come as strings or be empty"""
         return safe_int_conversion(v)
     
-    @validator('about', 'city', 'country', 'headline', 'location', 'state', 
+    @field_validator('about', 'city', 'country', 'headline', 'location', 'state', 
               'company', 'job_title', 'company_description', 'company_domain',
               'company_employee_range', 'company_industry', 'company_linkedin_url',
               'company_logo_url', 'company_website', 'email', 'phone',
               'first_name', 'last_name', 'profile_image_url', 'public_id',
-              'hq_city', 'hq_country', 'hq_region', 'school', pre=True)
+              'hq_city', 'hq_country', 'hq_region', 'school', mode='before')
+    @classmethod
     def handle_flexible_strings(cls, v):
         """Handle string fields that might be null, empty, or other types"""
         return safe_str_conversion(v)
     
-    @validator('educations', 'experiences', pre=True)
+    @field_validator('educations', 'experiences', mode='before')
+    @classmethod
     def handle_flexible_arrays(cls, v):
         """Handle array fields that might be null or single items"""
         return safe_list_conversion(v, dict)
@@ -239,7 +245,8 @@ class LinkedInProfile(BaseModel):
     experiences: List[ExperienceEntry] = Field(default_factory=list)
     languages: List[Union[str, Dict[str, Any]]] = Field(default_factory=list)
     
-    @validator('languages', pre=True)
+    @field_validator('languages', mode='before')
+    @classmethod
     def handle_languages_field(cls, v):
         """Handle languages that could be strings, dicts, or mixed formats"""
         if v is None:
@@ -386,7 +393,8 @@ class CompanyProfile(BaseModel):
     locations: List[CompanyLocation] = Field(default_factory=list)
     affiliated_companies: List[AffiliatedCompany] = Field(default_factory=list)
     
-    @validator('year_founded', pre=True)
+    @field_validator('year_founded', mode='before')
+    @classmethod
     def handle_empty_year_founded(cls, v):
         """Handle year_founded - convert int to string, handle empty strings"""
         if v == "" or v is None:
@@ -397,7 +405,8 @@ class CompanyProfile(BaseModel):
             return v  # Keep as string
         return v
     
-    @validator('funding_info', pre=True)
+    @field_validator('funding_info', mode='before')
+    @classmethod
     def handle_funding_info(cls, v):
         """Handle funding info validation"""
         if isinstance(v, dict) and v:

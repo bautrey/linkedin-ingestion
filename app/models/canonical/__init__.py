@@ -1,30 +1,31 @@
 """
-Models package for LinkedIn Ingestion Service
+Canonical models package for LinkedIn data.
 
-Contains Pydantic models for request/response validation and API documentation.
+These models serve as the internal, stable data contract for the application,
+decoupling it from the specific structure of any single data provider.
 """
 
-from .errors import ErrorResponse, ValidationErrorResponse
-from .canonical import (
+from .profile import (
     CanonicalProfile,
-    CanonicalCompany,
     CanonicalEducationEntry,
     CanonicalExperienceEntry,
     CanonicalWorkflowStatus,
+)
+from .company import (
+    CanonicalCompany,
     CanonicalFundingInfo,
     CanonicalCompanyLocation,
     CanonicalAffiliatedCompany,
 )
 
 __all__ = [
-    "ErrorResponse", 
-    "ValidationErrorResponse",
-    # Canonical models
+    # Profile models
     "CanonicalProfile",
-    "CanonicalCompany",
     "CanonicalEducationEntry",
     "CanonicalExperienceEntry",
     "CanonicalWorkflowStatus",
+    # Company models
+    "CanonicalCompany",
     "CanonicalFundingInfo",
     "CanonicalCompanyLocation",
     "CanonicalAffiliatedCompany",

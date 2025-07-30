@@ -8,7 +8,7 @@ and company data scraping with robust error handling and retry logic.
 import asyncio
 import json
 from typing import Dict, Any, Optional, Union
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import httpx
 from tenacity import (
     retry,
@@ -208,7 +208,7 @@ class CassidyClient(LoggerMixin):
         Raises:
             CassidyException: Various workflow execution errors
         """
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
         
         try:
             async with httpx.AsyncClient(**self.client_config) as client:
@@ -254,7 +254,7 @@ class CassidyClient(LoggerMixin):
                         details={"raw_response": response.text[:1000]}
                     )
                 
-                execution_time = (datetime.utcnow() - start_time).total_seconds()
+                execution_time = (datetime.now(timezone.utc) - start_time).total_seconds()
                 
                 # DEBUG: Log the actual response structure to understand format
                 self.logger.info(

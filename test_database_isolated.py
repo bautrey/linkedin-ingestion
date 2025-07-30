@@ -11,7 +11,7 @@ import uuid
 import pytest
 from typing import Dict, Any, List
 from unittest.mock import Mock, patch, AsyncMock, MagicMock
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Mock external dependencies before any imports
 async def mock_acreate_client(*args, **kwargs):
@@ -210,8 +210,8 @@ class MockSupabaseClientWrapper:
             "education": [edu.model_dump() if hasattr(edu, 'model_dump') else (edu.dict() if hasattr(edu, 'dict') else edu) for edu in profile.education],
             "certifications": [cert.model_dump() if hasattr(cert, 'model_dump') else (cert.dict() if hasattr(cert, 'dict') else cert) for cert in profile.certifications],
             "current_company": profile.current_company if isinstance(profile.current_company, dict) else (profile.current_company.model_dump() if hasattr(profile.current_company, 'model_dump') else profile.current_company.dict()) if profile.current_company else None,
-            "timestamp": profile.timestamp.isoformat() if profile.timestamp else datetime.utcnow().isoformat(),
-            "created_at": datetime.utcnow().isoformat(),
+            "timestamp": profile.timestamp.isoformat() if profile.timestamp else datetime.now(timezone.utc).isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "embedding": embedding
         }
         
@@ -248,9 +248,9 @@ class MockSupabaseClientWrapper:
             "hq_city": company.hq_city,
             "hq_region": company.hq_region,
             "hq_country": company.hq_country,
-            "locations": [loc.dict() if hasattr(loc, 'dict') else loc for loc in company.locations],
-            "funding_info": company.funding_info.dict() if company.funding_info else None,
-            "created_at": datetime.utcnow().isoformat(),
+            "locations": [loc.model_dump() if hasattr(loc, 'model_dump') else loc for loc in company.locations],
+            "funding_info": company.funding_info.model_dump() if company.funding_info else None,
+            "created_at": datetime.now(timezone.utc).isoformat(),
             "embedding": embedding
         }
         

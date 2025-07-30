@@ -11,7 +11,7 @@ import json
 import pytest
 from typing import Dict, Any, List
 from unittest.mock import Mock, patch, AsyncMock
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Mock external dependencies before importing our modules
 def mock_external_dependencies():
@@ -213,7 +213,7 @@ class MockLinkedInPipeline:
             "pipeline_id": "mock-pipeline-123",
             "linkedin_url": linkedin_url,
             "status": "completed",
-            "profile": profile.dict(),
+            "profile": profile.model_dump(),
             "companies": [],
             "embeddings": {"profile": len(embedding) if embedding else 0},
             "storage_ids": {"profile": storage_id} if storage_id else {},
@@ -245,7 +245,7 @@ class MockLinkedInPipeline:
         """Mock health check"""
         return {
             "pipeline": "healthy",
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "components": {
                 "cassidy": await self.cassidy_client.health_check(),
                 "database": await self.db_client.health_check(),

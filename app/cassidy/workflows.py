@@ -7,7 +7,7 @@ company data enrichment, and data validation.
 
 import asyncio
 from typing import List, Optional, Dict, Any, Tuple
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import uuid
 
 from app.core.config import settings
@@ -30,7 +30,7 @@ class EnrichedProfile:
     def __init__(self, profile: LinkedInProfile, companies: List[Optional[CompanyProfile]] = None):
         self.profile = profile
         self.companies = companies or []
-        self.created_at = datetime.utcnow()
+        self.created_at = datetime.now(timezone.utc)
     
     @property
     def company_count(self) -> int:
@@ -88,7 +88,7 @@ class LinkedInWorkflow(LoggerMixin):
             request_id=request_id,
             status=WorkflowStatus.RUNNING,
             profile_url=request.linkedin_url,
-            started_at=datetime.utcnow(),
+            started_at=datetime.now(timezone.utc),
             progress={"stage": "profile_fetch", "step": 1, "total_steps": 2}
         )
         self._active_requests[request_id] = status
@@ -116,7 +116,7 @@ class LinkedInWorkflow(LoggerMixin):
             
             # Update final status
             status.status = WorkflowStatus.SUCCESS
-            status.completed_at = datetime.utcnow()
+            status.completed_at = datetime.now(timezone.utc)
             status.progress = {
                 "stage": "completed",
                 "step": 2,
@@ -141,7 +141,7 @@ class LinkedInWorkflow(LoggerMixin):
         except Exception as e:
             # Update error status
             status.status = WorkflowStatus.FAILED
-            status.completed_at = datetime.utcnow()
+            status.completed_at = datetime.now(timezone.utc)
             status.error_message = str(e)
             
             self.logger.error(
@@ -239,7 +239,7 @@ class LinkedInWorkflow(LoggerMixin):
             request_id=request_id,
             status=WorkflowStatus.RUNNING,
             profile_url=company_url,  # Using profile_url field for company URL
-            started_at=datetime.utcnow(),
+            started_at=datetime.now(timezone.utc),
             progress={"stage": "company_fetch", "step": 1, "total_steps": 1}
         )
         self._active_requests[request_id] = status
@@ -250,7 +250,7 @@ class LinkedInWorkflow(LoggerMixin):
             
             # Update final status
             status.status = WorkflowStatus.SUCCESS
-            status.completed_at = datetime.utcnow()
+            status.completed_at = datetime.now(timezone.utc)
             status.progress = {"stage": "completed", "step": 1, "total_steps": 1}
             
             self.logger.info(
@@ -267,7 +267,7 @@ class LinkedInWorkflow(LoggerMixin):
         except Exception as e:
             # Update error status
             status.status = WorkflowStatus.FAILED
-            status.completed_at = datetime.utcnow()
+            status.completed_at = datetime.now(timezone.utc)
             status.error_message = str(e)
             
             self.logger.error(
@@ -309,7 +309,7 @@ class LinkedInWorkflow(LoggerMixin):
         Returns:
             Number of requests cleaned up
         """
-        cutoff_time = datetime.utcnow() - timedelta(hours=max_age_hours)
+        cutoff_time = datetime.now(timezone.utc) - timedelta(hours=max_age_hours)
         cleaned_count = 0
         
         # Find requests to clean up
