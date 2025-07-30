@@ -16,6 +16,10 @@ from pydantic import BaseModel, HttpUrl, Field, ValidationError
 from typing import Dict, Any, Optional, List
 from datetime import datetime
 import traceback
+import logging
+
+# Configure logging for error tracking
+logger = logging.getLogger(__name__)
 
 from app.cassidy.client import CassidyClient
 from app.cassidy.workflows import LinkedInWorkflow
@@ -23,6 +27,11 @@ from app.cassidy.models import ProfileIngestionRequest
 from app.database.supabase_client import SupabaseClient
 from app.core.config import settings
 from app.models.errors import ErrorResponse, ValidationErrorResponse
+from app.exceptions import (
+    LinkedInIngestionError,
+    InvalidLinkedInURLError,
+    ProfileAlreadyExistsError
+)
 
 
 def normalize_linkedin_url(url: str) -> str:
@@ -117,12 +126,116 @@ async def value_error_handler(request: Request, exc: ValueError):
         content=error_response.model_dump()
     )
 
+# Custom LinkedIn Ingestion Exception Handlers
+@app.exception_handler(InvalidLinkedInURLError)
+async def invalid_linkedin_url_handler(request: Request, exc: InvalidLinkedInURLError):
+    """Handle InvalidLinkedInURLError with 400 status code and suggestions"""
+    # Log the error for tracking
+    logger.warning(
+        f"Invalid LinkedIn URL error: {exc.message}",
+        extra={
+            "url": exc.url,
+            "endpoint": str(request.url),
+            "method": request.method,
+            "error_code": exc.error_code
+        }
+    )
+    
+    error_response = ErrorResponse(
+        error_code=exc.error_code,
+        message=exc.message,
+        details={
+            "endpoint": str(request.url),
+            "method": request.method,
+            "invalid_url": exc.url,
+            **exc.details
+        },
+        suggestions=exc.details.get("suggestions", [])
+    )
+    
+    return JSONResponse(
+        status_code=exc.status_code or 400,
+        content=error_response.model_dump()
+    )
+
+@app.exception_handler(ProfileAlreadyExistsError)
+async def profile_already_exists_handler(request: Request, exc: ProfileAlreadyExistsError):
+    """Handle ProfileAlreadyExistsError with 409 status code and suggestions"""
+    # Log the error for tracking
+    logger.info(
+        f"Profile already exists: {exc.message}",
+        extra={
+            "profile_id": exc.profile_id,
+            "endpoint": str(request.url),
+            "method": request.method,
+            "error_code": exc.error_code
+        }
+    )
+    
+    error_response = ErrorResponse(
+        error_code=exc.error_code,
+        message=exc.message,
+        details={
+            "endpoint": str(request.url),
+            "method": request.method,
+            "profile_id": exc.profile_id,
+            **exc.details
+        },
+        suggestions=exc.details.get("suggestions", [])
+    )
+    
+    return JSONResponse(
+        status_code=exc.status_code or 409,
+        content=error_response.model_dump()
+    )
+
+@app.exception_handler(LinkedInIngestionError)
+async def linkedin_ingestion_error_handler(request: Request, exc: LinkedInIngestionError):
+    """Handle base LinkedInIngestionError with dynamic status code and suggestions"""
+    # Log the error for tracking  
+    logger.error(
+        f"LinkedIn ingestion error: {exc.message}",
+        extra={
+            "endpoint": str(request.url),
+            "method": request.method,
+            "error_code": exc.error_code,
+            "status_code": exc.status_code
+        }
+    )
+    
+    error_response = ErrorResponse(
+        error_code=exc.error_code,
+        message=exc.message,
+        details={
+            "endpoint": str(request.url),
+            "method": request.method,
+            **exc.details
+        },
+        suggestions=exc.details.get("suggestions", [])
+    )
+    
+    return JSONResponse(
+        status_code=exc.status_code or 500,
+        content=error_response.model_dump()
+    )
+
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
     """Handle all other exceptions with standardized error response"""
     # Don't catch HTTPExceptions - let FastAPI handle them
     if isinstance(exc, HTTPException):
         raise exc
+    
+    # Log unexpected errors for debugging
+    logger.error(
+        f"Unexpected error: {str(exc)}",
+        extra={
+            "endpoint": str(request.url),
+            "method": request.method,
+            "exception_type": type(exc).__name__,
+            "traceback": traceback.format_exc() if settings.ENVIRONMENT != "production" else None
+        }
+    )
     
     error_response = ErrorResponse(
         error_code="INTERNAL_SERVER_ERROR",
@@ -309,7 +422,7 @@ class ProfileController:
         return self._convert_db_profile_to_response(profile)
     
     async def create_profile(self, request: ProfileCreateRequest) -> ProfileResponse:
-        """Create or update profile with smart duplicate handling"""
+        """Create a new profile - raises ProfileAlreadyExistsError if profile exists"""
         # Normalize LinkedIn URL to consistent format
         linkedin_url = normalize_linkedin_url(str(request.linkedin_url))
         
@@ -317,9 +430,16 @@ class ProfileController:
         existing = await self.db_client.get_profile_by_url(linkedin_url)
         
         if existing:
-            # Smart profile management: Update existing profile with latest data
-            # Delete the existing profile and create fresh one with latest LinkedIn data
-            await self.db_client.delete_profile(existing["id"])
+            # Raise ProfileAlreadyExistsError with actionable suggestions
+            raise ProfileAlreadyExistsError(
+                profile_id=existing["id"],
+                existing_profile_data={
+                    "id": existing["id"],
+                    "name": existing.get("name"),
+                    "url": existing["url"],
+                    "created_at": existing["created_at"]
+                }
+            )
         
         # Create workflow request with user's company inclusion preference
         workflow_request = ProfileIngestionRequest(
@@ -431,6 +551,7 @@ async def get_profile(
     status_code=201,
     responses={
         403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        409: {"model": ErrorResponse, "description": "Profile already exists - Conflict"},
         422: {"model": ValidationErrorResponse, "description": "Validation error"},
         500: {"model": ErrorResponse, "description": "Internal server error"}
     }
