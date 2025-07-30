@@ -132,11 +132,6 @@
     "contact_information": {
       "email": "email",
       "phone": "phone"
-    },
-    "complex_nested_data": {
-      "funding_info": "funding_info",
-      "locations": "locations",
-      "affiliated_companies": "affiliated_companies"
     }
   },
   "essential_fields": {

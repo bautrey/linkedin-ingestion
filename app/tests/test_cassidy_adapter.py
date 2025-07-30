@@ -138,6 +138,52 @@ class TestCassidyAdapterCoreTransformation:
         with pytest.raises(IncompleteDataError):
             adapter.transform(incomplete_profile)
 
+    def test_transform_profile_with_null_values(self, adapter):
+        """Test transforming profile data with null values."""
+        profile_with_nulls = {
+            "profile_id": "null-test",
+            "full_name": None,  # Null value instead of string
+            "linkedin_url": "https://linkedin.com/in/null-test"
+        }
+
+        with pytest.raises(IncompleteDataError):
+            adapter.transform(profile_with_nulls)
+
+    def test_transform_experience_with_empty_array(self, adapter):
+        """Test transforming profile with empty experiences array."""
+        profile_with_empty_experiences = {
+            "profile_id": "empty-test",
+            "full_name": "Empty Array",
+            "linkedin_url": "https://linkedin.com/in/empty-test",
+            "experiences": []  # Empty array should be handled gracefully
+        }
+
+        profile = adapter.transform(profile_with_empty_experiences)
+        assert len(profile.experiences) == 0
+
+    def test_transform_education_with_missing_objects(self, adapter):
+        """Test transforming profile with missing education key."""
+        profile_missing_education = {
+            "profile_id": "missing-education",
+            "full_name": "Missing Education",
+            "linkedin_url": "https://linkedin.com/in/missing-education"
+            # Missing 'educations' key
+        }
+
+        profile = adapter.transform(profile_missing_education)
+        assert profile.educations is not None
+        assert len(profile.educations) == 0
+
+    def test_transform_incomplete_profile_missing_required_field(self, adapter):
+        """Test transforming an incomplete Cassidy profile raises IncompleteDataError."""
+        incomplete_profile = {
+            "full_name": "Incomplete Profile",
+            # omitting essential field 'linkedin_url'
+        }
+
+        with pytest.raises(IncompleteDataError):
+            adapter.transform(incomplete_profile)
+
     def test_experience_field_conversion(self, adapter):
         """Test that experience field conversion handles different data types correctly."""
         # Test "Present" conversion to None
@@ -495,6 +541,205 @@ class TestCassidyAdapterValidation:
             
         error = exc_info.value
         assert "full_name" in error.missing_fields
+
+
+class TestCassidyAdapterEdgeCases:
+    """Test edge cases for the CassidyAdapter to ensure robustness."""
+    
+    @pytest.fixture
+    def adapter(self):
+        """Create a CassidyAdapter instance for testing."""
+        return CassidyAdapter()
+    
+    def test_transform_experience_with_null_arrays(self, adapter):
+        """Test transforming experiences when arrays contain null values."""
+        experiences_with_nulls = [
+            {
+                "title": "Software Engineer",
+                "company": "Tech Corp",
+                "skills": None,  # Null value instead of string
+                "start_year": 2020,
+            },
+            None,  # Null experience entry
+            {
+                "title": "Data Analyst",
+                "company": None,  # Missing company
+                "start_year": "2019"
+            }
+        ]
+        
+        # Filter out None entries before transformation
+        valid_experiences = [exp for exp in experiences_with_nulls if exp is not None]
+        experiences = adapter._transform_experiences(valid_experiences)
+        
+        # Should have 2 valid experiences
+        assert len(experiences) == 2
+        assert experiences[0].title == "Software Engineer"
+        assert experiences[0].skills is None  # Null skill should remain None
+        assert experiences[1].title == "Data Analyst"
+        assert experiences[1].company is None  # None company should remain None
+    
+    def test_transform_education_with_empty_strings(self, adapter):
+        """Test transforming education entries with empty string values."""
+        education_with_empty_strings = {
+            "school": "",  # Empty string
+            "degree": "Bachelor of Science",
+            "field_of_study": "   ",  # Whitespace only
+            "start_year": "",  # Empty year
+            "activities": "Computer Club"
+        }
+        
+        education = adapter._transform_education(education_with_empty_strings)
+        
+        assert education.school == ""  # Empty string preserved
+        assert education.degree == "Bachelor of Science"
+        assert education.field_of_study == "   "  # Whitespace preserved in non-essential fields
+        assert education.start_year is None  # Empty year string converted to None
+        assert education.activities == "Computer Club"
+    
+    def test_transform_company_with_empty_nested_objects(self, adapter):
+        """Test transforming company with empty nested objects."""
+        company_with_empty_nested = {
+            "company_name": "Test Company",
+            "funding_info": {},  # Empty funding info
+            "locations": [],  # Empty locations array
+            "affiliated_companies": None,  # Null affiliated companies
+            "industries": ["Tech", "", "Software"]  # Array with empty string
+        }
+        
+        company = adapter._transform_company(company_with_empty_nested)
+        
+        assert company.company_name == "Test Company"
+        assert company.funding_info is None  # Empty dict should not create FundingInfo object
+        assert company.locations == []  # Empty array should remain empty
+        assert company.affiliated_companies == []  # Should be empty list, not None
+        assert company.industries == ["Tech", "", "Software"]  # Preserve array with empty strings
+    
+    def test_transform_profile_with_mixed_data_types(self, adapter):
+        """Test transforming profile with unexpected data types."""
+        profile_mixed_types = {
+            "profile_id": "mixed-types-test",
+            "full_name": "Mixed Types User",
+            "linkedin_url": "https://linkedin.com/in/mixed-types",
+            "experiences": "not-an-array",  # String instead of array
+            "educations": None  # Null instead of array
+        }
+        
+        # This should handle non-array values gracefully by returning empty arrays
+        profile = adapter.transform(profile_mixed_types)
+        
+        # Non-array experiences should result in empty list
+        assert len(profile.experiences) == 0
+        # None educations should result in empty list
+        assert len(profile.educations) == 0
+    
+    def test_transform_experience_with_invalid_years(self, adapter):
+        """Test experience transformation with various invalid year formats."""
+        test_cases = [
+            ("invalid_year", None),
+            ("", None),
+            ("2025.5", None),  # Float as string
+            ("twenty-twenty", None),  # Word format
+            ("1980", 1980),  # Valid year
+            (2020, 2020),  # Already integer
+        ]
+        
+        for input_year, expected in test_cases:
+            result = adapter._convert_experience_field("start_year", input_year)
+            assert result == expected, f"Failed for input: {input_year}"
+    
+    def test_transform_with_very_large_arrays(self, adapter):
+        """Test adapter performance with large arrays."""
+        # Create a profile with many experiences and educations
+        large_profile = {
+            "profile_id": "large-profile-test",
+            "full_name": "Large Profile User",
+            "linkedin_url": "https://linkedin.com/in/large-profile",
+            "experiences": [
+                {
+                    "title": f"Position {i}",
+                    "company": f"Company {i}",
+                    "start_year": 2000 + i
+                } for i in range(100)  # 100 experiences
+            ],
+            "educations": [
+                {
+                    "school": f"School {i}",
+                    "degree": f"Degree {i}"
+                } for i in range(50)  # 50 educations
+            ]
+        }
+        
+        profile = adapter.transform(large_profile)
+        
+        assert len(profile.experiences) == 100
+        assert len(profile.educations) == 50
+        assert profile.experiences[0].title == "Position 0"
+        assert profile.experiences[99].title == "Position 99"
+        assert profile.educations[0].school == "School 0"
+        assert profile.educations[49].school == "School 49"
+    
+    def test_transform_with_unicode_and_special_characters(self, adapter):
+        """Test adapter with unicode and special characters."""
+        unicode_profile = {
+            "profile_id": "unicode-test-éñ",
+            "full_name": "José María González 中文名字",
+            "linkedin_url": "https://linkedin.com/in/josé-maría-gonzález",
+            "experiences": [
+                {
+                    "title": "Développeur Senior 🚀",
+                    "company": "Société Générale & Co.",
+                    "description": "Worked on AI/ML projects with €1M+ budget",
+                    "location": "Paris, Île-de-France, France 🇫🇷"
+                }
+            ]
+        }
+        
+        profile = adapter.transform(unicode_profile)
+        
+        assert profile.profile_id == "unicode-test-éñ"
+        assert profile.full_name == "José María González 中文名字"
+        assert profile.experiences[0].title == "Développeur Senior 🚀"
+        assert profile.experiences[0].company == "Société Générale & Co."
+        assert "€1M+" in profile.experiences[0].description
+        assert "🇫🇷" in profile.experiences[0].location
+    
+    def test_transform_with_deeply_nested_null_values(self, adapter):
+        """Test transformation with deeply nested null values in company data."""
+        company_with_nested_nulls = {
+            "company_name": "Nested Nulls Corp",
+            "funding_info": {
+                "crunchbase_url": None,
+                "last_funding_round_type": "Series A",
+                "last_funding_round_amount": None,
+                "last_funding_round_year": "",
+                "last_funding_round_investor_count": "invalid"
+            },
+            "locations": [
+                {
+                    "is_headquarter": None,
+                    "city": "San Francisco",
+                    "country": "",
+                    "zipcode": None
+                },
+                None,  # Null location entry
+                {
+                    "city": "New York",
+                    "region": "NY"
+                }
+            ]
+        }
+        
+        company = adapter._transform_company(company_with_nested_nulls)
+        
+        assert company.company_name == "Nested Nulls Corp"
+        assert company.funding_info is not None
+        assert company.funding_info.crunchbase_url is None
+        assert company.funding_info.last_funding_round_type == "Series A"
+        # Should handle the valid locations and skip None entries
+        assert len(company.locations) == 2  # Only non-None locations
+        assert company.locations[0].city == "San Francisco"
+        assert company.locations[1].city == "New York"
 
 
 if __name__ == "__main__":

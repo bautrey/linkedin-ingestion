@@ -132,11 +132,28 @@ class CassidyAdapter:
         Returns:
             List of CanonicalExperienceEntry instances
         """
+        # Handle edge case where experiences_data is not a list
+        if not isinstance(experiences_data, list):
+            # Log warning and return empty list
+            return []
+            
         transformed_experiences = []
         
         for experience in experiences_data:
-            transformed_experience = self._transform_experience(experience)
-            transformed_experiences.append(transformed_experience)
+            # Skip None entries in the array
+            if experience is None:
+                continue
+                
+            # Ensure experience is a dictionary
+            if not isinstance(experience, dict):
+                continue
+                
+            try:
+                transformed_experience = self._transform_experience(experience)
+                transformed_experiences.append(transformed_experience)
+            except Exception:
+                # Skip invalid experience entries but continue processing
+                continue
         
         return transformed_experiences
     
@@ -200,11 +217,27 @@ class CassidyAdapter:
         Returns:
             List of CanonicalEducationEntry instances
         """
+        # Handle edge case where educations_data is not a list or is None
+        if not isinstance(educations_data, list):
+            return []
+            
         transformed_educations = []
         
         for education in educations_data:
-            transformed_education = self._transform_education(education)
-            transformed_educations.append(transformed_education)
+            # Skip None entries in the array
+            if education is None:
+                continue
+                
+            # Ensure education is a dictionary
+            if not isinstance(education, dict):
+                continue
+                
+            try:
+                transformed_education = self._transform_education(education)
+                transformed_educations.append(transformed_education)
+            except Exception:
+                # Skip invalid education entries but continue processing
+                continue
         
         return transformed_educations
     
@@ -249,6 +282,41 @@ class CassidyAdapter:
         
         return value
     
+    def _clean_funding_data(self, funding_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Clean and validate funding data to ensure it can be used with CanonicalFundingInfo.
+        
+        Args:
+            funding_data: Raw funding data dictionary
+            
+        Returns:
+            Cleaned funding data dictionary with valid types
+        """
+        cleaned = {}
+        
+        # Copy all string fields as-is
+        string_fields = ['crunchbase_url', 'last_funding_round_type', 'last_funding_round_amount', 'last_funding_round_currency']
+        for field in string_fields:
+            value = funding_data.get(field)
+            if value is not None:
+                cleaned[field] = value
+        
+        # Handle integer fields with validation
+        int_fields = ['last_funding_round_year', 'last_funding_round_month', 'last_funding_round_investor_count']
+        for field in int_fields:
+            value = funding_data.get(field)
+            if value is not None:
+                if isinstance(value, int):
+                    cleaned[field] = value
+                elif isinstance(value, str) and value.strip():
+                    try:
+                        cleaned[field] = int(value)
+                    except ValueError:
+                        # Skip invalid integer values
+                        pass
+        
+        return cleaned
+    
     def _transform_company(self, company_data: Dict[str, Any]) -> CanonicalCompany:
         """
         Transform a company profile from Cassidy to canonical format.
@@ -284,19 +352,49 @@ class CassidyAdapter:
                 if value is not None:
                     transformed[canonical_field] = value
         
-        # Transform nested company data
-        if 'funding_info' in company_data and company_data['funding_info']:
-            transformed['funding_info'] = CanonicalFundingInfo(**company_data['funding_info'])
+        # Transform nested company data with robust handling
         
+        # Handle funding_info - skip if empty dict or has invalid data
+        if 'funding_info' in company_data:
+            funding_data = company_data['funding_info']
+            if isinstance(funding_data, dict) and funding_data:  # Not empty dict
+                try:
+                    # Clean and validate funding data before creating object
+                    cleaned_funding = self._clean_funding_data(funding_data)
+                    # Only create FundingInfo if there's actual data after cleaning
+                    if cleaned_funding and any(v is not None for v in cleaned_funding.values()):
+                        transformed['funding_info'] = CanonicalFundingInfo(**cleaned_funding)
+                except Exception:
+                    # Skip invalid funding info
+                    pass
+        
+        # Handle locations - filter out None entries
         if 'locations' in company_data and company_data['locations']:
-            transformed['locations'] = [
-                CanonicalCompanyLocation(**loc) for loc in company_data['locations']
-            ]
+            locations_data = company_data['locations']
+            if isinstance(locations_data, list):
+                valid_locations = []
+                for loc in locations_data:
+                    if loc is not None and isinstance(loc, dict):
+                        try:
+                            valid_locations.append(CanonicalCompanyLocation(**loc))
+                        except Exception:
+                            # Skip invalid location entries
+                            continue
+                transformed['locations'] = valid_locations
         
+        # Handle affiliated_companies - filter out None entries
         if 'affiliated_companies' in company_data and company_data['affiliated_companies']:
-            transformed['affiliated_companies'] = [
-                CanonicalAffiliatedCompany(**company) for company in company_data['affiliated_companies']
-            ]
+            affiliated_data = company_data['affiliated_companies']
+            if isinstance(affiliated_data, list):
+                valid_companies = []
+                for company in affiliated_data:
+                    if company is not None and isinstance(company, dict):
+                        try:
+                            valid_companies.append(CanonicalAffiliatedCompany(**company))
+                        except Exception:
+                            # Skip invalid company entries
+                            continue
+                transformed['affiliated_companies'] = valid_companies
         
         # Store raw data
         transformed['raw_data'] = company_data
