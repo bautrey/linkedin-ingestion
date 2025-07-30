@@ -32,12 +32,14 @@ class TestSupabaseClientDelete:
         mock_result = MagicMock()
         mock_result.data = [{"id": profile_id}]  # Indicates successful deletion
         
-        # Set up nested async mocks
-        mock_table = AsyncMock()
-        mock_delete_query = AsyncMock()
-        mock_delete_query.eq.return_value.execute = AsyncMock(return_value=mock_result)
-        mock_table.delete = AsyncMock(return_value=mock_delete_query)
-        mock_supabase_client.client.table = AsyncMock(return_value=mock_table)
+        # Set up nested mocks - only final execute should be async
+        mock_table = MagicMock()
+        mock_delete_query = MagicMock()
+        mock_eq_query = MagicMock()
+        mock_eq_query.execute = AsyncMock(return_value=mock_result)
+        mock_delete_query.eq = MagicMock(return_value=mock_eq_query)
+        mock_table.delete = MagicMock(return_value=mock_delete_query)
+        mock_supabase_client.client.table = MagicMock(return_value=mock_table)
 
         # Act
         result = await mock_supabase_client.delete_profile(profile_id)
@@ -56,12 +58,14 @@ class TestSupabaseClientDelete:
         mock_result = MagicMock()
         mock_result.data = []  # Indicates no rows deleted
         
-        # Set up nested async mocks
-        mock_table = AsyncMock()
-        mock_delete_query = AsyncMock()
-        mock_delete_query.eq.return_value.execute = AsyncMock(return_value=mock_result)
-        mock_table.delete = AsyncMock(return_value=mock_delete_query)
-        mock_supabase_client.client.table = AsyncMock(return_value=mock_table)
+        # Set up nested mocks - only final execute should be async
+        mock_table = MagicMock()
+        mock_delete_query = MagicMock()
+        mock_eq_query = MagicMock()
+        mock_eq_query.execute = AsyncMock(return_value=mock_result)
+        mock_delete_query.eq = MagicMock(return_value=mock_eq_query)
+        mock_table.delete = MagicMock(return_value=mock_delete_query)
+        mock_supabase_client.client.table = MagicMock(return_value=mock_table)
 
         # Act
         result = await mock_supabase_client.delete_profile(profile_id)
@@ -76,12 +80,14 @@ class TestSupabaseClientDelete:
         # Arrange
         profile_id = "test-profile-id"
         
-        # Set up nested async mocks with error
-        mock_table = AsyncMock()
-        mock_delete_query = AsyncMock()
-        mock_delete_query.eq.return_value.execute = AsyncMock(side_effect=Exception("Database error"))
-        mock_table.delete = AsyncMock(return_value=mock_delete_query)
-        mock_supabase_client.client.table = AsyncMock(return_value=mock_table)
+        # Set up nested mocks with error - only final execute should be async
+        mock_table = MagicMock()
+        mock_delete_query = MagicMock()
+        mock_eq_query = MagicMock()
+        mock_eq_query.execute = AsyncMock(side_effect=Exception("Database error"))
+        mock_delete_query.eq = MagicMock(return_value=mock_eq_query)
+        mock_table.delete = MagicMock(return_value=mock_delete_query)
+        mock_supabase_client.client.table = MagicMock(return_value=mock_table)
 
         # Act & Assert
         with pytest.raises(Exception, match="Database error"):
@@ -137,7 +143,7 @@ class TestDeleteEndpoint:
         # Assert
         assert response.status_code == 404
         response_data = response.json()
-        assert response_data["detail"]["error"] == "Not Found"
+        assert response_data["detail"]["error_code"] == "PROFILE_NOT_FOUND"
         assert "nonexistent-id" in response_data["detail"]["message"]
 
     def test_delete_profile_unauthorized(self, client):
@@ -148,7 +154,7 @@ class TestDeleteEndpoint:
         # Assert
         assert response.status_code == 403
         response_data = response.json()
-        assert response_data["detail"]["error"] == "Unauthorized"
+        assert response_data["detail"]["error_code"] == "UNAUTHORIZED"
 
     def test_delete_profile_invalid_api_key(self, client):
         """Test DELETE endpoint with invalid API key"""
@@ -161,7 +167,7 @@ class TestDeleteEndpoint:
         # Assert
         assert response.status_code == 403
         response_data = response.json()
-        assert response_data["detail"]["error"] == "Unauthorized"
+        assert response_data["detail"]["error_code"] == "UNAUTHORIZED"
 
     def test_delete_profile_database_error(self, client, monkeypatch):
         """Test DELETE endpoint when database error occurs"""

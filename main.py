@@ -437,7 +437,7 @@ class ProfileController:
                     "id": existing["id"],
                     "name": existing.get("name"),
                     "url": existing["url"],
-                    "created_at": existing["created_at"]
+                    "created_at": existing.get("created_at")
                 }
             )
         

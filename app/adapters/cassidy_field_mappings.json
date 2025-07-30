@@ -1,0 +1,152 @@
+{
+  "profile_mapping": {
+    "core_identity": {
+      "profile_id": "profile_id",
+      "public_id": "public_id", 
+      "linkedin_url": "linkedin_url",
+      "urn": "urn"
+    },
+    "personal_information": {
+      "first_name": "first_name",
+      "last_name": "last_name",
+      "full_name": "full_name",
+      "headline": "headline",
+      "about": "about",
+      "profile_image_url": "profile_image_url"
+    },
+    "location": {
+      "city": "city",
+      "state": "state", 
+      "country": "country",
+      "location": "location"
+    },
+    "contact_information": {
+      "email": "email",
+      "phone": "phone"
+    },
+    "professional_details": {
+      "experiences": "experiences",
+      "educations": "educations"
+    },
+    "skills_and_languages": {
+      "languages": "languages"
+    },
+    "social_metrics": {
+      "follower_count": "follower_count",
+      "connection_count": "connection_count"
+    },
+    "current_job_details": {
+      "company": "company",
+      "job_title": "job_title",
+      "company_description": "company_description",
+      "company_domain": "company_domain",
+      "company_linkedin_url": "company_linkedin_url",
+      "company_logo_url": "company_logo_url",
+      "company_website": "company_website",
+      "company_employee_count": "company_employee_count",
+      "company_employee_range": "company_employee_range",
+      "company_industry": "company_industry",
+      "company_year_founded": "company_year_founded",
+      "current_company_join_month": "current_company_join_month",
+      "current_company_join_year": "current_company_join_year",
+      "current_job_duration": "current_job_duration"
+    },
+    "hq_location": {
+      "hq_city": "hq_city",
+      "hq_country": "hq_country",
+      "hq_region": "hq_region"
+    },
+    "profile_flags": {
+      "is_premium": "is_premium",
+      "is_creator": "is_creator", 
+      "is_influencer": "is_influencer",
+      "is_verified": "is_verified"
+    },
+    "legacy_fields": {
+      "school": "school",
+      "start_month": "start_month",
+      "end_month": "end_month"
+    }
+  },
+  "experience_mapping": {
+    "title": "title",
+    "company": "company",
+    "company_linkedin_url": "company_linkedin_url",
+    "company_logo_url": "company_logo_url",
+    "location": "location",
+    "start_year": "start_year",
+    "start_month": "start_month",
+    "end_year": "end_year", 
+    "end_month": "end_month",
+    "date_range": "date_range",
+    "duration": "duration",
+    "description": "description",
+    "is_current": "is_current", 
+    "job_type": "job_type",
+    "skills": "skills",
+    "company_id": "company_id"
+  },
+  "education_mapping": {
+    "school": "school",
+    "degree": "degree",
+    "field_of_study": "field_of_study",
+    "start_year": "start_year",
+    "end_year": "end_year",
+    "date_range": "date_range",
+    "activities": "activities",
+    "school_linkedin_url": "school_linkedin_url",
+    "school_id": "school_id"
+  },
+  "company_mapping": {
+    "core_identity": {
+      "company_id": "company_id",
+      "company_name": "company_name",
+      "linkedin_url": "linkedin_url"
+    },
+    "company_details": {
+      "tagline": "tagline",
+      "description": "description",
+      "website": "website",
+      "domain": "domain",
+      "logo_url": "logo_url",
+      "year_founded": "year_founded"
+    },
+    "classification": {
+      "industries": "industries",
+      "specialties": "specialties"
+    },
+    "size_and_metrics": {
+      "employee_count": "employee_count",
+      "employee_range": "employee_range",
+      "follower_count": "follower_count"
+    },
+    "hq_location": {
+      "hq_address_line1": "hq_address_line1",
+      "hq_address_line2": "hq_address_line2",
+      "hq_city": "hq_city",
+      "hq_region": "hq_region",
+      "hq_country": "hq_country",
+      "hq_postalcode": "hq_postalcode",
+      "hq_full_address": "hq_full_address"
+    },
+    "contact_information": {
+      "email": "email",
+      "phone": "phone"
+    },
+    "complex_nested_data": {
+      "funding_info": "funding_info",
+      "locations": "locations",
+      "affiliated_companies": "affiliated_companies"
+    }
+  },
+  "essential_fields": {
+    "profile": [
+      "profile_id",
+      "full_name", 
+      "linkedin_url"
+    ],
+    "company": [
+      "company_name"
+    ]
+  }
+}

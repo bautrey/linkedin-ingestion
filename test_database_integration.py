@@ -190,7 +190,7 @@ class MockSupabaseClient:
         self._tables = {}
         self._rpc_responses = {}
     
-    async def table(self, table_name: str):
+    def table(self, table_name: str):
         if table_name not in self._tables:
             self._tables[table_name] = MockSupabaseTable(table_name)
         return self._tables[table_name]
