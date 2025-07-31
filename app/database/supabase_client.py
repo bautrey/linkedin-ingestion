@@ -15,6 +15,7 @@ from app.core.config import settings
 from app.core.logging import LoggerMixin
 from app.cassidy.models import LinkedInProfile, CompanyProfile
 from app.models.canonical.profile import CanonicalProfile
+from pydantic import HttpUrl
 
 
 class SupabaseClient(LoggerMixin):
@@ -50,6 +51,23 @@ class SupabaseClient(LoggerMixin):
             )
             self._client_initialized = True
     
+    def _serialize_model(self, model) -> Dict[str, Any]:
+        """Serialize a Pydantic model, converting HttpUrl objects to strings"""
+        data = model.model_dump()
+        # Convert HttpUrl objects to strings recursively
+        return self._convert_httpurl_to_str(data)
+    
+    def _convert_httpurl_to_str(self, obj) -> Any:
+        """Recursively convert HttpUrl objects to strings in nested data structures"""
+        if isinstance(obj, HttpUrl):
+            return str(obj)
+        elif isinstance(obj, dict):
+            return {k: self._convert_httpurl_to_str(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [self._convert_httpurl_to_str(item) for item in obj]
+        else:
+            return obj
+    
     async def store_profile(
         self, 
         profile: CanonicalProfile, 
@@ -83,8 +101,8 @@ class SupabaseClient(LoggerMixin):
             "country_code": profile.country,  # Using country instead of country_code
             "followers": profile.follower_count,
             "connections": profile.connection_count,
-            "experience": [exp.model_dump() for exp in profile.experiences],
-            "education": [edu.model_dump() for edu in profile.educations],
+            "experience": [self._serialize_model(exp) for exp in profile.experiences],
+            "education": [self._serialize_model(edu) for edu in profile.educations],
             "certifications": [],  # CanonicalProfile doesn't have certifications field
             "current_company": {"name": profile.company} if profile.company else None,
             "timestamp": profile.timestamp.isoformat() if profile.timestamp else datetime.now(timezone.utc).isoformat(),
