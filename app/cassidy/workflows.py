@@ -207,10 +207,10 @@ class LinkedInWorkflow(LoggerMixin):
             unique_companies=len(company_urls)
         )
         
-        # Use batch fetch with delay (from blueprint: 10 seconds between requests)
+        # Use batch fetch with delay (reduced from 10 to 5 seconds between requests)
         companies = await self.cassidy_client.batch_fetch_companies(
             company_urls=company_urls,
-            delay_seconds=10.0
+            delay_seconds=5.0
         )
         
         successful_count = sum(1 for c in companies if c is not None)

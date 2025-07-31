@@ -237,7 +237,7 @@ async def _process_profile_background(
         logger.info(
             "Background profile processing completed",
             request_id=request_id,
-            profile_id=enriched_profile.profile.id,
+            profile_id=enriched_profile.profile.profile_id,
             companies_fetched=enriched_profile.company_count
         )
         

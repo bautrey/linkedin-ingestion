@@ -14,6 +14,7 @@ import httpx
 from app.core.config import settings
 from app.core.logging import LoggerMixin
 from app.cassidy.models import LinkedInProfile, CompanyProfile
+from app.models.canonical.profile import CanonicalProfile
 
 
 class SupabaseClient(LoggerMixin):
@@ -51,21 +52,21 @@ class SupabaseClient(LoggerMixin):
     
     async def store_profile(
         self, 
-        profile: LinkedInProfile, 
+        profile: CanonicalProfile, 
         embedding: Optional[List[float]] = None
     ) -> str:
         """
         Store LinkedIn profile in Supabase with optional vector embedding
         
         Args:
-            profile: LinkedInProfile instance to store
+            profile: CanonicalProfile instance to store
             embedding: Optional vector embedding for similarity search
             
         Returns:
             str: Unique record ID
         """
         await self._ensure_client()
-        self.logger.info("Storing LinkedIn profile", profile_id=profile.id, profile_name=profile.name)
+        self.logger.info("Storing LinkedIn profile", profile_id=profile.profile_id, profile_name=profile.full_name)
         
         # Generate a unique record ID
         record_id = str(uuid.uuid4())
@@ -73,19 +74,19 @@ class SupabaseClient(LoggerMixin):
         # Prepare profile data for storage
         profile_data = {
             "id": record_id,
-            "linkedin_id": profile.id,
-            "name": profile.name,
-            "url": str(profile.url),
-            "position": profile.position,
+            "linkedin_id": profile.profile_id,
+            "name": profile.full_name,
+            "url": str(profile.linkedin_url) if profile.linkedin_url else None,
+            "position": profile.job_title,
             "about": profile.about,
             "city": profile.city,
-            "country_code": profile.country_code,
-            "followers": profile.followers,
-            "connections": profile.connections,
-            "experience": [exp.model_dump() for exp in profile.experience],
-            "education": [edu.model_dump() for edu in profile.education],
-            "certifications": [cert.model_dump() for cert in profile.certifications],
-            "current_company": profile.current_company.model_dump() if profile.current_company else None,
+            "country_code": profile.country,  # Using country instead of country_code
+            "followers": profile.follower_count,
+            "connections": profile.connection_count,
+            "experience": [exp.model_dump() for exp in profile.experiences],
+            "education": [edu.model_dump() for edu in profile.educations],
+            "certifications": [],  # CanonicalProfile doesn't have certifications field
+            "current_company": {"name": profile.company} if profile.company else None,
             "timestamp": profile.timestamp.isoformat() if profile.timestamp else datetime.now(timezone.utc).isoformat(),
             "created_at": datetime.now(timezone.utc).isoformat(),
             "embedding": embedding
@@ -99,7 +100,7 @@ class SupabaseClient(LoggerMixin):
             self.logger.info(
                 "Profile stored successfully",
                 record_id=record_id,
-                linkedin_id=profile.id,
+                linkedin_id=profile.profile_id,
                 has_embedding=embedding is not None
             )
             
@@ -108,7 +109,7 @@ class SupabaseClient(LoggerMixin):
         except Exception as e:
             self.logger.error(
                 "Failed to store profile",
-                profile_id=profile.id,
+                profile_id=profile.profile_id,
                 error=str(e),
                 error_type=type(e).__name__
             )

@@ -104,8 +104,8 @@ def test_data_extraction_methods():
     # Test profile extraction
     profile_data = client._extract_profile_data(MOCK_CASSIDY_PROFILE_RESPONSE)
     assert isinstance(profile_data, dict)
-    assert "name" in profile_data
-    assert "id" in profile_data
+    assert "full_name" in profile_data
+    assert "profile_id" in profile_data
     
     # Test company extraction  
     company_data = client._extract_company_data(MOCK_CASSIDY_COMPANY_RESPONSE)
