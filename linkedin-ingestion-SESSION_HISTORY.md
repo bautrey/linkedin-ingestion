@@ -294,3 +294,9 @@ Next: Fix remaining name/full_name field inconsistencies and validate full test 
 
 ---
 
+## Session 2025-07-31 07:24:12
+
+Session File: ./sessions/linkedin-ingestion-session-2025-07-31-072334.md
+
+---
+
