@@ -14,6 +14,7 @@
 **Branch**: `feature/v1.8-fortium-fit-scoring-api`
 
 ### Subtask 1.1: Session Recovery
+- [ ] Follow official recovery process: `/Users/burke/projects/burke-agent-os-standards/instructions/session-recovery.md`
 - [ ] Read lessons learned from `learning/lessons-learned.md`
 - [ ] Review current branch status and ensure clean working directory
 - [ ] Verify Railway deployment status and connectivity
@@ -44,9 +45,10 @@
 - [ ] Verify seed data loaded correctly
 
 ### Subtask 1.6: Session Hibernation
+- [ ] Follow official hibernation process: `/Users/burke/projects/burke-agent-os-standards/instructions/session-hibernation.md`
 - [ ] Write lessons learned to `learning/lessons-learned.md`
 - [ ] Document any issues encountered and solutions
-- [ ] Create session state summary for next recovery
+- [ ] Create timestamped session file in `./sessions/` directory
 - [ ] **HIBERNATE SESSION** - Maximum 30 minutes reached
 
 ---
@@ -90,6 +92,7 @@
 - [ ] Verify no performance degradation
 
 ### Subtask 2.6: Session Hibernation
+- [ ] Follow official hibernation process: `/Users/burke/projects/burke-agent-os-standards/instructions/session-hibernation.md`
 - [ ] Write lessons learned to `learning/lessons-learned.md`
 - [ ] Document scoring engine architecture decisions
 - [ ] **HIBERNATE SESSION** - Maximum 30 minutes reached
@@ -134,6 +137,7 @@
 - [ ] Monitor response times and error rates
 
 ### Subtask 3.6: Session Hibernation
+- [ ] Follow official hibernation process: `/Users/burke/projects/burke-agent-os-standards/instructions/session-hibernation.md`
 - [ ] Write lessons learned to `learning/lessons-learned.md`
 - [ ] Document API implementation patterns used
 - [ ] **HIBERNATE SESSION** - Maximum 30 minutes reached
@@ -177,6 +181,7 @@
 - [ ] Verify performance with multiple concurrent requests
 
 ### Subtask 4.6: Session Hibernation
+- [ ] Follow official hibernation process: `/Users/burke/projects/burke-agent-os-standards/instructions/session-hibernation.md`
 - [ ] Write lessons learned to `learning/lessons-learned.md`
 - [ ] Document role-specific algorithm differences
 - [ ] **HIBERNATE SESSION** - Maximum 30 minutes reached
@@ -221,6 +226,7 @@
 - [ ] Verify response format with all new fields
 
 ### Subtask 5.6: Session Hibernation
+- [ ] Follow official hibernation process: `/Users/burke/projects/burke-agent-os-standards/instructions/session-hibernation.md`
 - [ ] Write lessons learned to `learning/lessons-learned.md`
 - [ ] Document recommendation and summary algorithms
 - [ ] **HIBERNATE SESSION** - Maximum 30 minutes reached
@@ -266,6 +272,7 @@
 - [ ] Verify sub-200ms cached response times
 
 ### Subtask 6.6: Session Hibernation
+- [ ] Follow official hibernation process: `/Users/burke/projects/burke-agent-os-standards/instructions/session-hibernation.md`
 - [ ] Write lessons learned to `learning/lessons-learned.md`
 - [ ] Document performance optimization strategies
 - [ ] **HIBERNATE SESSION** - Maximum 30 minutes reached

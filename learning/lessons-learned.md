@@ -36,7 +36,9 @@
 - **Database**: Supabase with CanonicalProfile models implemented
 - **API Security**: API key authentication working correctly
 
-### Lessons from Previous Sessions (Referenced)
+### Lessons from Previous Sessions (Integration with relearning.md)
+
+**See also**: `/learning/relearning.md` for AgentOS spec creation process requirements and project-specific technical learnings.
 
 #### Critical Bug Fix Patterns
 - **Field Mapping Issues**: Always verify field names match between models (.id vs .profile_id, .name vs .full_name)
