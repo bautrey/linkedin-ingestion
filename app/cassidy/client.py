@@ -559,6 +559,7 @@ class CassidyClient(LoggerMixin):
                         'title': exp.get('title'),
                         'company': exp.get('company'),
                         'company_id': exp.get('company_id'),
+                        'company_linkedin_url': exp.get('company_linkedin_url'),
                         'location': exp.get('location'),
                         'description': exp.get('description'),
                         'start_date': exp.get('start_date'),

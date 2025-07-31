@@ -7,6 +7,7 @@ and core transformation logic.
 """
 
 import pytest
+import json
 from typing import Dict, Any, List
 from unittest.mock import Mock, patch
 
@@ -16,6 +17,10 @@ from app.models.canonical import (
     CanonicalProfile,
     CanonicalExperienceEntry,
     CanonicalEducationEntry
+)
+from app.tests.fixtures.mock_responses import (
+    MOCK_CASSIDY_PROFILE_RESPONSE,
+    MOCK_CASSIDY_COMPANY_RESPONSE
 )
 
 
@@ -83,6 +88,49 @@ class TestCassidyAdapterInfrastructure:
         for method_name in required_methods:
             assert hasattr(adapter, method_name)
             assert callable(getattr(adapter, method_name))
+
+
+class TestCassidyAdapterRealAPIResponses:
+    """Test the adapter with real Cassidy API response fixtures."""
+    
+    @pytest.fixture
+    def adapter(self):
+        """Create a CassidyAdapter instance for testing."""
+        return CassidyAdapter()
+
+    def test_real_cassidy_profile_response(self, adapter):
+        """Test transforming a real Cassidy API profile response."""
+        # Convert the mock response's output from JSON string
+        from app.tests.fixtures.mock_responses import MOCK_CASSIDY_PROFILE_RESPONSE
+        profile_data = json.loads(MOCK_CASSIDY_PROFILE_RESPONSE['workflowRun']['actionResults'][0]['output']['value'])
+        
+        transformed_profile = adapter.transform(profile_data)
+
+        assert transformed_profile.full_name == "Ronald Sorozan (MBA, CISM, PMP)"
+        assert transformed_profile.current_company["name"] == "JAM+"
+        assert len(transformed_profile.experiences) == 1
+        assert transformed_profile.experiences[0].title == "Global Chief Information Officer and Chief Operating Officer (TZP Private Equity)"
+        assert transformed_profile.experiences[0].company == "JAM+"
+        assert transformed_profile.experiences[0].location == "Northvale, New Jersey and Houston, Texas"
+        assert transformed_profile.followers == 1503
+        assert transformed_profile.connections == 500
+
+    def test_real_cassidy_company_response(self, adapter):
+        """Test transforming a real Cassidy API company response."""
+        # Convert the mock response's output from JSON string  
+        from app.tests.fixtures.mock_responses import MOCK_CASSIDY_COMPANY_RESPONSE
+        company_data = json.loads(MOCK_CASSIDY_COMPANY_RESPONSE['workflowRun']['actionResults'][0]['output']['value'])
+        
+        transformed_company = adapter._transform_company(company_data)
+
+        assert transformed_company.company_name == "JAM+"
+        assert transformed_company.year_founded == 2018
+        assert transformed_company.employee_count == 250
+        assert transformed_company.employee_range == "201-500"
+        assert len(transformed_company.locations) == 1
+        assert transformed_company.locations[0].city == "Northvale"
+        assert transformed_company.locations[0].region == "New Jersey"
+        assert transformed_company.locations[0].is_headquarter is True
 
 
 class TestCassidyAdapterCoreTransformation:
@@ -543,7 +591,29 @@ class TestCassidyAdapterValidation:
         assert "full_name" in error.missing_fields
 
 
-class TestCassidyAdapterEdgeCases:
+    def test_real_cassidy_profile_response(self, adapter):
+        """Test transforming a real Cassidy API profile response."""
+        # Convert the mock response's output from JSON string
+        profile_data = json.loads(MOCK_CASSIDY_PROFILE_RESPONSE['workflowRun']['actionResults'][0]['output']['value'])
+        
+        transformed_profile = adapter.transform(profile_data)
+
+        assert transformed_profile.full_name == "Ronald Sorozan (MBA, CISM, PMP)"
+        assert transformed_profile.current_company.name == "JAM+"
+        assert len(transformed_profile.experiences) == 1
+        assert transformed_profile.experiences[0].title == "Global Chief Information Officer and Chief Operating Officer (TZP Private Equity)"
+
+    def test_real_cassidy_company_response(self, adapter):
+        """Test transforming a real Cassidy API company response."""
+        # Convert the mock response's output from JSON string
+        company_data = json.loads(MOCK_CASSIDY_COMPANY_RESPONSE['workflowRun']['actionResults'][0]['output']['value'])
+        
+        transformed_company = adapter._transform_company(company_data)
+
+        assert transformed_company.company_name == "JAM+"
+        assert transformed_company.year_founded == 2018
+        assert len(transformed_company.locations) == 1
+        assert transformed_company.locations[0].city == "Northvale"
     """Test edge cases for the CassidyAdapter to ensure robustness."""
     
     @pytest.fixture

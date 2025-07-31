@@ -120,6 +120,14 @@ class ExperienceEntry(BaseModel):
             return int(v)
         return v
     
+    @field_validator('company', 'company_id', 'company_linkedin_url', 'company_logo_url',
+                     'date_range', 'description', 'duration', 'end_month', 'job_type',
+                     'location', 'skills', 'title', mode='before')
+    @classmethod
+    def handle_flexible_strings(cls, v):
+        """Handle string fields that might be null, empty, or other types"""
+        return safe_str_conversion(v)
+    
     # Backward compatibility properties
     @property
     def job_title(self) -> Optional[str]:
