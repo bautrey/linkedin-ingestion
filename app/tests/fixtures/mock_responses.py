@@ -18,12 +18,13 @@ MOCK_CASSIDY_PROFILE_RESPONSE: Dict[str, Any] = {
                 "status": "success",
                 "output": {
                     "value": """{
-                        "id": "ronald-sorozan-mba-cism-pmp-8325652",
-                        "name": "Ronald Sorozan (MBA, CISM, PMP)",
+                        "profile_id": "ronald-sorozan-mba-cism-pmp-8325652",
+                        "full_name": "Ronald Sorozan (MBA, CISM, PMP)",
                         "city": "Greater Houston",
                         "country_code": "US",
                         "position": "Chief Information Officer | Chief Security Officer | Chief Technology Officer",
                         "about": "Chief Information Officer Chief Technology Officer Chief Security Officer CISM and PMP Certified",
+                        "company": "JAM+",
                         "current_company": {
                             "name": "JAM+",
                             "company_id": "jambnc",
@@ -39,7 +40,7 @@ MOCK_CASSIDY_PROFILE_RESPONSE: Dict[str, Any] = {
                                 "end_date": "Present",
                                 "company": "JAM+",
                                 "company_id": "jambnc",
-                                "url": "https://www.linkedin.com/company/jambnc",
+                                "company_linkedin_url": "https://www.linkedin.com/company/jambnc",
                                 "company_logo_url": "https://media.licdn.com/dms/image/v2/D4E0BAQGkFJ5c-Ht1Tg/company-logo_100_100/company-logo_100_100/0/1716332314357/jambnc_logo"
                             }
                         ],
@@ -62,7 +63,7 @@ MOCK_CASSIDY_PROFILE_RESPONSE: Dict[str, Any] = {
                                 "title": "Project Management Professional (PMP)"
                             }
                         ],
-                        "url": "https://www.linkedin.com/in/ronald-sorozan-mba-cism-pmp-8325652/",
+                        "linkedin_url": "https://www.linkedin.com/in/ronald-sorozan-mba-cism-pmp-8325652/",
                         "followers": 1503,
                         "connections": 500,
                         "timestamp": "2025-06-13T21:35:26.380Z"

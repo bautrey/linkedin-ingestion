@@ -32,8 +32,8 @@
       "languages": "languages"
     },
     "social_metrics": {
-      "follower_count": "follower_count",
-      "connection_count": "connection_count"
+      "follower_count": "followers",
+      "connection_count": "connections"
     },
     "current_job_details": {
       "company": "company",

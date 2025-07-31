@@ -100,7 +100,10 @@ class LinkedInWorkflow(LoggerMixin):
         try:
             # Step 1: Fetch profile data from Cassidy API
             self.logger.info("Fetching profile data", request_id=request_id)
-            cassidy_data = await self.cassidy_client.fetch_profile(str(request.linkedin_url))
+            linkedin_profile_model = await self.cassidy_client.fetch_profile(str(request.linkedin_url))
+            
+            # Convert Pydantic model to dict for the adapter
+            cassidy_data = linkedin_profile_model.model_dump()
             
             # Use CassidyAdapter to transform the data
             try:

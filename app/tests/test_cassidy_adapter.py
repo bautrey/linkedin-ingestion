@@ -107,13 +107,14 @@ class TestCassidyAdapterRealAPIResponses:
         transformed_profile = adapter.transform(profile_data)
 
         assert transformed_profile.full_name == "Ronald Sorozan (MBA, CISM, PMP)"
-        assert transformed_profile.current_company["name"] == "JAM+"
+        # Check that the current company data is preserved
+        assert transformed_profile.company == "JAM+"
         assert len(transformed_profile.experiences) == 1
         assert transformed_profile.experiences[0].title == "Global Chief Information Officer and Chief Operating Officer (TZP Private Equity)"
         assert transformed_profile.experiences[0].company == "JAM+"
         assert transformed_profile.experiences[0].location == "Northvale, New Jersey and Houston, Texas"
-        assert transformed_profile.followers == 1503
-        assert transformed_profile.connections == 500
+        assert transformed_profile.follower_count == 1503
+        assert transformed_profile.connection_count == 500
 
     def test_real_cassidy_company_response(self, adapter):
         """Test transforming a real Cassidy API company response."""
@@ -599,9 +600,10 @@ class TestCassidyAdapterValidation:
         transformed_profile = adapter.transform(profile_data)
 
         assert transformed_profile.full_name == "Ronald Sorozan (MBA, CISM, PMP)"
-        assert transformed_profile.current_company.name == "JAM+"
+        assert transformed_profile.company == "JAM+"  # Current company name
         assert len(transformed_profile.experiences) == 1
         assert transformed_profile.experiences[0].title == "Global Chief Information Officer and Chief Operating Officer (TZP Private Equity)"
+        assert str(transformed_profile.experiences[0].company_linkedin_url) == "https://www.linkedin.com/company/jambnc"
 
     def test_real_cassidy_company_response(self, adapter):
         """Test transforming a real Cassidy API company response."""
