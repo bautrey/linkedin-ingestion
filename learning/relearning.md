@@ -60,6 +60,37 @@ agent-os/specs/YYYY-MM-DD-spec-name/
 - Zero deprecation warnings policy enforced
 - Test suite must pass without warnings
 
+#### Tech Stack Context Review (MANDATORY before any implementation)
+
+**BEFORE writing any code, ALWAYS review:**
+
+1. **Database Stack**: This project uses **Supabase** (NOT SQLAlchemy)
+   - Check `requirements.txt` for `supabase==2.17.0`
+   - Review existing patterns in `app/database/supabase_client.py`
+   - Use Supabase client patterns: `client.table().select().eq().execute()`
+   - Never assume SQLAlchemy without checking the codebase first
+
+2. **API Framework**: FastAPI with async patterns
+   - All database calls should be async
+   - Use proper async/await patterns
+   - Follow existing route patterns in `app/api/routes/`
+
+3. **Model Framework**: Pydantic V2
+   - Use `ConfigDict` not class-based `Config`
+   - Use `@field_validator` not `@validator`
+   - Use `.model_dump()` not `.dict()`
+
+4. **Testing Framework**: pytest with asyncio
+   - Mock Supabase client patterns correctly
+   - Use `AsyncMock` only for async methods like `execute()`
+   - Use `MagicMock` for sync methods like `table()`, `select()`, `eq()`
+
+**Error Prevention Pattern:**
+- Spend 2 minutes reviewing existing similar code before implementing
+- Check imports in existing files to understand dependencies
+- Look at `requirements.txt` to confirm tech stack
+- Follow established patterns rather than assuming frameworks
+
 ## Recovery Process Integration
 
 This learning must be integrated into session recovery to ensure:
