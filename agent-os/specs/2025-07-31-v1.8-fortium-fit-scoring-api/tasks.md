@@ -60,45 +60,63 @@
 
 ### Subtask 2.1: Session Recovery & Context Verification (5 min)
 - [ ] Read lessons learned from `learning/lessons-learned.md` (mandatory)
-- [ ] Check current session state: `cat .agent-os/current-session-state.txt`
-- [ ] Verify current test count: `pytest --collect-only -q | grep -c "::"`
-- [ ] Confirm git status clean and on correct branch: `git status --porcelain`
-- [ ] Review Task 1 completion status
-- [ ] Verify database schema and seed data are working
-- [ ] Check current test count and passing status
-- [ ] Validate production connectivity: `curl -H "x-api-key: li_HieZz-IjBp0uE7d-rZkRE0qyy12r5_ZJS_FR4jMvv0I" https://smooth-mailbox-production.up.railway.app/health`
+- [ ] **Context Check**: Update task status - mark Task 1 subtasks as [x] complete in this file
+- [ ] **Context Check**: Verify V1.8 database schema deployed: `curl -H "x-api-key: li_HieZz-IjBp0uE7d-rZkRE0qyy12r5_ZJS_FR4jMvv0I" https://smooth-mailbox-production.up.railway.app/health`
+- [ ] **Context Check**: Confirm 200+ tests passing: `pytest --collect-only -q | grep -c "::"`
+- [ ] **Context Check**: Verify production scoring tables exist and seeded
+- [ ] **Ready State**: Task 1 complete, database schema live, ready for scoring engine implementation
 
 ### Subtask 2.2: Scoring Engine Models (TDD)
+- [ ] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
+- [ ] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
+- [ ] **Context Check**: Mark Subtask 2.1 as [x] complete in this file
 - [ ] **TESTS FIRST**: Write tests for scoring engine data models
 - [ ] Create Pydantic models for scoring requests/responses
 - [ ] Create models for database configuration loading
 - [ ] Test model validation and serialization
 - [ ] Ensure Pydantic V2 compliance (zero deprecation warnings)
+- [ ] **Context Update**: `echo "Subtask 2.2 complete: Scoring engine models implemented and tested" >> .agent-os/subtask-progress.log`
 
 ### Subtask 2.3: Algorithm Loading Logic (TDD)
+- [ ] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
+- [ ] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
+- [ ] **Context Check**: Mark Subtask 2.2 as [x] complete in this file
 - [ ] **TESTS FIRST**: Write tests for configuration loading
 - [ ] Implement scoring algorithm loader from database
 - [ ] Implement scoring threshold loader from database
 - [ ] Add caching mechanism for configuration
 - [ ] Test error handling for missing configurations
+- [ ] **Context Update**: `echo "Subtask 2.3 complete: Algorithm loading from database working with caching" >> .agent-os/subtask-progress.log`
 
 ### Subtask 2.4: Core Scoring Logic (TDD)
+- [ ] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
+- [ ] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
+- [ ] **Context Check**: Mark Subtask 2.3 as [x] complete in this file
 - [ ] **TESTS FIRST**: Write tests for deterministic scoring
 - [ ] Implement basic scoring calculation engine
 - [ ] Implement role-specific scoring logic (CTO only first)
 - [ ] Test score range validation (0.0-1.0)
 - [ ] Test deterministic results (same input = same output)
+- [ ] **Context Update**: `echo "Subtask 2.4 complete: Core scoring logic implemented with deterministic CTO scoring" >> .agent-os/subtask-progress.log`
 
 ### Subtask 2.5: Local Testing & Production Validation
+- [ ] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
+- [ ] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
+- [ ] **Context Check**: Mark Subtask 2.4 as [x] complete in this file
 - [ ] Run full test suite (all tests must pass, zero warnings)
 - [ ] Commit and push changes
 - [ ] Test configuration loading in production
 - [ ] Verify no performance degradation
+- [ ] **Context Update**: `echo "Subtask 2.5 complete: Scoring engine deployed and validated in production" >> .agent-os/subtask-progress.log`
 
 ### Subtask 2.6: Session Hibernation
+- [ ] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
+- [ ] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
+- [ ] **Context Check**: Mark Subtask 2.5 as [x] complete in this file
 - [ ] Follow official hibernation process: `/Users/burke/projects/burke-agent-os-standards/instructions/session-hibernation.md`
 - [ ] Write lessons learned to `learning/lessons-learned.md`
 - [ ] Document scoring engine architecture decisions
+- [ ] **Context Update**: `echo "Task 2 complete: Scoring engine core implementation ready for API endpoint" >> .agent-os/subtask-progress.log`
 - [ ] **HIBERNATE SESSION** - Maximum 30 minutes reached
 
 ---
@@ -108,42 +126,66 @@
 **Session Duration**: 30 minutes max
 **Prerequisites**: Task 2 complete, scoring engine core ready
 
-### Subtask 3.1: Session Recovery
-- [ ] Read lessons learned from `learning/lessons-learned.md`
+### Subtask 3.1: Session Recovery & Context Verification (5 min)
+- [ ] Read lessons learned from `learning/lessons-learned.md` (mandatory)
+- [ ] Check current session state: `cat .agent-os/current-session-state.txt`
+- [ ] Verify current test count: `pytest --collect-only -q | grep -c "::"`
+- [ ] Confirm git status clean and on correct branch: `git status --porcelain`
 - [ ] Verify scoring engine functionality
 - [ ] Check current branch and test status
+- [ ] Validate production connectivity
 
 ### Subtask 3.2: API Route Definition (TDD)
+- [ ] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
+- [ ] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
+- [ ] **Context Check**: Mark Subtask 3.1 as [x] complete in this file
 - [ ] **TESTS FIRST**: Write tests for API endpoint
 - [ ] Create FastAPI route handler for `/api/v1/profiles/{profile_id}/score`
 - [ ] Implement query parameter validation (role)
 - [ ] Test API key authentication integration
 - [ ] Test error response formats
+- [ ] **Context Update**: `echo "Subtask 3.2 complete: API route defined and tested" >> .agent-os/subtask-progress.log`
 
 ### Subtask 3.3: Request/Response Handling (TDD)
+- [ ] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
+- [ ] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
+- [ ] **Context Check**: Mark Subtask 3.2 as [x] complete in this file
 - [ ] **TESTS FIRST**: Write tests for response formatting
 - [ ] Implement profile existence validation
 - [ ] Implement scoring calculation integration
 - [ ] Format JSON response with all required fields
 - [ ] Test error handling for edge cases
+- [ ] **Context Update**: `echo "Subtask 3.3 complete: Request/response handling implemented" >> .agent-os/subtask-progress.log`
 
 ### Subtask 3.4: Integration Testing
+- [ ] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
+- [ ] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
+- [ ] **Context Check**: Mark Subtask 3.3 as [x] complete in this file
 - [ ] Run all tests including new API tests
 - [ ] Test with existing profile data (ronald-sorozan)
 - [ ] Verify response times meet requirements (<500ms)
 - [ ] Check memory usage and performance
+- [ ] **Context Update**: `echo "Subtask 3.4 complete: Integration testing passed with performance validation" >> .agent-os/subtask-progress.log`
 
 ### Subtask 3.5: Production API Testing
+- [ ] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
+- [ ] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
+- [ ] **Context Check**: Mark Subtask 3.4 as [x] complete in this file
 - [ ] Commit and push changes
 - [ ] Deploy to Railway
 - [ ] Run live API tests with curl/postman
 - [ ] Test all error scenarios in production
 - [ ] Monitor response times and error rates
+- [ ] **Context Update**: `echo "Subtask 3.5 complete: API deployed and validated in production" >> .agent-os/subtask-progress.log`
 
 ### Subtask 3.6: Session Hibernation
+- [ ] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
+- [ ] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
+- [ ] **Context Check**: Mark Subtask 3.5 as [x] complete in this file
 - [ ] Follow official hibernation process: `/Users/burke/projects/burke-agent-os-standards/instructions/session-hibernation.md`
 - [ ] Write lessons learned to `learning/lessons-learned.md`
 - [ ] Document API implementation patterns used
+- [ ] **Context Update**: `echo "Task 3 complete: API endpoint implementation ready for multi-role algorithms" >> .agent-os/subtask-progress.log`
 - [ ] **HIBERNATE SESSION** - Maximum 30 minutes reached
 
 ---
@@ -153,10 +195,14 @@
 **Session Duration**: 30 minutes max
 **Prerequisites**: Task 3 complete, basic CTO scoring working
 
-### Subtask 4.1: Session Recovery
-- [ ] Read lessons learned from `learning/lessons-learned.md`
+### Subtask 4.1: Session Recovery & Context Verification (5 min)
+- [ ] Read lessons learned from `learning/lessons-learned.md` (mandatory)
+- [ ] Check current session state: `cat .agent-os/current-session-state.txt`
+- [ ] Verify current test count: `pytest --collect-only -q | grep -c "::"`
+- [ ] Confirm git status clean and on correct branch: `git status --porcelain`
 - [ ] Verify API endpoint is working for CTO role
 - [ ] Check test suite status
+- [ ] Validate production connectivity
 
 ### Subtask 4.2: CIO Scoring Algorithm (TDD)
 - [ ] **TESTS FIRST**: Write comprehensive tests for CIO scoring
@@ -197,10 +243,14 @@
 **Session Duration**: 30 minutes max
 **Prerequisites**: Task 4 complete, all roles scoring correctly
 
-### Subtask 5.1: Session Recovery
-- [ ] Read lessons learned from `learning/lessons-learned.md`
+### Subtask 5.1: Session Recovery & Context Verification (5 min)
+- [ ] Read lessons learned from `learning/lessons-learned.md` (mandatory)
+- [ ] Check current session state: `cat .agent-os/current-session-state.txt`
+- [ ] Verify current test count: `pytest --collect-only -q | grep -c "::"`
+- [ ] Confirm git status clean and on correct branch: `git status --porcelain`
 - [ ] Verify all role scoring is working
 - [ ] Confirm production deployment status
+- [ ] Validate production connectivity
 
 ### Subtask 5.2: Summary Generation (TDD)
 - [ ] **TESTS FIRST**: Write tests for summary text generation
@@ -242,10 +292,14 @@
 **Session Duration**: 30 minutes max
 **Prerequisites**: Task 5 complete, full feature set working
 
-### Subtask 6.1: Session Recovery
-- [ ] Read lessons learned from `learning/lessons-learned.md`
+### Subtask 6.1: Session Recovery & Context Verification (5 min)
+- [ ] Read lessons learned from `learning/lessons-learned.md` (mandatory)
+- [ ] Check current session state: `cat .agent-os/current-session-state.txt`
+- [ ] Verify current test count: `pytest --collect-only -q | grep -c "::"`
+- [ ] Confirm git status clean and on correct branch: `git status --porcelain`
 - [ ] Verify full scoring API functionality
 - [ ] Check current performance baselines
+- [ ] Validate production connectivity
 
 ### Subtask 6.2: Caching Implementation (TDD)
 - [ ] **TESTS FIRST**: Write tests for caching behavior
@@ -288,10 +342,14 @@
 **Session Duration**: 30 minutes max
 **Prerequisites**: Task 6 complete, performance optimized
 
-### Subtask 7.1: Session Recovery
-- [ ] Read lessons learned from `learning/lessons-learned.md`
+### Subtask 7.1: Session Recovery & Context Verification (5 min)
+- [ ] Read lessons learned from `learning/lessons-learned.md` (mandatory)
+- [ ] Check current session state: `cat .agent-os/current-session-state.txt`
+- [ ] Verify current test count: `pytest --collect-only -q | grep -c "::"`
+- [ ] Confirm git status clean and on correct branch: `git status --porcelain`
 - [ ] Verify all previous tasks complete
 - [ ] Run full test suite to confirm stability
+- [ ] Validate production connectivity
 
 ### Subtask 7.2: Final Integration Testing (TDD)
 - [ ] **TESTS FIRST**: Write comprehensive end-to-end tests
