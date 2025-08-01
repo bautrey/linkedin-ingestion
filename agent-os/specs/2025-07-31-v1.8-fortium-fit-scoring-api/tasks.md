@@ -58,11 +58,15 @@
 **Session Duration**: 30 minutes max
 **Prerequisites**: Task 1 complete, database schema deployed
 
-### Subtask 2.1: Session Recovery
-- [ ] Read lessons learned from `learning/lessons-learned.md`
+### Subtask 2.1: Session Recovery & Context Verification (5 min)
+- [ ] Read lessons learned from `learning/lessons-learned.md` (mandatory)
+- [ ] Check current session state: `cat .agent-os/current-session-state.txt`
+- [ ] Verify current test count: `pytest --collect-only -q | grep -c "::"`
+- [ ] Confirm git status clean and on correct branch: `git status --porcelain`
 - [ ] Review Task 1 completion status
 - [ ] Verify database schema and seed data are working
 - [ ] Check current test count and passing status
+- [ ] Validate production connectivity: `curl -H "x-api-key: li_HieZz-IjBp0uE7d-rZkRE0qyy12r5_ZJS_FR4jMvv0I" https://smooth-mailbox-production.up.railway.app/health`
 
 ### Subtask 2.2: Scoring Engine Models (TDD)
 - [ ] **TESTS FIRST**: Write tests for scoring engine data models
