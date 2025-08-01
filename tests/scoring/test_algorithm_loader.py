@@ -4,6 +4,7 @@ Tests for scoring algorithm and threshold loading functionality.
 Following TDD approach - tests first before implementation.
 """
 import pytest
+import pytest_asyncio
 from unittest.mock import AsyncMock, MagicMock
 from app.scoring.algorithm_loader import (
     AlgorithmLoader,
@@ -310,17 +311,128 @@ class TestScoringConfigCache:
 
 
 class TestIntegrationAlgorithmLoader:
-    """Integration tests for AlgorithmLoader with real-like scenarios."""
+    """Integration tests for AlgorithmLoader with real database scenarios."""
+    
+    @pytest_asyncio.fixture
+    async def real_supabase_client(self):
+        """Create real Supabase client for integration testing."""
+        from app.database.supabase_client import SupabaseClient
+        from app.core.config import settings
+        
+        # Ensure we have database configuration
+        if not settings.SUPABASE_URL or not settings.SUPABASE_ANON_KEY:
+            pytest.skip("Supabase configuration not available for integration tests")
+        
+        supabase_client = SupabaseClient()
+        await supabase_client._ensure_client()
+        return supabase_client.client
+    
+    @pytest_asyncio.fixture
+    async def algorithm_loader_with_db(self, real_supabase_client):
+        """Create AlgorithmLoader with real database connection."""
+        return AlgorithmLoader(supabase_client=real_supabase_client)
     
     @pytest.mark.asyncio
-    async def test_load_complete_role_configuration(self):
-        """Test loading complete configuration for a role."""
-        # This would be an integration test that requires actual database
-        # For now, we'll mark it as a placeholder for future implementation
-        pytest.skip("Integration test - requires actual database connection")
+    async def test_load_complete_role_configuration(self, algorithm_loader_with_db):
+        """Test loading complete configuration for a role from real database."""
+        try:
+            # Test with CTO role - this should exist in seed data
+            config = await algorithm_loader_with_db.get_complete_role_config("CTO")
+            
+            # Verify the configuration structure
+            assert "role" in config
+            assert "algorithms" in config
+            assert "thresholds" in config
+            assert "categories" in config
+            assert "loaded_at" in config
+            
+            # Verify role is correct
+            assert config["role"] == "CTO"
+            
+            # Verify we have algorithms
+            assert isinstance(config["algorithms"], list)
+            assert len(config["algorithms"]) > 0
+            
+            # Verify algorithm structure
+            for alg in config["algorithms"]:
+                assert "role" in alg
+                assert "category" in alg
+                assert "algorithm_config" in alg
+                assert "version" in alg
+                assert alg["role"] == "CTO"
+            
+            # Verify we have thresholds
+            assert isinstance(config["thresholds"], list)
+            assert len(config["thresholds"]) > 0
+            
+            # Verify threshold structure
+            for threshold in config["thresholds"]:
+                assert "role" in threshold
+                assert "threshold_type" in threshold
+                assert "min_score" in threshold
+                assert "max_score" in threshold
+                assert threshold["role"] == "CTO"
+            
+            # Verify we have categories
+            assert isinstance(config["categories"], list)
+            assert len(config["categories"]) > 0
+            
+            # Verify category structure
+            for category in config["categories"]:
+                assert "name" in category
+                assert "description" in category
+                assert "weight" in category
+                assert "is_active" in category
+                assert category["is_active"] is True
+            
+        except Exception as e:
+            pytest.fail(f"Integration test failed with database connection: {str(e)}")
     
     @pytest.mark.asyncio
-    async def test_caching_integration(self):
-        """Test that caching works correctly in real scenarios."""
-        # Integration test placeholder
-        pytest.skip("Integration test - requires actual database connection")
+    async def test_caching_integration(self, algorithm_loader_with_db):
+        """Test that caching works correctly with real database scenarios."""
+        try:
+            # Clear cache to start fresh
+            algorithm_loader_with_db.cache.clear_all()
+            
+            # First load - should hit database
+            algorithms1 = await algorithm_loader_with_db.load_algorithms_for_role("CTO")
+            assert len(algorithms1) > 0
+            
+            # Verify cache was populated
+            cached_algorithms = algorithm_loader_with_db.cache.get_algorithms("CTO")
+            assert cached_algorithms is not None
+            assert len(cached_algorithms) == len(algorithms1)
+            
+            # Second load - should hit cache (we can't easily verify this without mocking,
+            # but we can verify the results are consistent)
+            algorithms2 = await algorithm_loader_with_db.load_algorithms_for_role("CTO")
+            assert len(algorithms2) == len(algorithms1)
+            
+            # Verify algorithm data consistency
+            for i, alg in enumerate(algorithms1):
+                assert alg.role == algorithms2[i].role
+                assert alg.category == algorithms2[i].category
+                assert alg.algorithm_config == algorithms2[i].algorithm_config
+                assert alg.version == algorithms2[i].version
+            
+            # Test cache invalidation
+            algorithm_loader_with_db.cache.invalidate("CTO")
+            cached_after_invalidation = algorithm_loader_with_db.cache.get_algorithms("CTO")
+            assert cached_after_invalidation is None
+            
+            # Third load after cache invalidation - should hit database again
+            algorithms3 = await algorithm_loader_with_db.load_algorithms_for_role("CTO")
+            assert len(algorithms3) == len(algorithms1)
+            
+            # Test with thresholds as well
+            thresholds1 = await algorithm_loader_with_db.load_thresholds_for_role("CTO")
+            assert len(thresholds1) > 0
+            
+            # Verify threshold cache
+            cached_thresholds = algorithm_loader_with_db.cache.get_thresholds("CTO")
+            assert cached_thresholds is not None
+            assert len(cached_thresholds) == len(thresholds1)
+            
+        except Exception as e:
+            pytest.fail(f"Caching integration test failed with database connection: {str(e)}")

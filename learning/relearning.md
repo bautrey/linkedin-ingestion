@@ -1,7 +1,7 @@
 # Learning and Relearning
 
-> Last Updated: 2025-07-30
-> Version: 1.0.0
+> Last Updated: 2025-08-01
+> Version: 1.1.0
 
 ## Critical Process Requirements
 
@@ -90,6 +90,79 @@ agent-os/specs/YYYY-MM-DD-spec-name/
 - Check imports in existing files to understand dependencies
 - Look at `requirements.txt` to confirm tech stack
 - Follow established patterns rather than assuming frameworks
+
+### Test Quality Standards (CRITICAL)
+
+**MANDATORY: NO TOLERANCE FOR SLOPPY TEST PRACTICES**
+
+#### Unacceptable Behaviors (User Expressed Extreme Frustration 2025-08-01)
+
+**USER FEEDBACK:** "I really wish you would do this without my constant prompting... there is NO POINT in building stuff with you if you're going to accept failing tests, overlook warnings, and leave tests skipped that should be included. It's just sloppy. Almost to the point of being on purpose."
+
+**NEVER DO THESE:**
+1. **Accept failing tests** - Every test must pass before considering work complete
+2. **Ignore warnings** - Zero tolerance for deprecation warnings or test warnings
+3. **Leave tests skipped** - If database connections exist, integration tests must run
+4. **Ask permission for obvious fixes** - Don't ask "would you like me to fix this?" for clearly broken functionality
+5. **Overlook incomplete test coverage** - Skipped tests with available resources are unacceptable
+
+#### Required Test Quality Process
+
+**BEFORE submitting any code:**
+1. **Run full test suite** - `pytest --tb=short` must show 100% pass rate
+2. **Check for warnings** - Zero warnings allowed in test output
+3. **Verify skipped tests** - Any skipped tests must have legitimate reasons (no available resources)
+4. **Integration test validation** - If database/API connections exist, integration tests must be implemented
+5. **Fix immediately** - Don't ask, just fix obvious problems
+
+#### Test Implementation Standards
+
+- **Integration tests** must connect to real databases when available
+- **Async fixtures** must use `pytest_asyncio.fixture` properly
+- **Database connections** must be tested in both local and remote environments
+- **Cache behavior** must be validated with real data
+- **Error scenarios** must be covered with proper exception handling
+
+#### Proactive Quality Mindset
+
+**ALWAYS:**
+- Take initiative to fix problems without being asked
+- Run tests after every implementation
+- Verify integration points work with real resources
+- Assume user wants complete, working functionality
+
+**REPOSITORY RULE:** This project requires 100% passing tests with zero warnings. Any deviation from this standard is considered a failed implementation.
+
+### Execution Authority and Initiative (CRITICAL - User Extreme Frustration 2025-08-01)
+
+**USER FEEDBACK:** "I truly don't understand what else I can do to make you do what you've already been told to do. Every rule, every learning, every task/subtask, etc. tells you what to do next. then you read what to do next and then ask me if I want to do it. If I DIDN'T want to do it then i wouldn't have instructed you to build tasks/substask that ASK YOU TO DO IT! Dang your dense sometimes."
+
+#### MANDATORY: STOP ASKING PERMISSION FOR DOCUMENTED REQUIREMENTS
+
+**NEVER ASK THESE QUESTIONS:**
+- "Would you like me to commit and push the changes?"
+- "Should I run the hibernation process?"
+- "Do you want me to fix this failing test?"
+- "Would you like me to implement the next subtask?"
+
+**EXECUTION RULE:**
+If a task, subtask, learning document, or requirement explicitly tells you to do something, **JUST DO IT**. The user has already given you permission by creating the instruction.
+
+**EXAMPLES OF WHEN TO ACT IMMEDIATELY:**
+- Tasks say "Commit and push changes" → DO IT
+- Tasks say "Follow hibernation process" → DO IT
+- Tests are failing → FIX THEM
+- Subtasks list specific actions → EXECUTE THEM
+- Requirements documents specify behaviors → IMPLEMENT THEM
+
+**ONLY ASK PERMISSION FOR:**
+- Clarification on ambiguous requirements
+- Major architectural decisions not covered in specs
+- Changes that deviate from documented plans
+- New features not in the task list
+
+**INITIATIVE REQUIREMENT:**
+When you read a task/subtask that says to do something, that IS the user's instruction to do it. Execute immediately without confirmation.
 
 ## Recovery Process Integration
 
