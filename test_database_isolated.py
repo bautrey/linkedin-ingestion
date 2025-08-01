@@ -161,13 +161,11 @@ class MockSupabaseClientWrapper:
     """Wrapper to create our mock SupabaseClient properly"""
     
     def __init__(self):
-        # Override settings to use mock values
+        # Store original settings but don't modify global settings
         self.original_url = getattr(settings, 'SUPABASE_URL', None)
         self.original_key = getattr(settings, 'SUPABASE_ANON_KEY', None)
         
-        # Set mock settings
-        settings.SUPABASE_URL = 'https://mock.supabase.co'
-        settings.SUPABASE_ANON_KEY = 'mock_key'
+        # Don't modify global settings - use mock client directly
         
         # Create async client (lazily initialized)
         self.client = None
