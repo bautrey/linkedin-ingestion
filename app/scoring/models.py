@@ -11,26 +11,26 @@ from decimal import Decimal
 
 class ScoringRequest(BaseModel):
     """Request model for profile scoring"""
+    model_config = ConfigDict(str_strip_whitespace=True)
+    
     profile_id: str = Field(..., description="LinkedIn profile ID to score")
     role: Literal["CTO", "CIO", "CISO"] = Field(..., description="Role to score against")
-    
-    class Config:
-        str_strip_whitespace = True
 
 
 class CategoryScore(BaseModel):
     """Individual category score details"""
+    model_config = ConfigDict(validate_assignment=True)
+    
     category: str = Field(..., description="Scoring category name")
     score: float = Field(..., ge=0.0, le=1.0, description="Category score (0.0-1.0)")
     weight: float = Field(..., ge=0.0, le=2.0, description="Category weight in overall score")
     details: Optional[str] = Field(None, description="Detailed scoring explanation")
-    
-    class Config:
-        validate_assignment = True
 
 
 class ScoringResponse(BaseModel):
     """Complete scoring response model"""
+    model_config = ConfigDict(validate_assignment=True)
+    
     profile_id: str = Field(..., description="Profile ID that was scored")
     role: Literal["CTO", "CIO", "CISO"] = Field(..., description="Role scored against")
     overall_score: float = Field(..., ge=0.0, le=1.0, description="Overall fit score")
@@ -41,9 +41,6 @@ class ScoringResponse(BaseModel):
     alternative_roles: List[str] = Field(default_factory=list, description="Alternative role suggestions")
     algorithm_version: int = Field(..., description="Algorithm version used")
     scored_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat(), description="Scoring timestamp")
-    
-    class Config:
-        validate_assignment = True
 
 
 class ScoringThreshold(BaseModel):
@@ -66,17 +63,18 @@ class ScoringThreshold(BaseModel):
 
 class ScoringAlgorithm(BaseModel):
     """Scoring algorithm configuration from database"""
+    model_config = ConfigDict(validate_assignment=True)
+    
     role: Literal["CTO", "CIO", "CISO"] = Field(..., description="Role for algorithm")
     category: str = Field(..., description="Scoring category")
     algorithm_config: Dict[str, Any] = Field(..., description="Algorithm configuration JSON")
     version: int = Field(..., ge=1, description="Algorithm version")
-    
-    class Config:
-        validate_assignment = True
 
 
 class ProfileScore(BaseModel):
     """Profile score for database storage"""
+    model_config = ConfigDict(validate_assignment=True)
+    
     profile_id: str = Field(..., description="Profile ID")
     role: Literal["CTO", "CIO", "CISO"] = Field(..., description="Role scored")
     overall_score: float = Field(..., ge=0.0, le=1.0, description="Overall score")
@@ -86,16 +84,12 @@ class ProfileScore(BaseModel):
     alternative_roles: Optional[List[str]] = Field(None, description="Alternative roles")
     algorithm_version: int = Field(..., description="Algorithm version used")
     scored_at: Optional[datetime] = Field(default_factory=lambda: datetime.now(timezone.utc), description="Scoring timestamp")
-    
-    class Config:
-        validate_assignment = True
 
 
 class ScoringConfig(BaseModel):
     """Complete scoring configuration loaded from database"""
+    model_config = ConfigDict(validate_assignment=True)
+    
     algorithms: Dict[str, ScoringAlgorithm] = Field(..., description="Algorithms by category")
     thresholds: List[ScoringThreshold] = Field(..., description="Score thresholds")
     categories: List[str] = Field(..., description="Available scoring categories")
-    
-    class Config:
-        validate_assignment = True
