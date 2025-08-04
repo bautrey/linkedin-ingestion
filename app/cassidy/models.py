@@ -449,6 +449,21 @@ class ProfileIngestionRequest(BaseModel):
     linkedin_url: HttpUrl = Field(..., description="LinkedIn profile URL to ingest")
     include_companies: bool = Field(True, description="Whether to fetch company data for experiences")
     force_refresh: bool = Field(False, description="Force refresh even if profile exists")
+    
+    @field_validator('linkedin_url', mode='before')
+    @classmethod
+    def normalize_linkedin_url(cls, v):
+        """Normalize LinkedIn URLs by adding https:// if missing protocol"""
+        if isinstance(v, str):
+            # Remove trailing whitespace
+            v = v.strip()
+            
+            # If URL doesn't start with http:// or https://, add https://
+            if not v.startswith(('http://', 'https://')):
+                # Handle common cases like "www.linkedin.com" or "linkedin.com"
+                if v.startswith('www.') or 'linkedin.com' in v:
+                    v = f"https://{v}"
+        return v
 
 
 class CompanyIngestionRequest(BaseModel):
