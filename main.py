@@ -12,7 +12,7 @@ from fastapi import FastAPI, HTTPException, Header, Depends, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, HttpUrl, Field, ValidationError
+from pydantic import BaseModel, HttpUrl, Field, ValidationError, field_validator
 from typing import Dict, Any, Optional, List
 from datetime import datetime, timezone
 import traceback
@@ -299,6 +299,21 @@ class ProfileCreateRequest(BaseModel):
     linkedin_url: HttpUrl
     name: Optional[str] = None
     include_companies: bool = Field(default=True, description="Include company profiles for all experience entries")
+    
+    @field_validator('linkedin_url', mode='before')
+    @classmethod
+    def normalize_linkedin_url(cls, v):
+        """Normalize LinkedIn URLs by adding https:// if missing protocol"""
+        if isinstance(v, str):
+            # Remove trailing whitespace
+            v = v.strip()
+            
+            # If URL doesn't start with http:// or https://, add https://
+            if not v.startswith(('http://', 'https://')):
+                # Handle common cases like "www.linkedin.com" or "linkedin.com"
+                if v.startswith('www.') or 'linkedin.com' in v:
+                    v = f"https://{v}"
+        return v
 
 class PaginationMetadata(BaseModel):
     limit: int
