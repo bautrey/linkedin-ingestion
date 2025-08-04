@@ -59,45 +59,45 @@
 **Prerequisites**: Task 1 complete, database schema deployed
 
 ### Subtask 2.1: Session Recovery & Context Verification (5 min)
-- [ ] Read lessons learned from `learning/lessons-learned.md` (mandatory)
-- [ ] **Context Check**: Update task status - mark Task 1 subtasks as [x] complete in this file
-- [ ] **Context Check**: Verify V1.8 database schema deployed: `curl -H "x-api-key: li_HieZz-IjBp0uE7d-rZkRE0qyy12r5_ZJS_FR4jMvv0I" https://smooth-mailbox-production.up.railway.app/health`
-- [ ] **Context Check**: Confirm 200+ tests passing: `pytest --collect-only -q | grep -c "::"`
-- [ ] **Context Check**: Verify production scoring tables exist and seeded
-- [ ] **Ready State**: Task 1 complete, database schema live, ready for scoring engine implementation
+- [x] Read lessons learned from `learning/lessons-learned.md` (mandatory)
+- [x] **Context Check**: Update task status - mark Task 1 subtasks as [x] complete in this file
+- [x] **Context Check**: Verify V1.8 database schema deployed: `curl -H "x-api-key: li_HieZz-IjBp0uE7d-rZkRE0qyy12r5_ZJS_FR4jMvv0I" https://smooth-mailbox-production.up.railway.app/health`
+- [x] **Context Check**: Confirm 204 tests passing: `pytest --collect-only -q | grep -c "::"`
+- [x] **Context Check**: Verify production scoring tables exist and seeded
+- [x] **Ready State**: Task 1 complete, database schema live, ready for scoring engine implementation
 
 ### Subtask 2.2: Scoring Engine Models (TDD)
-- [ ] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
-- [ ] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
-- [ ] **Context Check**: Mark Subtask 2.1 as [x] complete in this file
-- [ ] **TESTS FIRST**: Write tests for scoring engine data models
-- [ ] Create Pydantic models for scoring requests/responses
-- [ ] Create models for database configuration loading
-- [ ] Test model validation and serialization
-- [ ] Ensure Pydantic V2 compliance (zero deprecation warnings)
-- [ ] **Context Update**: `echo "Subtask 2.2 complete: Scoring engine models implemented and tested" >> .agent-os/subtask-progress.log`
+- [x] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
+- [x] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
+- [x] **Context Check**: Mark Subtask 2.1 as [x] complete in this file
+- [x] **TESTS FIRST**: Write tests for scoring engine data models
+- [x] Create Pydantic models for scoring requests/responses
+- [x] Create models for database configuration loading
+- [x] Test model validation and serialization
+- [x] Ensure Pydantic V2 compliance (zero deprecation warnings)
+- [x] **Context Update**: `echo "Subtask 2.2 complete: Scoring engine models implemented and tested" ee .agent-os/subtask-progress.log`
 
 ### Subtask 2.3: Algorithm Loading Logic (TDD)
-- [ ] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
-- [ ] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
-- [ ] **Context Check**: Mark Subtask 2.2 as [x] complete in this file
-- [ ] **TESTS FIRST**: Write tests for configuration loading
-- [ ] Implement scoring algorithm loader from database
-- [ ] Implement scoring threshold loader from database
-- [ ] Add caching mechanism for configuration
-- [ ] Test error handling for missing configurations
-- [ ] **Context Update**: `echo "Subtask 2.3 complete: Algorithm loading from database working with caching" >> .agent-os/subtask-progress.log`
+- [x] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
+- [x] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
+- [x] **Context Check**: Mark Subtask 2.2 as [x] complete in this file
+- [x] **TESTS FIRST**: Write tests for configuration loading
+- [x] Implement scoring algorithm loader from database
+- [x] Implement scoring threshold loader from database
+- [x] Add caching mechanism for configuration
+- [x] Test error handling for missing configurations
+- [x] **Context Update**: `echo "Subtask 2.3 complete: Algorithm loading from database working with caching" >> .agent-os/subtask-progress.log`
 
 ### Subtask 2.4: Core Scoring Logic (TDD)
-- [ ] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
-- [ ] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
-- [ ] **Context Check**: Mark Subtask 2.3 as [x] complete in this file
-- [ ] **TESTS FIRST**: Write tests for deterministic scoring
-- [ ] Implement basic scoring calculation engine
-- [ ] Implement role-specific scoring logic (CTO only first)
-- [ ] Test score range validation (0.0-1.0)
-- [ ] Test deterministic results (same input = same output)
-- [ ] **Context Update**: `echo "Subtask 2.4 complete: Core scoring logic implemented with deterministic CTO scoring" >> .agent-os/subtask-progress.log`
+- [x] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
+- [x] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
+- [x] **Context Check**: Mark Subtask 2.3 as [x] complete in this file
+- [x] **TESTS FIRST**: Write tests for deterministic scoring
+- [x] Implement basic scoring calculation engine
+- [x] Implement role-specific scoring logic (CTO only first)
+- [x] Test score range validation (0.0-1.0)
+- [x] Test deterministic results (same input = same output)
+- [x] **Context Update**: `echo "Subtask 2.4 complete: Core scoring logic implemented with deterministic CTO scoring" ee .agent-os/subtask-progress.log`
 
 ### Subtask 2.5: Local Testing & Production Validation
 - [ ] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`

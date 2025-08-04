@@ -5,6 +5,7 @@ Following TDD approach - tests first before implementation.
 """
 import pytest
 from app.scoring.scoring_logic import ScoringEngine
+from app.scoring.models import ScoringAlgorithm, ScoringThreshold
 from unittest.mock import AsyncMock, MagicMock
 
 
@@ -33,15 +34,17 @@ class TestScoringEngine:
 
         # Mock algorithm and thresholds for demonstration
         mock_algorithms = [
-            {
-                'category': 'technical_leadership',
-                'algorithm_config': {
+            ScoringAlgorithm(
+                role='CTO',
+                category='technical_leadership',
+                algorithm_config={
                     'keywords': ['CTO', 'VP Engineering'],
                     'experience_weight': 0.4,
                     'title_weight': 0.3,
                     'company_weight': 0.3
-                }
-            }
+                },
+                version=1
+            )
         ]
         mock_thresholds = [
             {
@@ -74,15 +77,17 @@ class TestScoringEngine:
 
         # Mock algorithm and thresholds for demonstration
         mock_algorithms = [
-            {
-                'category': 'technical_leadership',
-                'algorithm_config': {
+            ScoringAlgorithm(
+                role='CTO',
+                category='technical_leadership',
+                algorithm_config={
                     'keywords': ['CTO', 'VP Engineering'],
                     'experience_weight': 0.4,
                     'title_weight': 0.3,
                     'company_weight': 0.3
-                }
-            }
+                },
+                version=1
+            )
         ]
         mock_thresholds = [
             {
@@ -126,30 +131,36 @@ class TestScoringEngine:
 
         # Mock CTO algorithms with realistic configuration
         mock_algorithms = [
-            {
-                'category': 'technical_leadership',
-                'algorithm_config': {
+            ScoringAlgorithm(
+                role='CTO',
+                category='technical_leadership',
+                algorithm_config={
                     'keywords': ['CTO', 'Chief Technology Officer', 'VP Engineering', 'Head of Engineering'],
                     'experience_weight': 0.4,
                     'title_weight': 0.3,
                     'company_weight': 0.3
-                }
-            },
-            {
-                'category': 'industry_experience',
-                'algorithm_config': {
+                },
+                version=1
+            ),
+            ScoringAlgorithm(
+                role='CTO',
+                category='industry_experience',
+                algorithm_config={
                     'tech_keywords': ['software', 'technology', 'engineering', 'development'],
                     'years_weight': 0.6,
                     'relevance_weight': 0.4
-                }
-            },
-            {
-                'category': 'education_background',
-                'algorithm_config': {
+                },
+                version=1
+            ),
+            ScoringAlgorithm(
+                role='CTO',
+                category='education_background',
+                algorithm_config={
                     'degrees': {'BS': 0.8, 'MS': 1.0, 'PhD': 1.2},
                     'fields': ['Computer Science', 'Engineering', 'Technology']
-                }
-            }
+                },
+                version=1
+            )
         ]
         
         mock_thresholds = [
@@ -180,13 +191,15 @@ class TestScoringEngine:
         }
 
         mock_algorithms = [
-            {
-                'category': 'technical_leadership',
-                'algorithm_config': {
+            ScoringAlgorithm(
+                role='CIO',
+                category='technical_leadership',
+                algorithm_config={
                     'keywords': ['CIO', 'Chief Information Officer'],
                     'experience_weight': 0.4
-                }
-            }
+                },
+                version=1
+            )
         ]
         
         mock_thresholds = []
@@ -208,14 +221,16 @@ class TestScoringEngine:
         }
 
         mock_algorithms = [
-            {
-                'category': 'technical_leadership',
-                'algorithm_config': {
+            ScoringAlgorithm(
+                role='CTO',
+                category='technical_leadership',
+                algorithm_config={
                     'keywords': ['CTO'],
                     'experience_weight': 0.4,
                     'title_weight': 0.3
-                }
-            }
+                },
+                version=1
+            )
         ]
         
         mock_thresholds = []

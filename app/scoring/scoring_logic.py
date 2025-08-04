@@ -30,8 +30,8 @@ class ScoringEngine:
         # Calculate scores for each category
         category_scores = []
         for algorithm in algorithms:
-            category = algorithm["category"]
-            config = algorithm["algorithm_config"]
+            category = algorithm.category
+            config = algorithm.algorithm_config
             
             if role == "CTO":
                 score = self._calculate_cto_category_score(profile_data, category, config)
