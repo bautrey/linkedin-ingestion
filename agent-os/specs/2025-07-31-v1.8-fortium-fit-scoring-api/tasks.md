@@ -127,24 +127,24 @@
 **Prerequisites**: Task 2 complete, scoring engine core ready
 
 ### Subtask 3.1: Session Recovery & Context Verification (5 min)
-- [ ] Read lessons learned from `learning/lessons-learned.md` (mandatory)
-- [ ] Check current session state: `cat .agent-os/current-session-state.txt`
-- [ ] Verify current test count: `pytest --collect-only -q | grep -c "::"`
-- [ ] Confirm git status clean and on correct branch: `git status --porcelain`
-- [ ] Verify scoring engine functionality
-- [ ] Check current branch and test status
-- [ ] Validate production connectivity
+- [x] Read lessons learned from `learning/lessons-learned.md` (mandatory)
+- [x] Check current session state: `cat .agent-os/current-session-state.txt`
+- [x] Verify current test count: `pytest --collect-only -q | grep -c "::"` - 204 tests
+- [x] Confirm git status clean and on correct branch: `git status --porcelain` - clean
+- [x] Verify scoring engine functionality - scoring/ directory exists with models, algorithm_loader, scoring_logic
+- [x] Check current branch and test status - master branch, all committed
+- [x] Validate production connectivity - health endpoint responding
 
 ### Subtask 3.2: API Route Definition (TDD)
-- [ ] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
-- [ ] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
-- [ ] **Context Check**: Mark Subtask 3.1 as [x] complete in this file
-- [ ] **TESTS FIRST**: Write tests for API endpoint
-- [ ] Create FastAPI route handler for `/api/v1/profiles/{profile_id}/score`
-- [ ] Implement query parameter validation (role)
-- [ ] Test API key authentication integration
-- [ ] Test error response formats
-- [ ] **Context Update**: `echo "Subtask 3.2 complete: API route defined and tested" >> .agent-os/subtask-progress.log`
+- [x] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain` - 204 tests, changes in main.py
+- [x] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
+- [x] **Context Check**: Mark Subtask 3.1 as [x] complete in this file
+- [x] **TESTS FIRST**: Write tests for API endpoint - comprehensive test suite created
+- [x] Create FastAPI route handler for `/api/v1/profiles/{profile_id}/score` - endpoint implemented
+- [x] Implement query parameter validation (role) - Role enum with CTO/CIO/CISO validation
+- [x] Test API key authentication integration - authentication tests passing
+- [x] Test error response formats - error handling implemented and tested
+- [x] **Context Update**: `echo "Subtask 3.2 complete: API route defined and tested" >> .agent-os/subtask-progress.log`
 
 ### Subtask 3.3: Request/Response Handling (TDD)
 - [ ] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
