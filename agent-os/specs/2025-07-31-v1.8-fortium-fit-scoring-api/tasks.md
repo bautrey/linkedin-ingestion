@@ -100,24 +100,24 @@
 - [x] **Context Update**: `echo "Subtask 2.4 complete: Core scoring logic implemented with deterministic CTO scoring" ee .agent-os/subtask-progress.log`
 
 ### Subtask 2.5: Local Testing & Production Validation
-- [ ] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
-- [ ] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
-- [ ] **Context Check**: Mark Subtask 2.4 as [x] complete in this file
-- [ ] Run full test suite (all tests must pass, zero warnings)
-- [ ] Commit and push changes
-- [ ] Test configuration loading in production
-- [ ] Verify no performance degradation
-- [ ] **Context Update**: `echo "Subtask 2.5 complete: Scoring engine deployed and validated in production" >> .agent-os/subtask-progress.log`
+- [x] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
+- [x] **Context Check**: `cat agent-os/current-session-state.txt` - read current session state
+- [x] **Context Check**: Mark Subtask 2.4 as [x] complete in this file
+- [x] Run full test suite (all tests must pass, zero warnings)
+- [x] Commit and push changes
+- [x] Test configuration loading in production
+- [x] Verify no performance degradation
+- [x] **Context Update**: `echo "Subtask 2.5 complete: Scoring engine deployed and validated in production" \u003e\u003e agent-os/subtask-progress.log`
 
 ### Subtask 2.6: Session Hibernation
-- [ ] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
-- [ ] **Context Check**: `cat .agent-os/current-session-state.txt` - read current session state
-- [ ] **Context Check**: Mark Subtask 2.5 as [x] complete in this file
-- [ ] Follow official hibernation process: `/Users/burke/projects/burke-agent-os-standards/instructions/session-hibernation.md`
-- [ ] Write lessons learned to `learning/lessons-learned.md`
-- [ ] Document scoring engine architecture decisions
-- [ ] **Context Update**: `echo "Task 2 complete: Scoring engine core implementation ready for API endpoint" >> .agent-os/subtask-progress.log`
-- [ ] **HIBERNATE SESSION** - Maximum 30 minutes reached
+- [x] **Context Check**: `pytest --collect-only -q | grep -c "::"` and `git status --porcelain`
+- [x] **Context Check**: `cat agent-os/current-session-state.txt` - read current session state
+- [x] **Context Check**: Mark Subtask 2.5 as [x] complete in this file
+- [x] Follow official hibernation process: `/Users/burke/projects/burke-agent-os-standards/instructions/session-hibernation.md`
+- [x] Write lessons learned to `learning/lessons-learned.md`
+- [x] Document scoring engine architecture decisions
+- [x] **Context Update**: `echo "Task 2 complete: Scoring engine core implementation ready for API endpoint" \u003e\u003e agent-os/subtask-progress.log`
+- [x] **HIBERNATE SESSION** - Maximum 30 minutes reached
 
 ---
 
