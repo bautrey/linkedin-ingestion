@@ -223,3 +223,26 @@ python test_complete_data_capture.py  # Shows actual API structure
 # Then push dependencies and verify deployment
 git push origin master && railway up --detach
 ```
+
+### August 7, 2025: V1.8 Infrastructure Complete Removal
+
+**Context**: User identified V1.8 keyword-based scoring as unwanted detour from original LLM vision.
+
+**Decision**: Completely eliminate all V1.8 scoring infrastructure to create clean foundation for V1.85.
+
+**Actions Taken**:
+- Removed all V1.8 code files (scoring_logic.py, algorithm_loader.py, models.py)
+- Eliminated V1.8 database schema and migration files
+- Deleted 58 V1.8-specific tests (225 → 167 total tests)
+- Removed V1.8 API endpoint from main.py
+- Deleted entire V1.8 specification directory
+- Cleaned up V1.8 git branches
+
+**Rationale**:
+- V1.8 never aligned with user's original intent for AI-driven scoring
+- Keyword approach created unnecessary complexity (58 tests, multiple files)
+- Clean removal enables focused V1.85 LLM implementation
+- Eliminates maintenance burden of unused scoring infrastructure
+
+**Impact**: Clean 167-test baseline, streamlined codebase ready for V1.85 LLM scoring.
+
