@@ -32,17 +32,7 @@ from app.exceptions import (
     InvalidLinkedInURLError,
     ProfileAlreadyExistsError
 )
-from app.scoring.models import ScoringResponse
-from app.scoring.scoring_logic import ScoringEngine
 from app.models.canonical import CanonicalProfile
-from enum import Enum
-
-# Define Role enum for scoring endpoint validation
-class Role(str, Enum):
-    """Valid roles for profile scoring"""
-    CTO = "CTO"
-    CIO = "CIO"
-    CISO = "CISO"
 
 
 def normalize_linkedin_url(url: str) -> str:
@@ -638,79 +628,6 @@ async def delete_profile(
         )
 
 
-@app.get(
-    "/api/v1/profiles/{profile_id}/score",
-    response_model=ScoringResponse,
-    responses={
-        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
-        404: {"model": ErrorResponse, "description": "Profile not found"},
-        422: {"model": ValidationErrorResponse, "description": "Validation error"},
-        500: {"model": ErrorResponse, "description": "Internal server error"}
-    }
-)
-async def score_profile(
-    profile_id: str,
-    role: Role = Query(..., description="Role to score the profile for (CTO, CIO, or CISO)"),
-    api_key: str = Depends(verify_api_key)
-):
-    """Score a LinkedIn profile for a specific executive role"""
-    try:
-        # Get profile from database
-        controller = get_profile_controller()
-        profile_data = await controller.db_client.get_profile_by_id(profile_id)
-        
-        if not profile_data:
-            error_response = ErrorResponse(
-                error_code="PROFILE_NOT_FOUND",
-                message=f"Profile with ID {profile_id} not found",
-                details={
-                    "profile_id": profile_id,
-                    "operation": "score_profile"
-                }
-            )
-            raise HTTPException(status_code=404, detail=error_response.model_dump())
-        
-        # Initialize scoring engine
-        scoring_engine = ScoringEngine()
-        
-        # Convert database profile to canonical format
-        canonical_profile = CanonicalProfile(**profile_data)
-        
-        # Score the profile for the requested role
-        scoring_response = await scoring_engine.score_profile(canonical_profile, role.value)
-        
-        return scoring_response
-        
-    except HTTPException:
-        # Re-raise HTTP exceptions (like 404)
-        raise
-    except Exception as e:
-        # Log the error for debugging
-        logger.error(
-            f"Scoring engine error: {str(e)}",
-            extra={
-                "profile_id": profile_id,
-                "role": role.value,
-                "exception_type": type(e).__name__,
-                "traceback": traceback.format_exc()
-            }
-        )
-        
-        # Handle scoring engine and other errors
-        error_response = ErrorResponse(
-            error_code="INTERNAL_SERVER_ERROR",
-            message="An unexpected error occurred during scoring",
-            details={
-                "profile_id": profile_id,
-                "role": role.value,
-                "operation": "score_profile",
-                "exception_type": type(e).__name__
-            }
-        )
-        raise HTTPException(
-            status_code=500,
-            detail=error_response.model_dump()
-        )
 
 
 if __name__ == "__main__":
