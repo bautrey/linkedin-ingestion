@@ -98,6 +98,19 @@
 - **Mocking:** pytest-mock for LinkedIn API mocking
 - **Coverage:** pytest-cov for test coverage reporting
 
+#### MANDATORY Test Execution Standards
+🚨 **NEVER HIDE TEST OUTPUT** - Project owner requires full test visibility
+
+**Required Commands:**
+- ✅ `source venv/bin/activate && pytest` (shows full dots format)
+- ✅ `pytest` (if venv already active)
+- ❌ **NEVER** `pytest | tail -X` (hides test execution)
+- ❌ **NEVER** `pytest | head -X` (truncates output)
+- ❌ **NEVER** use any pipe that hides test results
+
+**Rationale:** Project owner has explicitly requested full test execution visibility.
+Any agent working on this project must show complete pytest output.
+
 ### Monitoring & Logging
 - **Structured Logging:** Python logging with JSON formatting
 - **Health Checks:** FastAPI health endpoint
