@@ -1,8 +1,8 @@
 # Product Roadmap
 
-> Last Updated: 2025-07-30
-> Version: 2.0.0
-> Status: ✅ PRODUCTION STABLE - Ready for next phase of features
+> Last Updated: 2025-08-07
+> Version: 2.1.0
+> Status: ✅ PRODUCTION STABLE - V1.8 cleaned up, ready for V1.85 LLM scoring
 
 ## Current Status (July 2025)
 
@@ -28,10 +28,11 @@
 - **Spec**: @agent-os/specs/2025-07-30-v1.6-canonical-profile-models/ (✅ COMPLETE)
 - **Deliverables**: CanonicalProfile and CanonicalCompany models, zero deprecation warnings
 
-**🚧 NEXT PLANNED SEQUENCE: Profile Intelligence Platform**
-- **v1.7**: Cassidy-to-Canonical Adapter - Decouple from external API format
-- **v1.8**: Candidate Fit Scoring API - Algorithm for Fortium partner fit assessment
-- **v1.9**: Basic Admin UI - shadcn/ui interface for profile management
+**🚧 CURRENT DEVELOPMENT SEQUENCE: AI-Powered Profile Intelligence**
+- **v1.7**: ✅ Cassidy-to-Canonical Adapter - Decouple from external API format (COMPLETE)
+- **v1.8**: 🗑️ REMOVED - Keyword-based scoring system (replaced by V1.85 LLM approach)
+- **v1.85**: 🚧 LLM-Based Profile Scoring - AI-driven executive role assessment with OpenAI
+- **v1.9**: Enhanced Admin UI - shadcn/ui interface with AI scoring insights and management
 
 **📋 PHASE PROGRESS:**
 - [x] Issue identification and analysis (Gregory Pascuzzi profile case)
