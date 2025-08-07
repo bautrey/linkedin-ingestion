@@ -30,3 +30,14 @@ When asked to work on this codebase:
 - Product-specific files in `.agent-os/product/` override any global standards
 - User's specific instructions override (or amend) instructions found in `.agent-os/specs/...`
 - Always adhere to established patterns, code style, and best practices documented above.
+
+## 🚨 MANDATORY PROJECT RULES
+
+### Test Execution Visibility
+**NEVER HIDE TEST OUTPUT** - Project owner explicitly requires full test visibility
+
+- ✅ **ALWAYS** run: `source venv/bin/activate && pytest` (shows full dots format)
+- ❌ **NEVER** run: `pytest | tail -X` (hides test execution)
+- ❌ **NEVER** use any pipe that truncates or hides pytest output
+
+*This rule is also documented in `agent-os/product/tech-stack.md` Testing Framework section*
