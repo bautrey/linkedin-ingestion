@@ -95,6 +95,35 @@ export OPENAI_API_KEY=sk-[actual-key-here]
 python -m pytest tests/test_llm_scoring_service.py
 ```
 
+## Production Deployment Critical Lessons
+
+### Domain Name Discovery Failure
+**CRITICAL ERROR**: Agent incorrectly assumed production domain was `linkedin-ingestion-production.up.railway.app` instead of discovering actual URL `smooth-mailbox-production.up.railway.app`.
+
+**Impact**: 2+ hours of debugging 404 errors due to wrong domain
+**Root Cause**: Made assumptions instead of checking Railway dashboard or deployment logs
+**Fix**: Always verify actual deployed domain before making API calls
+
+### Local Testing vs Production Reality Gap
+**Problem**: All 247 local tests passing gave false confidence that system was production-ready
+**Reality**: Production was completely broken due to:
+- Race conditions in async job processing not exposed locally
+- Import errors (`Experience` vs `CanonicalExperienceEntry`) that worked in local environment
+- Status update timing issues between controller and service layers
+- Configuration differences between local and deployed environments
+
+**Learning**: Local testing success ≠ production readiness. Need production-first validation approach.
+
+### Async Job Processing Race Condition
+**Issue**: Controller updated job status to "processing" before LLM service could process it, causing jobs to fail gatekeeper checks
+**Solution**: Remove duplicate status updates, let LLM service handle all status transitions
+**Pattern**: Async background tasks need careful coordination between components
+
+### Import Error in Production
+**Issue**: `from app.models.canonical.profile import Experience, Education` failed in production
+**Root Cause**: Actual class names were `CanonicalExperienceEntry` and `CanonicalEducationEntry`
+**Learning**: Production environments can expose import issues that work locally due to Python path differences
+
 ---
 
 ## Session: V1.8 Task 2 Completion (2025-08-04)
