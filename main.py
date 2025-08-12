@@ -508,6 +508,52 @@ async def health_check():
         raise HTTPException(status_code=503, detail=error_response.model_dump())
 
 
+@app.get("/api/v1/openai-test")
+async def openai_test(
+    api_key: str = Depends(verify_api_key)
+):
+    """Test OpenAI configuration and connectivity"""
+    try:
+        from app.services.llm_scoring_service import LLMScoringService
+        
+        # Initialize the service
+        llm_service = LLMScoringService()
+        
+        # Check configuration
+        has_api_key = bool(llm_service.api_key and llm_service.api_key != "your-openai-key-here-or-set-in-railway")
+        has_client = llm_service.client is not None
+        
+        # Try a simple token counting test
+        test_text = "This is a simple test for OpenAI integration"
+        token_count = llm_service.count_tokens(test_text)
+        
+        return {
+            "status": "openai_configuration_check",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "has_api_key": has_api_key,
+            "api_key_preview": llm_service.api_key[:10] + "..." if llm_service.api_key else None,
+            "has_client": has_client,
+            "default_model": llm_service.default_model,
+            "max_tokens": llm_service.max_tokens,
+            "temperature": llm_service.temperature,
+            "token_counting_test": {
+                "text": test_text,
+                "token_count": token_count
+            }
+        }
+    except Exception as e:
+        error_response = ErrorResponse(
+            error_code="OPENAI_TEST_FAILED",
+            message=f"OpenAI test failed: {str(e)}",
+            details={
+                "service": "linkedin-ingestion",
+                "component": "openai_test",
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=500, detail=error_response.model_dump())
+
+
 # Initialize ProfileController
 def get_profile_controller():
     return ProfileController(get_db_client(), get_cassidy_client(), get_linkedin_workflow())
