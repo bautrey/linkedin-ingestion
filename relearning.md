@@ -31,6 +31,10 @@
   - Fixed PostgreSQL syntax issue: `CREATE TRIGGER IF NOT EXISTS` → `DROP TRIGGER IF EXISTS` + `CREATE TRIGGER`
   - Used correct CLI command: `supabase db push --password "dvm2rjq6ngk@GZN-wth"`
   - Migration applied successfully with all constraints and indexes
+- **Production Test**: Job creation works (job ID: ee55144a-258b-49c8-88e7-26f2a0ea6152)
+- **V1.85 Progress**: Tasks 1-3 fully implemented per commit d222a87 (60% complete)
+- **Current Blocker**: Task 4 - Async job processing system (jobs stuck in "processing" status)
+- **Next Session Focus**: Implement background worker to process scoring jobs
 
 ## Railway Deployment Monitoring
 **Date**: 2025-08-12
