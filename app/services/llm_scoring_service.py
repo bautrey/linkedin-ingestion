@@ -508,7 +508,12 @@ Please provide your evaluation in JSON format:"""
             )
             raise
     
-    async def process_scoring_job(self, job_id: str) -> bool:
+    async def process_scoring_job(
+        self, 
+        job_id: str, 
+        max_tokens: Optional[int] = None, 
+        temperature: Optional[float] = None
+    ) -> bool:
         """
         Process an async scoring job
         
@@ -562,7 +567,9 @@ Please provide your evaluation in JSON format:"""
             raw_response, parsed_score = await self.score_profile(
                 profile=profile,
                 prompt=job.prompt,
-                model=job.model_name
+                model=job.model_name,
+                max_tokens=max_tokens,
+                temperature=temperature
             )
             
             # Update job with results
@@ -597,10 +604,7 @@ Please provide your evaluation in JSON format:"""
     
     async def _get_profile_by_id(self, profile_id: str) -> Optional[CanonicalProfile]:
         """
-        Get CanonicalProfile by ID
-        
-        This is a placeholder that needs to be implemented based on 
-        the existing profile retrieval system.
+        Get CanonicalProfile by ID from database
         
         Args:
             profile_id: Profile UUID
@@ -608,15 +612,92 @@ Please provide your evaluation in JSON format:"""
         Returns:
             CanonicalProfile instance or None if not found
         """
-        # TODO: Implement profile retrieval
-        # This would typically involve:
-        # 1. Querying the database for the linkedin_profiles record
-        # 2. Converting the stored data back to CanonicalProfile format
-        # 3. Handling any data transformation needed
-        
-        self.logger.warning(
-            "Profile retrieval not implemented yet",
-            profile_id=profile_id,
-            todo="Implement _get_profile_by_id method"
-        )
-        return None
+        try:
+            # Import here to avoid circular imports
+            from app.database.supabase_client import SupabaseClient
+            from app.models.canonical.profile import (
+                CanonicalProfile, Experience, Education
+            )
+            from pydantic import HttpUrl
+            from datetime import datetime, timezone
+            
+            # Get profile data from database
+            db_client = SupabaseClient()
+            profile_data = await db_client.get_profile_by_id(profile_id)
+            
+            if not profile_data:
+                self.logger.info("Profile not found in database", profile_id=profile_id)
+                return None
+            
+            # Convert database record to CanonicalProfile
+            # Handle experiences
+            experiences = []
+            if profile_data.get('experience'):
+                for exp_data in profile_data['experience']:
+                    if isinstance(exp_data, dict):
+                        experiences.append(Experience(
+                            title=exp_data.get('title'),
+                            company=exp_data.get('company'),
+                            duration=exp_data.get('duration'),
+                            description=exp_data.get('description'),
+                            location=exp_data.get('location')
+                        ))
+            
+            # Handle educations
+            educations = []
+            if profile_data.get('education'):
+                for edu_data in profile_data['education']:
+                    if isinstance(edu_data, dict):
+                        educations.append(Education(
+                            school=edu_data.get('school'),
+                            degree=edu_data.get('degree'),
+                            field_of_study=edu_data.get('field_of_study'),
+                            date_range=edu_data.get('date_range'),
+                            description=edu_data.get('description')
+                        ))
+            
+            # Parse timestamp
+            timestamp = None
+            if profile_data.get('timestamp'):
+                try:
+                    timestamp = datetime.fromisoformat(profile_data['timestamp'].replace('Z', '+00:00'))
+                except ValueError:
+                    timestamp = datetime.now(timezone.utc)
+            else:
+                timestamp = datetime.now(timezone.utc)
+            
+            # Create CanonicalProfile instance
+            canonical_profile = CanonicalProfile(
+                profile_id=profile_data.get('linkedin_id', profile_data['id']),
+                full_name=profile_data.get('name'),
+                linkedin_url=HttpUrl(profile_data['url']) if profile_data.get('url') else None,
+                job_title=profile_data.get('position'),
+                company=profile_data.get('current_company', {}).get('name') if profile_data.get('current_company') else None,
+                about=profile_data.get('about'),
+                city=profile_data.get('city'),
+                country=profile_data.get('country_code'),
+                connection_count=profile_data.get('connections'),
+                follower_count=profile_data.get('followers'),
+                experiences=experiences,
+                educations=educations,
+                timestamp=timestamp
+            )
+            
+            self.logger.info(
+                "Profile retrieved and converted to CanonicalProfile",
+                profile_id=profile_id,
+                profile_name=canonical_profile.full_name,
+                experience_count=len(experiences),
+                education_count=len(educations)
+            )
+            
+            return canonical_profile
+            
+        except Exception as e:
+            self.logger.error(
+                "Failed to retrieve profile by ID",
+                profile_id=profile_id,
+                error=str(e),
+                error_type=type(e).__name__
+            )
+            return None

@@ -14,6 +14,7 @@ class Settings(BaseSettings):
         env_file=[".env.production", ".env"],  # Try production first, fallback to .env
         env_file_encoding="utf-8",
         case_sensitive=True,
+        extra="ignore"  # Ignore extra environment variables
     )
 
     # Application

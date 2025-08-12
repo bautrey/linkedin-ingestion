@@ -64,6 +64,37 @@ supabase db push --password "$SUPABASE_PASSWORD"
 - ✅ **Environment Security**: Password stored properly in .env file
 - ✅ **Process Documentation**: Complete step-by-step process recorded
 
+#### V1.85 OpenAI API Key Security Configuration
+
+**CRITICAL LEARNING**: OpenAI API key is stored in Railway environment variables, not in local .env files
+
+**Background**: GitHub applies high security scanning to repositories and will flag OpenAI API keys in code/config files. To prevent this:
+
+**Production Configuration**:
+- ✅ **OpenAI API Key**: Set directly in Railway environment variables dashboard
+- ✅ **Local Development**: .env file contains placeholder `OPENAI_API_KEY=your-openai-key-here-or-set-in-railway`
+- ✅ **Security**: Real key never committed to repository
+- ✅ **Deployment**: Railway automatically injects environment variables into production
+
+**Testing Implications**:
+- Local tests may use placeholder API key (causing auth failures in tests)
+- Production scoring jobs will use real Railway environment variable
+- Test failures related to "Incorrect API key provided" are expected in local environment
+- This is by design for security compliance
+
+**Railway Environment Variables Setup**:
+```bash
+# In Railway dashboard > Project > Environment Variables:
+OPENAI_API_KEY=sk-[actual-key-here]
+```
+
+**Local Testing with Real Key** (if needed):
+```bash
+# Temporarily set for testing (never commit)
+export OPENAI_API_KEY=sk-[actual-key-here]
+python -m pytest tests/test_llm_scoring_service.py
+```
+
 ---
 
 ## Session: V1.8 Task 2 Completion (2025-08-04)
