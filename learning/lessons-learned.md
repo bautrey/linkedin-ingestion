@@ -1,8 +1,70 @@
 # Lessons Learned - LinkedIn Ingestion Project
 
-> Last Updated: 2025-07-31T14:05:00Z
-> Current Version: 1.0.0
+> Last Updated: 2025-08-12T17:43:00Z
+> Current Version: 1.1.0
 
+
+## Session: V1.85 Database Migration Success (2025-08-12)
+
+### CRITICAL: Supabase Production Migration Process - DEFINITIVE APPROACH
+
+**NEVER FORGET**: This process was figured out multiple times - use it every time
+
+#### The ONLY Way to Apply Schema Changes to Production Supabase
+
+**Step 1: Create Migration File**
+```bash
+# Create migration in supabase/migrations/
+supabase migration new [description]
+# OR manually create: supabase/migrations/YYYYMMDDHHMMSS_[description].sql
+```
+
+**Step 2: Apply to Production**
+```bash
+# NEVER use psql, pooler, or connection strings
+# ALWAYS use Supabase CLI with production password from .env
+source .env
+supabase db push --password "$SUPABASE_PASSWORD"
+```
+
+**Step 3: Handle PostgreSQL Syntax Issues**
+- PostgreSQL does NOT support `CREATE TRIGGER IF NOT EXISTS`
+- Use: `DROP TRIGGER IF EXISTS [name] ON [table]; CREATE TRIGGER [name]...`
+- Always test trigger syntax in migration files
+
+**Critical Commands That DON'T Work**:
+- ❌ `psql "postgresql://postgres:password@host:port/db"`
+- ❌ `psql -h aws-0-us-west-1.pooler.supabase.com`
+- ❌ Any direct PostgreSQL connection attempts
+- ❌ MCP tools or API-based approaches
+
+**The ONLY Command That Works**:
+- ✅ `supabase db push --password "$SUPABASE_PASSWORD"` (after sourcing .env)
+
+**Environment Setup**:
+```bash
+# Check project is linked
+supabase projects list
+# Should show: ● yirtidxcgkkoizwqpdfv | bautrey's Project
+
+# Verify migration directory exists
+ls supabase/migrations/
+
+# Load environment variables (password should be in .env file)
+source .env
+supabase db push --password "$SUPABASE_PASSWORD"
+```
+
+**Password Storage**: In `.env` file as `SUPABASE_PASSWORD=...` (NEVER in documentation files)
+
+#### V1.85 Database Migration Achievement
+- ✅ **scoring_jobs table**: Successfully deployed to production Supabase
+- ✅ **Production API**: Scoring job creation working (tested with real profile)
+- ✅ **PostgreSQL Syntax Fix**: Resolved CREATE TRIGGER compatibility issue
+- ✅ **Environment Security**: Password stored properly in .env file
+- ✅ **Process Documentation**: Complete step-by-step process recorded
+
+---
 
 ## Session: V1.8 Task 2 Completion (2025-08-04)
 
