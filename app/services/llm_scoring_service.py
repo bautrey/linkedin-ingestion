@@ -523,47 +523,62 @@ Please provide your evaluation in JSON format:"""
         Returns:
             bool: True if successful, False otherwise
         """
+        self.logger.info("STEP 1: Starting process_scoring_job", job_id=job_id)
+        
         job = await self.job_service.get_job(job_id)
         if not job:
-            self.logger.error("Scoring job not found", job_id=job_id)
+            self.logger.error("STEP 1 FAILED: Scoring job not found", job_id=job_id)
             return False
         
         if job.status != JobStatus.PENDING:
             self.logger.warning(
-                "Job not in pending status", 
+                "STEP 1 FAILED: Job not in pending status", 
                 job_id=job_id, 
                 current_status=job.status
             )
             return False
         
         self.logger.info(
-            "Processing scoring job",
+            "STEP 2: Job validation passed, starting processing",
             job_id=job_id,
             profile_id=job.profile_id,
-            model_name=job.model_name
+            model_name=job.model_name,
+            prompt_length=len(job.prompt)
         )
         
         try:
             # Update job status to processing
+            self.logger.info("STEP 3: Updating job status to PROCESSING", job_id=job_id)
             started_at = datetime.now(timezone.utc)
             await self.job_service.update_job_status(
                 job_id, 
                 JobStatus.PROCESSING, 
                 started_at=started_at
             )
+            self.logger.info("STEP 3 SUCCESS: Job status updated to PROCESSING", job_id=job_id)
             
-            # Get profile data (this would need to be implemented)
-            # For now, we'll need to add a method to get CanonicalProfile by ID
-            # This is a dependency on the profile retrieval system
+            # Get profile data
+            self.logger.info("STEP 4: Retrieving profile data", job_id=job_id, profile_id=job.profile_id)
             profile = await self._get_profile_by_id(job.profile_id)
             if not profile:
+                self.logger.error("STEP 4 FAILED: Profile not found, failing job", job_id=job_id, profile_id=job.profile_id)
                 await self.job_service.fail_job(
                     job_id, 
                     f"Profile not found: {job.profile_id}"
                 )
                 return False
             
+            self.logger.info(
+                "STEP 4 SUCCESS: Profile retrieved", 
+                job_id=job_id,
+                profile_id=job.profile_id,
+                profile_name=profile.full_name,
+                experience_count=len(profile.experiences),
+                education_count=len(profile.educations)
+            )
+            
             # Score the profile
+            self.logger.info("STEP 5: Starting LLM scoring", job_id=job_id, model=job.model_name)
             raw_response, parsed_score = await self.score_profile(
                 profile=profile,
                 prompt=job.prompt,
@@ -571,8 +586,15 @@ Please provide your evaluation in JSON format:"""
                 max_tokens=max_tokens,
                 temperature=temperature
             )
+            self.logger.info(
+                "STEP 5 SUCCESS: LLM scoring completed", 
+                job_id=job_id, 
+                tokens_used=raw_response.get("usage", {}).get("total_tokens", 0),
+                score_keys=list(parsed_score.keys()) if parsed_score else []
+            )
             
             # Update job with results
+            self.logger.info("STEP 6: Completing job with results", job_id=job_id)
             await self.job_service.complete_job(
                 job_id=job_id,
                 llm_response=raw_response,
@@ -580,7 +602,7 @@ Please provide your evaluation in JSON format:"""
             )
             
             self.logger.info(
-                "Scoring job completed successfully",
+                "STEP 6 SUCCESS: Scoring job completed successfully",
                 job_id=job_id,
                 profile_id=job.profile_id,
                 tokens_used=raw_response.get("usage", {}).get("total_tokens", 0)
@@ -593,13 +615,20 @@ Please provide your evaluation in JSON format:"""
             error_message = f"{type(e).__name__}: {str(e)}"
             
             self.logger.error(
-                "Scoring job processing failed",
+                "SCORING JOB PROCESSING FAILED - FULL ERROR",
                 job_id=job_id,
                 profile_id=job.profile_id,
-                error=error_message
+                error_message=error_message,
+                error_type=type(e).__name__,
+                error_details=str(e)
             )
             
-            await self.job_service.fail_job(job_id, error_message)
+            try:
+                await self.job_service.fail_job(job_id, error_message)
+                self.logger.info("Job marked as failed", job_id=job_id)
+            except Exception as fail_error:
+                self.logger.error("Failed to mark job as failed", job_id=job_id, fail_error=str(fail_error))
+            
             return False
     
     async def _get_profile_by_id(self, profile_id: str) -> Optional[CanonicalProfile]:
