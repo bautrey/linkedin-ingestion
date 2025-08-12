@@ -645,7 +645,7 @@ Please provide your evaluation in JSON format:"""
             # Import here to avoid circular imports
             from app.database.supabase_client import SupabaseClient
             from app.models.canonical.profile import (
-                CanonicalProfile, Experience, Education
+                CanonicalProfile, CanonicalExperienceEntry, CanonicalEducationEntry
             )
             from pydantic import HttpUrl
             from datetime import datetime, timezone
@@ -664,7 +664,7 @@ Please provide your evaluation in JSON format:"""
             if profile_data.get('experience'):
                 for exp_data in profile_data['experience']:
                     if isinstance(exp_data, dict):
-                        experiences.append(Experience(
+                        experiences.append(CanonicalExperienceEntry(
                             title=exp_data.get('title'),
                             company=exp_data.get('company'),
                             duration=exp_data.get('duration'),
@@ -677,7 +677,7 @@ Please provide your evaluation in JSON format:"""
             if profile_data.get('education'):
                 for edu_data in profile_data['education']:
                     if isinstance(edu_data, dict):
-                        educations.append(Education(
+                        educations.append(CanonicalEducationEntry(
                             school=edu_data.get('school'),
                             degree=edu_data.get('degree'),
                             field_of_study=edu_data.get('field_of_study'),
