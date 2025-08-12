@@ -12,6 +12,7 @@ from fastapi import FastAPI, HTTPException, Header, Depends, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, HttpUrl, Field, ValidationError, field_validator
 from typing import Dict, Any, Optional, List
 from datetime import datetime, timezone
@@ -33,6 +34,8 @@ from app.exceptions import (
     ProfileAlreadyExistsError
 )
 from app.models.canonical import CanonicalProfile
+from app.models.scoring import ScoringRequest, ScoringResponse, JobRetryRequest
+from app.controllers.scoring_controllers import ProfileScoringController, ScoringJobController
 
 
 def normalize_linkedin_url(url: str) -> str:
@@ -628,6 +631,78 @@ async def delete_profile(
         )
 
 
+# Initialize Scoring Controllers
+def get_profile_scoring_controller():
+    return ProfileScoringController()
+
+def get_scoring_job_controller():
+    return ScoringJobController()
+
+
+# V1.85 LLM Profile Scoring Endpoints
+@app.post(
+    "/api/v1/profiles/{profile_id}/score",
+    response_model=ScoringResponse,
+    status_code=201,
+    responses={
+        400: {"model": ErrorResponse, "description": "Invalid profile ID or malformed request"},
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Profile not found"},
+        429: {"model": ErrorResponse, "description": "Rate limit exceeded"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def create_scoring_job(
+    profile_id: str,
+    request: ScoringRequest,
+    api_key: str = Depends(verify_api_key)
+):
+    """Initiate LLM-based scoring evaluation for a LinkedIn profile"""
+    controller = get_profile_scoring_controller()
+    return await controller.create_scoring_job(profile_id, request)
+
+
+@app.get(
+    "/api/v1/scoring-jobs/{job_id}",
+    response_model=ScoringResponse,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Job not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def get_scoring_job_status(
+    job_id: str,
+    api_key: str = Depends(verify_api_key)
+):
+    """Check the status and retrieve results of a scoring job"""
+    controller = get_scoring_job_controller()
+    response = await controller.get_job_status(job_id)
+    return JSONResponse(
+        status_code=200,
+        content=jsonable_encoder(response, exclude_none=True)
+    )
+
+
+@app.post(
+    "/api/v1/scoring-jobs/{job_id}/retry",
+    response_model=ScoringResponse,
+    status_code=200,
+    responses={
+        400: {"model": ErrorResponse, "description": "Job not in failed state or retry limit exceeded"},
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Job not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def retry_scoring_job(
+    job_id: str,
+    retry_request: Optional[JobRetryRequest] = None,
+    api_key: str = Depends(verify_api_key)
+):
+    """Retry a failed scoring job"""
+    controller = get_scoring_job_controller()
+    return await controller.retry_job(job_id, retry_request)
 
 
 if __name__ == "__main__":

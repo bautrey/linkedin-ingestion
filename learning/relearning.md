@@ -164,6 +164,35 @@ If a task, subtask, learning document, or requirement explicitly tells you to do
 **INITIATIVE REQUIREMENT:**
 When you read a task/subtask that says to do something, that IS the user's instruction to do it. Execute immediately without confirmation.
 
+---
+
+## 🚨 CRITICAL EFFICIENCY FAILURES (2025-08-11)
+
+### Virtual Environment Path Confusion
+
+**Problem**: Agent wasted tokens trying multiple virtual environment paths:
+- Attempted `python` without venv activation
+- Tried `python3` without venv activation  
+- Attempted `.venv/bin/activate` (wrong path)
+- Finally found correct `venv/bin/activate`
+
+**Correct Process**:
+1. **FIRST**: `ls -la | grep -E "(venv|\.venv|env)"` - identify venv directory
+2. **VERIFY**: Check activation script exists before sourcing
+3. **ACTIVATE**: `source venv/bin/activate && python run_tests.py`
+
+**Rule**: NEVER guess virtual environment paths - always verify first
+
+### AgentOS Hidden Directory Error
+
+**Problem**: Agent searched `.agent-os/` (hidden) when Burke eliminated all hidden directories
+- Correct path: `agent-os/product/roadmap.md` (visible directory)
+- Wrong path: `.agent-os/product/roadmap.md` (doesn't exist)
+
+**Rule**: AgentOS uses VISIBLE directories (`agent-os/`) not hidden (`.agent-os/`)
+
+---
+
 ## Recovery Process Integration
 
 This learning must be integrated into session recovery to ensure:
@@ -171,3 +200,5 @@ This learning must be integrated into session recovery to ensure:
 2. Spec creation is never done ad-hoc
 3. All specs maintain proper structure and documentation
 4. User approval is always obtained before implementation
+5. Virtual environment structure is verified before execution
+6. AgentOS paths use visible directories only

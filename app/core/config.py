@@ -51,6 +51,12 @@ class Settings(BaseSettings):
     VECTOR_DIMENSION: int = Field(default=1536, description="Vector embedding dimension")
     SIMILARITY_THRESHOLD: float = Field(default=0.8, description="Vector similarity threshold")
     
+    # OpenAI Configuration
+    OPENAI_API_KEY: Optional[str] = Field(default=None, description="OpenAI API key for LLM scoring")
+    OPENAI_DEFAULT_MODEL: str = Field(default="gpt-3.5-turbo", description="Default OpenAI model for scoring")
+    OPENAI_MAX_TOKENS: int = Field(default=2000, description="Maximum tokens for OpenAI responses")
+    OPENAI_TEMPERATURE: float = Field(default=0.1, description="Temperature for OpenAI requests")
+    
     # Rate Limiting
     RATE_LIMIT_PER_MINUTE: int = Field(default=60, description="API rate limit per minute")
     CASSIDY_RATE_LIMIT: int = Field(default=10, description="Cassidy API calls per minute")

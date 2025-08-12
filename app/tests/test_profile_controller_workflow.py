@@ -7,6 +7,9 @@ instead of bypassing to cassidy_client.fetch_profile()
 
 import pytest
 from unittest.mock import Mock, AsyncMock, patch
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 from main import ProfileController, ProfileCreateRequest, normalize_linkedin_url
 from app.cassidy.models import ProfileIngestionRequest
 from app.cassidy.workflows import EnrichedProfile

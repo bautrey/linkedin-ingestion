@@ -8,6 +8,9 @@ for duplicate handling, force_create, and include_companies options
 import pytest
 from unittest.mock import AsyncMock, MagicMock
 from fastapi.testclient import TestClient
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 from main import app, ProfileController, ProfileCreateRequest
 from app.database.supabase_client import SupabaseClient
 from app.cassidy.workflows import LinkedInWorkflow

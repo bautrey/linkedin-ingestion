@@ -246,3 +246,31 @@ git push origin master && railway up --detach
 
 **Impact**: Clean 167-test baseline, streamlined codebase ready for V1.85 LLM scoring.
 
+## 2025-08-11: V1.85 LLM-Based Scoring Architecture
+
+**ID:** DEC-006
+**Status:** Accepted
+**Category:** Technical
+**Related Spec:** @agent-os/specs/2025-08-11-v185-llm-profile-scoring/
+
+### Decision
+
+Implement flexible AI-driven profile scoring using OpenAI API with prompt-driven evaluation criteria, replacing any fixed scoring algorithms with an adaptable LLM-based assessment system.
+
+### Context
+
+Fortium needs dynamic candidate evaluation capabilities that can adapt to different client requirements and assessment criteria. The removed V1.8 keyword-based approach was too rigid and couldn't handle the nuanced evaluation needed for executive roles like CIO/CTO/CISO assessments.
+
+### Consequences
+
+**Positive:**
+- Unlimited evaluation criteria flexibility through custom prompts
+- Sophisticated candidate assessment capabilities matching human evaluation quality
+- Adaptable system that can evolve with Fortium's changing needs
+- JSON-structured responses enable systematic scoring and comparison
+
+**Negative:**
+- External dependency on OpenAI API and associated costs per evaluation
+- Requires careful prompt engineering for consistent evaluation results
+- Asynchronous complexity due to LLM response timing requirements
+

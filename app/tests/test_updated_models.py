@@ -6,10 +6,10 @@ Test the updated models against the sample LinkedIn profile data
 import sys
 import os
 
-# Add the app directory to the path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'app'))
+# Add the project root directory to the path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
 
-from cassidy.models import LinkedInProfile, ExperienceEntry, EducationEntry
+from app.cassidy.models import LinkedInProfile, ExperienceEntry, EducationEntry
 
 # Sample response from Cassidy
 SAMPLE_RESPONSE = {
