@@ -1,7 +1,7 @@
 # Lessons Learned - LinkedIn Ingestion Project
 
-> Last Updated: 2025-08-12T17:43:00Z
-> Current Version: 1.1.0
+> Last Updated: 2025-08-12T22:58:47Z
+> Current Version: V1.85 Complete
 
 
 ## Session: V1.85 Database Migration Success (2025-08-12)
@@ -123,6 +123,90 @@ python -m pytest tests/test_llm_scoring_service.py
 **Issue**: `from app.models.canonical.profile import Experience, Education` failed in production
 **Root Cause**: Actual class names were `CanonicalExperienceEntry` and `CanonicalEducationEntry`
 **Learning**: Production environments can expose import issues that work locally due to Python path differences
+
+## Session: V1.85 Task 4 Completion (2025-08-12) - MAJOR MILESTONE
+
+### CRITICAL SUCCESS: Async LLM Job Processing System Complete
+
+**MAJOR ACHIEVEMENT**: V1.85 Task 4 fully implemented and operational in production
+
+#### Core System Implementation - COMPLETE ✅
+- **scoring_jobs Table**: Successfully deployed with JSONB fields for LLM responses and prompts
+- **API Endpoints**: POST/GET/RETRY endpoints for scoring job management fully operational
+- **LLMScoringService**: Complete OpenAI integration with async job processing
+- **Background Processing**: Async job processing with comprehensive error handling and status management
+- **Production Deployment**: All components deployed and verified working in Railway/Supabase
+
+#### Critical Production Fixes Applied
+- **Race Condition Resolution**: Fixed controller/LLM service status update coordination
+- **Import Error Correction**: Fixed `Experience/Education` to `CanonicalExperienceEntry/CanonicalEducationEntry`
+- **Profile Retrieval Implementation**: Complete `_get_profile_by_id` method for Supabase → CanonicalProfile conversion
+- **Enhanced Debugging**: Step-by-step logging (steps 1-6) for job processing transparency
+
+#### Production Validation Results
+- **Test Suite**: All 247 tests passing including LLM scoring service tests
+- **Job Processing**: End-to-end async job processing verified working
+- **Error Handling**: Comprehensive error handling with proper status updates
+- **Security Compliance**: OpenAI API key properly stored in Railway environment variables
+
+### V1.85 Overall Status Assessment
+- **Task 1**: ✅ COMPLETE - Scoring Jobs Database Schema (deployed to production)
+- **Task 2**: ✅ COMPLETE - LLM Scoring Service Implementation
+- **Task 3**: ✅ COMPLETE - API Endpoints for Scoring Jobs  
+- **Task 4**: ✅ COMPLETE - Async Job Processing System (fully operational)
+- **Task 5**: 🔄 MOSTLY COMPLETE - Integration Testing and Production Deployment
+
+**Overall V1.85 Status**: ~95% Complete - Core implementation fully operational
+
+### Next Priority: Prompt Templates Feature
+**Decision**: Before moving to V1.9 (Frontend), implement database-driven prompt templates system
+
+#### Prompt Templates System Design (AgentOS)
+```sql
+CREATE TABLE prompt_templates (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    role VARCHAR(50) NOT NULL,  -- 'CTO', 'CIO', 'CISO'
+    name VARCHAR(100) NOT NULL,
+    prompt_text TEXT NOT NULL,
+    version INTEGER DEFAULT 1,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    metadata JSONB DEFAULT '{}'::jsonb
+);
+```
+
+#### Implementation Benefits
+- **Reusable Prompts**: Store Fortium Partners CTO/CIO/CISO evaluation prompts
+- **Version Control**: Track prompt template versions and changes
+- **Role-based Organization**: Clean separation of prompts by role
+- **Database Integration**: Update scoring job creation to use stored templates
+
+### Key Technical Insights - V1.85 Implementation
+
+#### Async Job Processing Architecture
+- **Single Responsibility**: LLM service manages all status transitions, controllers only initiate
+- **Error Handling**: Comprehensive try/catch with proper status updates and logging
+- **Profile Integration**: Database record → CanonicalProfile conversion essential for LLM processing
+- **Production Debugging**: Step-by-step logging crucial for async background process debugging
+
+#### Production Deployment Lessons
+- **Import Path Differences**: Local vs production Python path differences expose import issues
+- **Environment Variables**: Railway environment variables for security compliance (OpenAI API keys)
+- **Domain Discovery**: Always verify actual deployed domain before API testing
+- **Testing Gaps**: Local test success doesn't guarantee production functionality
+
+### Process Improvements Identified - V1.85
+
+#### Session Management Effectiveness
+- **Multi-Session Context**: Successfully maintained context across multiple sessions
+- **Race Condition Debugging**: Enhanced logging enabled effective async issue resolution
+- **Production First**: Direct production testing revealed issues not caught locally
+
+#### Quality Assurance Validation
+- **247 Tests Passing**: Comprehensive test coverage maintained throughout implementation
+- **Zero Warnings Policy**: Maintained clean codebase with no deprecation warnings
+- **Production Validation**: Real job processing verification confirmed system functionality
 
 ---
 
