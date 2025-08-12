@@ -202,14 +202,7 @@ class ProfileScoringController(LoggerMixin):
         try:
             self.logger.info("Starting background scoring job processing", job_id=job_id)
             
-            # Update status to processing
-            await self.job_service.update_job_status(
-                job_id=job_id,
-                status=JobStatus.PROCESSING,
-                started_at=datetime.now(timezone.utc)
-            )
-            
-            # Process with LLM service
+            # Process with LLM service (it will handle status updates)
             await self.llm_service.process_scoring_job(
                 job_id=job_id,
                 max_tokens=request.max_tokens,
