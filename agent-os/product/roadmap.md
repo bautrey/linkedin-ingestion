@@ -1,8 +1,8 @@
 # Product Roadmap
 
-> Last Updated: 2025-08-07
-> Version: 2.1.0
-> Status: ✅ PRODUCTION STABLE - V1.8 cleaned up, ready for V1.85 LLM scoring
+> Last Updated: 2025-08-12
+> Version: 2.2.0
+> Status: 🚧 V1.85 IN PROGRESS - 60% complete, Tasks 1-3 finished, ready for async processing
 
 ## Current Status (July 2025)
 
@@ -32,6 +32,11 @@
 - **v1.7**: ✅ Cassidy-to-Canonical Adapter - Decouple from external API format (COMPLETE)
 - **v1.8**: 🗑️ REMOVED - Keyword-based scoring system (replaced by V1.85 LLM approach)
 - **v1.85**: 🚧 LLM-Based Profile Scoring - AI-driven executive role assessment with OpenAI
+  - ✅ **Task 1**: Database Schema & Job Infrastructure (100% complete)
+  - ✅ **Task 2**: OpenAI Integration & LLM Service (100% complete)
+  - ✅ **Task 3**: API Endpoints Implementation (100% complete)
+  - 🚧 **Task 4**: Async Job Processing System (remaining)
+  - 🚧 **Task 5**: Integration Testing & Production Deployment (remaining)
 - **v1.9**: Enhanced Admin UI - shadcn/ui interface with AI scoring insights and management
 
 **📋 PHASE PROGRESS:**
