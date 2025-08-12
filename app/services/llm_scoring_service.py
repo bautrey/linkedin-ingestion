@@ -47,7 +47,12 @@ class LLMScoringService(LoggerMixin):
             )
         
         # Initialize OpenAI client with v1.x API
-        self.client = AsyncOpenAI(api_key=self.api_key) if self.api_key else None
+        try:
+            self.client = AsyncOpenAI(api_key=self.api_key) if self.api_key else None
+        except TypeError as e:
+            self.logger.warning(f"OpenAI client initialization error: {e}")
+            # Fallback: try minimal initialization
+            self.client = AsyncOpenAI(api_key=self.api_key) if self.api_key else None
         
         # Service dependencies
         self.job_service = ScoringJobService()
