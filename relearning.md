@@ -15,6 +15,59 @@
     -d '{"prompt": "...", "model": "gpt-3.5-turbo"}'
   ```
 
+## Supabase Production Migrations - DEFINITIVE PROCESS
+**Date**: 2025-08-12
+**NEVER FORGET**: This process was figured out multiple times - use it every time
+
+### The ONLY Way to Apply Schema Changes to Production Supabase
+
+**Step 1: Create Migration File**
+```bash
+# Create migration in supabase/migrations/
+supabase migration new [description]
+# OR manually create: supabase/migrations/YYYYMMDDHHMMSS_[description].sql
+```
+
+**Step 2: Apply to Production**
+```bash
+# NEVER use psql, pooler, or connection strings
+# ALWAYS use Supabase CLI with production password from .env
+source .env
+supabase db push --password "$SUPABASE_PASSWORD"
+```
+
+**Step 3: Handle PostgreSQL Syntax Issues**
+- PostgreSQL does NOT support `CREATE TRIGGER IF NOT EXISTS`
+- Use: `DROP TRIGGER IF EXISTS [name] ON [table]; CREATE TRIGGER [name]...`
+- Always test trigger syntax in migration files
+
+**Critical Commands That DON'T Work**:
+- ❌ `psql "postgresql://postgres:password@host:port/db"`
+- ❌ `psql -h aws-0-us-west-1.pooler.supabase.com`
+- ❌ Any direct PostgreSQL connection attempts
+- ❌ MCP tools or API-based approaches
+
+**The ONLY Command That Works**:
+- ✅ `supabase db push --password "$SUPABASE_PASSWORD"` (after sourcing .env)
+
+**Environment Setup**:
+```bash
+# Check project is linked
+supabase projects list
+# Should show: ● yirtidxcgkkoizwqpdfv | bautrey's Project
+
+# Verify migration directory exists
+ls supabase/migrations/
+
+# Load environment variables (password should be in .env file)
+source .env
+supabase db push --password "$SUPABASE_PASSWORD"
+```
+
+**Password**: Stored in `.env` file as `SUPABASE_PASSWORD=...`
+
+---
+
 ## V1.85 LLM Scoring Issues
 **Date**: 2025-08-12
 **Issue**: Scoring job creation fails with "JSON could not be generated, code 404"
@@ -29,7 +82,7 @@
 - **Migration File**: Contains complete table creation with indexes, constraints, RLS policies
 - **Resolution Details**:
   - Fixed PostgreSQL syntax issue: `CREATE TRIGGER IF NOT EXISTS` → `DROP TRIGGER IF EXISTS` + `CREATE TRIGGER`
-  - Used correct CLI command: `supabase db push --password "dvm2rjq6ngk@GZN-wth"`
+  - Used correct CLI command: `supabase db push --password "$SUPABASE_PASSWORD"` (from .env file)
   - Migration applied successfully with all constraints and indexes
 - **Production Test**: Job creation works (job ID: ee55144a-258b-49c8-88e7-26f2a0ea6152)
 - **V1.85 Progress**: Tasks 1-3 fully implemented per commit d222a87 (60% complete)
