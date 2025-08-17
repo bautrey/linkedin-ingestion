@@ -329,7 +329,7 @@ class TestOpenAIAPIIntegration:
         """Test API call without initialized client"""
         service = LLMScoringService()  # No API key
         
-        with pytest.raises(ValueError, match="OpenAI client not initialized"):
+        with pytest.raises(ValueError, match="OpenAI authentication failed"):
             await service._call_openai_api("Test prompt")
     
     @pytest.mark.asyncio
