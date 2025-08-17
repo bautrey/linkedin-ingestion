@@ -53,6 +53,10 @@ class ScoringJob(BaseModel):
         default="gpt-3.5-turbo",
         description="OpenAI model used for scoring"
     )
+    template_id: Optional[str] = Field(
+        default=None,
+        description="ID of prompt template used for scoring (optional)"
+    )
     
     # LLM Response Data
     llm_response: Optional[Dict[str, Any]] = Field(

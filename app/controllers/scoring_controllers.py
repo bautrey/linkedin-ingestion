@@ -20,6 +20,8 @@ from app.models.scoring import (
     ScoringRequest, ScoringResponse, JobRetryRequest,
     JobStatus, ScoringResultData, ScoringErrorData
 )
+from app.models.template_models import EnhancedScoringRequest
+from app.services.template_service import TemplateService
 from app.models.errors import ErrorResponse
 
 
@@ -30,6 +32,7 @@ class ProfileScoringController(LoggerMixin):
         self.db_client = SupabaseClient()
         self.job_service = ScoringJobService()
         self.llm_service = LLMScoringService()
+        self.template_service = TemplateService(supabase_client=self.db_client)
         self._rate_limits = {}  # Simple in-memory rate limiting
     
     def _check_rate_limit(self, profile_id: str) -> bool:
@@ -219,6 +222,213 @@ class ProfileScoringController(LoggerMixin):
                 error_type=type(e).__name__
             )
             # LLMScoringService will handle marking job as failed
+    
+    async def create_enhanced_scoring_job(
+        self,
+        profile_id: str,
+        request: EnhancedScoringRequest
+    ) -> ScoringResponse:
+        """
+        Create a new scoring job supporting both template-based and prompt-based scoring
+        
+        Args:
+            profile_id: UUID of profile to score
+            request: Enhanced scoring request with template_id OR prompt
+            
+        Returns:
+            ScoringResponse: Job creation response
+            
+        Raises:
+            HTTPException: If validation fails or limits exceeded
+        """
+        # Determine if this is template-based or prompt-based scoring
+        template_id = None
+        prompt = None
+        
+        if request.template_id:
+            self.logger.info(
+                "Creating template-based scoring job",
+                profile_id=profile_id,
+                template_id=str(request.template_id)
+            )
+            
+            # Resolve template to get prompt text
+            try:
+                template = await self.template_service.get_template_by_id(str(request.template_id))
+                if not template:
+                    error_response = ErrorResponse(
+                        error_code="TEMPLATE_NOT_FOUND",
+                        message=f"Template with ID {request.template_id} not found",
+                        details={"template_id": str(request.template_id)}
+                    )
+                    raise HTTPException(
+                        status_code=404,
+                        detail=error_response.model_dump()
+                    )
+                
+                if not template.is_active:
+                    error_response = ErrorResponse(
+                        error_code="TEMPLATE_INACTIVE",
+                        message=f"Template {request.template_id} is not active",
+                        details={"template_id": str(request.template_id)}
+                    )
+                    raise HTTPException(
+                        status_code=400,
+                        detail=error_response.model_dump()
+                    )
+                
+                template_id = str(request.template_id)
+                prompt = template.prompt_text
+                
+                self.logger.info(
+                    "Template resolved successfully",
+                    template_id=template_id,
+                    template_name=template.name,
+                    template_category=template.category,
+                    prompt_length=len(prompt)
+                )
+                
+            except HTTPException:
+                raise
+            except Exception as e:
+                self.logger.error(
+                    "Failed to resolve template",
+                    template_id=str(request.template_id),
+                    error=str(e),
+                    error_type=type(e).__name__
+                )
+                error_response = ErrorResponse(
+                    error_code="TEMPLATE_RESOLUTION_ERROR",
+                    message="Failed to resolve template",
+                    details={
+                        "template_id": str(request.template_id),
+                        "error": str(e)
+                    }
+                )
+                raise HTTPException(
+                    status_code=500,
+                    detail=error_response.model_dump()
+                )
+        
+        else:
+            # Prompt-based scoring (backward compatibility)
+            prompt = request.prompt
+            self.logger.info(
+                "Creating prompt-based scoring job",
+                profile_id=profile_id,
+                prompt_length=len(prompt)
+            )
+        
+        # Check rate limits
+        if not self._check_rate_limit(profile_id):
+            error_response = ErrorResponse(
+                error_code="RATE_LIMIT_EXCEEDED",
+                message="Rate limit exceeded for profile scoring",
+                details={
+                    "profile_id": profile_id,
+                    "limit": "10 requests per hour per profile"
+                }
+            )
+            raise HTTPException(
+                status_code=429,
+                detail=error_response.model_dump(),
+                headers={"Retry-After": "3600"}
+            )
+        
+        # Verify profile exists
+        try:
+            profile = await self.db_client.get_profile_by_id(profile_id)
+            if not profile:
+                error_response = ErrorResponse(
+                    error_code="PROFILE_NOT_FOUND",
+                    message=f"Profile with ID {profile_id} not found",
+                    details={"profile_id": profile_id}
+                )
+                raise HTTPException(
+                    status_code=404,
+                    detail=error_response.model_dump()
+                )
+        except HTTPException:
+            raise
+        except Exception as e:
+            self.logger.error(
+                "Profile validation failed",
+                profile_id=profile_id,
+                error=str(e),
+                error_type=type(e).__name__
+            )
+            error_response = ErrorResponse(
+                error_code="PROFILE_ACCESS_ERROR",
+                message="Unable to verify profile access",
+                details={
+                    "profile_id": profile_id,
+                    "error": str(e)
+                }
+            )
+            raise HTTPException(
+                status_code=500,
+                detail=error_response.model_dump()
+            )
+        
+        # Create scoring job with template_id tracking
+        try:
+            job_id = await self.job_service.create_job(
+                profile_id=profile_id,
+                prompt=prompt,
+                model_name=getattr(request, 'model', 'gpt-3.5-turbo'),
+                template_id=template_id
+            )
+            
+            # Convert enhanced request to legacy format for background processing
+            legacy_request = ScoringRequest(
+                prompt=prompt,
+                model=getattr(request, 'model', 'gpt-3.5-turbo'),
+                max_tokens=getattr(request, 'max_tokens', 2000),
+                temperature=getattr(request, 'temperature', 0.1)
+            )
+            
+            # Start background processing (don't await)
+            asyncio.create_task(self._process_scoring_job(job_id, legacy_request))
+            
+            # Return immediate response
+            response = ScoringResponse(
+                job_id=job_id,
+                status=JobStatus.PENDING,
+                profile_id=profile_id,
+                created_at=datetime.now(timezone.utc)
+            )
+            
+            self.logger.info(
+                "Enhanced scoring job created successfully",
+                job_id=job_id,
+                profile_id=profile_id,
+                template_id=template_id,
+                scoring_type="template-based" if template_id else "prompt-based"
+            )
+            
+            return response
+            
+        except Exception as e:
+            self.logger.error(
+                "Failed to create enhanced scoring job",
+                profile_id=profile_id,
+                template_id=template_id,
+                error=str(e),
+                error_type=type(e).__name__
+            )
+            error_response = ErrorResponse(
+                error_code="JOB_CREATION_FAILED",
+                message="Failed to create scoring job",
+                details={
+                    "profile_id": profile_id,
+                    "template_id": template_id,
+                    "error": str(e)
+                }
+            )
+            raise HTTPException(
+                status_code=500,
+                detail=error_response.model_dump()
+            )
 
 
 class ScoringJobController(LoggerMixin):

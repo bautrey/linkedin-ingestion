@@ -768,6 +768,29 @@ async def retry_scoring_job(
     return await controller.retry_job(job_id, retry_request)
 
 
+# V1.88 Enhanced Template-based Scoring Endpoint
+@app.post(
+    "/api/v1/profiles/{profile_id}/score-enhanced",
+    response_model=ScoringResponse,
+    status_code=201,
+    responses={
+        400: {"model": ErrorResponse, "description": "Invalid profile ID, template ID, or malformed request"},
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Profile or template not found"},
+        429: {"model": ErrorResponse, "description": "Rate limit exceeded"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def create_enhanced_scoring_job(
+    profile_id: str,
+    request: EnhancedScoringRequest,
+    api_key: str = Depends(verify_api_key)
+):
+    """Create LLM scoring job with template-based OR prompt-based evaluation (V1.88)"""
+    controller = get_profile_scoring_controller()
+    return await controller.create_enhanced_scoring_job(profile_id, request)
+
+
 # ============================================================================
 # V1.88 TEMPLATE MANAGEMENT API ENDPOINTS
 # ============================================================================

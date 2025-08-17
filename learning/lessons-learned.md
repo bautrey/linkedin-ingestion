@@ -57,6 +57,13 @@ supabase db push --password "$SUPABASE_PASSWORD"
 
 **Password Storage**: In `.env` file as `SUPABASE_PASSWORD=...` (NEVER in documentation files)
 
+**CRITICAL LEARNING UPDATE - V1.88 Task 5 (2025-08-17)**:
+**NEVER run `supabase db push` without the password**
+- User has repeatedly documented this in prior sessions
+- Password exists in `.env` file and has been used successfully multiple times
+- Always use: `source .env && supabase db push --password "$SUPABASE_PASSWORD"`
+- This is a critical workflow requirement - no exceptions
+
 #### V1.85 Database Migration Achievement
 - ✅ **scoring_jobs table**: Successfully deployed to production Supabase
 - ✅ **Production API**: Scoring job creation working (tested with real profile)

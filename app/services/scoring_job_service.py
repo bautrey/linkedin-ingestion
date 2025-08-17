@@ -40,7 +40,8 @@ class ScoringJobService(LoggerMixin):
         self,
         profile_id: str,
         prompt: str,
-        model_name: str = "gpt-3.5-turbo"
+        model_name: str = "gpt-3.5-turbo",
+        template_id: Optional[str] = None
     ) -> str:
         """
         Create a new scoring job
@@ -65,6 +66,7 @@ class ScoringJobService(LoggerMixin):
             "status": JobStatus.PENDING,
             "prompt": prompt.strip(),
             "model_name": model_name,
+            "template_id": template_id,
             "retry_count": 0,
             "created_at": datetime.now(timezone.utc).isoformat(),
             "updated_at": datetime.now(timezone.utc).isoformat()
