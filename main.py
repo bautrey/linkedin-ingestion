@@ -591,9 +591,8 @@ async def detailed_health_check(
         template_start = datetime.now()
         try:
             from app.services.template_service import TemplateService
-            from app.database.supabase_client import get_supabase_client
             
-            template_service = TemplateService(get_supabase_client())
+            template_service = TemplateService(get_db_client())
             
             # Test template listing (lightweight operation)
             templates = await template_service.list_templates()
@@ -617,7 +616,7 @@ async def detailed_health_check(
         scoring_start = datetime.now()
         try:
             from app.services.scoring_job_service import ScoringJobService
-            scoring_service = ScoringJobService(get_db_client())
+            scoring_service = ScoringJobService()
             
             # Test basic service functionality (no actual database query)
             scoring_time = (datetime.now() - scoring_start).total_seconds() * 1000
@@ -720,8 +719,7 @@ async def readiness_probe():
         # Check template service initialization
         try:
             from app.services.template_service import TemplateService
-            from app.database.supabase_client import get_supabase_client
-            template_service = TemplateService(get_supabase_client())
+            template_service = TemplateService(get_db_client())
             # Light test - just instantiate service
         except Exception:
             raise HTTPException(status_code=503, detail={"status": "not_ready", "reason": "template_service_initialization_failed"})
