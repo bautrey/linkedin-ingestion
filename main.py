@@ -496,7 +496,7 @@ async def root():
 
 @app.get("/api/v1/health")
 async def health_check():
-    """Health check endpoint"""
+    """Basic health check endpoint"""
     try:
         # Check database connectivity
         db_health = await get_db_client().health_check()
@@ -515,6 +515,145 @@ async def health_check():
             details={
                 "service": "linkedin-ingestion",
                 "component": "health_check",
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=503, detail=error_response.model_dump())
+
+
+@app.get("/api/v1/health/detailed")
+async def detailed_health_check(
+    api_key: str = Depends(verify_api_key)
+):
+    """Detailed health check including all services"""
+    start_time = datetime.now(timezone.utc)
+    health_checks = {}
+    overall_status = "healthy"
+    errors = []
+    
+    try:
+        # Database health check
+        db_start = datetime.now()
+        try:
+            db_health = await get_db_client().health_check()
+            db_time = (datetime.now() - db_start).total_seconds() * 1000
+            health_checks["database"] = {
+                "status": "healthy" if db_health["status"] == "healthy" else "degraded",
+                "response_time_ms": db_time,
+                "details": db_health
+            }
+        except Exception as e:
+            health_checks["database"] = {
+                "status": "unhealthy",
+                "error": str(e)
+            }
+            overall_status = "degraded"
+            errors.append(f"Database: {str(e)}")
+        
+        # OpenAI/LLM service health check
+        llm_start = datetime.now()
+        try:
+            from app.services.llm_scoring_service import LLMScoringService
+            llm_service = LLMScoringService()
+            
+            has_api_key = bool(llm_service.api_key and llm_service.api_key != "your-openai-key-here-or-set-in-railway")
+            has_client = llm_service.client is not None
+            
+            # Test token counting (lightweight test)
+            test_tokens = llm_service.count_tokens("Health check test")
+            llm_time = (datetime.now() - llm_start).total_seconds() * 1000
+            
+            llm_status = "healthy" if (has_api_key and has_client and test_tokens > 0) else "degraded"
+            if not has_api_key:
+                llm_status = "degraded"
+                errors.append("LLM: No API key configured")
+            
+            health_checks["llm_service"] = {
+                "status": llm_status,
+                "response_time_ms": llm_time,
+                "has_api_key": has_api_key,
+                "has_client": has_client,
+                "token_test_result": test_tokens
+            }
+            
+            if llm_status != "healthy":
+                overall_status = "degraded"
+                
+        except Exception as e:
+            health_checks["llm_service"] = {
+                "status": "unhealthy",
+                "error": str(e)
+            }
+            overall_status = "degraded"
+            errors.append(f"LLM Service: {str(e)}")
+        
+        # Template service health check
+        template_start = datetime.now()
+        try:
+            from app.services.template_service import TemplateService
+            from app.database.supabase_client import get_supabase_client
+            
+            template_service = TemplateService(get_supabase_client())
+            
+            # Test template listing (lightweight operation)
+            templates = await template_service.list_templates()
+            template_time = (datetime.now() - template_start).total_seconds() * 1000
+            
+            health_checks["template_service"] = {
+                "status": "healthy",
+                "response_time_ms": template_time,
+                "template_count": len(templates),
+                "has_default_templates": any("CTO" in t.name for t in templates)
+            }
+        except Exception as e:
+            health_checks["template_service"] = {
+                "status": "unhealthy",
+                "error": str(e)
+            }
+            overall_status = "degraded"
+            errors.append(f"Template Service: {str(e)}")
+        
+        # Scoring job service health check
+        scoring_start = datetime.now()
+        try:
+            from app.services.scoring_job_service import ScoringJobService
+            scoring_service = ScoringJobService(get_db_client())
+            
+            # Test basic service functionality (no actual database query)
+            scoring_time = (datetime.now() - scoring_start).total_seconds() * 1000
+            
+            health_checks["scoring_service"] = {
+                "status": "healthy",
+                "response_time_ms": scoring_time,
+                "service_initialized": True
+            }
+        except Exception as e:
+            health_checks["scoring_service"] = {
+                "status": "unhealthy", 
+                "error": str(e)
+            }
+            overall_status = "degraded"
+            errors.append(f"Scoring Service: {str(e)}")
+        
+        total_time = (datetime.now(timezone.utc) - start_time).total_seconds() * 1000
+        
+        return {
+            "status": overall_status,
+            "timestamp": start_time.isoformat(),
+            "version": settings.VERSION,
+            "environment": settings.ENVIRONMENT,
+            "total_check_time_ms": total_time,
+            "services": health_checks,
+            "errors": errors if errors else None
+        }
+        
+    except Exception as e:
+        error_response = ErrorResponse(
+            error_code="DETAILED_HEALTH_CHECK_FAILED",
+            message=f"Detailed health check failed: {str(e)}",
+            details={
+                "service": "linkedin-ingestion",
+                "component": "detailed_health_check",
                 "exception_type": type(e).__name__
             }
         )
@@ -565,6 +704,50 @@ async def openai_test(
             }
         )
         raise HTTPException(status_code=500, detail=error_response.model_dump())
+
+
+# Kubernetes probe endpoints
+@app.get("/ready")
+async def readiness_probe():
+    """Kubernetes readiness probe - checks if service can serve requests"""
+    try:
+        # Basic database connectivity check
+        db_health = await get_db_client().health_check()
+        
+        if db_health["status"] != "healthy":
+            raise HTTPException(status_code=503, detail={"status": "not_ready", "reason": "database_unhealthy"})
+        
+        # Check template service initialization
+        try:
+            from app.services.template_service import TemplateService
+            from app.database.supabase_client import get_supabase_client
+            template_service = TemplateService(get_supabase_client())
+            # Light test - just instantiate service
+        except Exception:
+            raise HTTPException(status_code=503, detail={"status": "not_ready", "reason": "template_service_initialization_failed"})
+        
+        return {"status": "ready", "timestamp": datetime.now(timezone.utc).isoformat()}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=503, detail={
+            "status": "not_ready", 
+            "reason": "unexpected_error",
+            "error": str(e)
+        })
+
+
+@app.get("/live")
+async def liveness_probe():
+    """Kubernetes liveness probe - checks if service is alive and should not be restarted"""
+    # Simple check that the application is responsive
+    # This should be very lightweight and not depend on external services
+    return {
+        "status": "alive",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "version": settings.VERSION
+    }
 
 
 # Initialize ProfileController
