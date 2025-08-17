@@ -36,6 +36,19 @@ from app.exceptions import (
 from app.models.canonical import CanonicalProfile
 from app.models.scoring import ScoringRequest, ScoringResponse, JobRetryRequest
 from app.controllers.scoring_controllers import ProfileScoringController, ScoringJobController
+from app.services.template_service import TemplateService
+from app.models.template_models import (
+    PromptTemplate,
+    CreateTemplateRequest,
+    UpdateTemplateRequest,
+    TemplateSummary,
+    TemplateListResponse,
+    TemplateListSummaryResponse,
+    DeleteTemplateResponse,
+    TemplateErrorResponse,
+    EnhancedScoringRequest,
+    ScoringJobResponse
+)
 
 
 def normalize_linkedin_url(url: str) -> str:
@@ -684,6 +697,10 @@ def get_profile_scoring_controller():
 def get_scoring_job_controller():
     return ScoringJobController()
 
+# Initialize Template Service
+def get_template_service():
+    return TemplateService(supabase_client=get_db_client())
+
 
 # V1.85 LLM Profile Scoring Endpoints
 @app.post(
@@ -749,6 +766,342 @@ async def retry_scoring_job(
     """Retry a failed scoring job"""
     controller = get_scoring_job_controller()
     return await controller.retry_job(job_id, retry_request)
+
+
+# ============================================================================
+# V1.88 TEMPLATE MANAGEMENT API ENDPOINTS
+# ============================================================================
+
+@app.get(
+    "/api/v1/templates",
+    response_model=TemplateListResponse,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def list_templates(
+    category: Optional[str] = Query(None, description="Filter by template category (CTO, CIO, CISO, etc.)"),
+    include_inactive: bool = Query(False, description="Include inactive templates in results"),
+    limit: Optional[int] = Query(None, ge=1, le=100, description="Maximum number of templates to return"),
+    api_key: str = Depends(verify_api_key)
+):
+    """List prompt templates with optional filtering"""
+    try:
+        service = get_template_service()
+        templates = await service.list_templates(
+            category=category,
+            include_inactive=include_inactive,
+            limit=limit
+        )
+        
+        return TemplateListResponse(
+            templates=templates,
+            count=len(templates)
+        )
+        
+    except Exception as e:
+        logger.error(
+            f"Failed to list templates: {str(e)}",
+            extra={
+                "category": category,
+                "include_inactive": include_inactive,
+                "limit": limit,
+                "exception_type": type(e).__name__
+            }
+        )
+        error_response = ErrorResponse(
+            error_code="TEMPLATE_LIST_FAILED",
+            message=f"Failed to retrieve templates: {str(e)}",
+            details={
+                "operation": "list_templates",
+                "category": category,
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=500, detail=error_response.model_dump())
+
+
+@app.get(
+    "/api/v1/templates/summaries",
+    response_model=TemplateListSummaryResponse,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def list_template_summaries(
+    category: Optional[str] = Query(None, description="Filter by template category"),
+    include_inactive: bool = Query(False, description="Include inactive templates"),
+    limit: Optional[int] = Query(None, ge=1, le=100, description="Maximum number of summaries to return"),
+    api_key: str = Depends(verify_api_key)
+):
+    """List template summaries (without full prompt text) for performance"""
+    try:
+        service = get_template_service()
+        summaries = await service.list_template_summaries(
+            category=category,
+            include_inactive=include_inactive,
+            limit=limit
+        )
+        
+        return TemplateListSummaryResponse(
+            templates=summaries,
+            count=len(summaries)
+        )
+        
+    except Exception as e:
+        logger.error(
+            f"Failed to list template summaries: {str(e)}",
+            extra={
+                "category": category,
+                "include_inactive": include_inactive,
+                "limit": limit,
+                "exception_type": type(e).__name__
+            }
+        )
+        error_response = ErrorResponse(
+            error_code="TEMPLATE_SUMMARIES_FAILED",
+            message=f"Failed to retrieve template summaries: {str(e)}",
+            details={
+                "operation": "list_template_summaries",
+                "category": category,
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=500, detail=error_response.model_dump())
+
+
+@app.get(
+    "/api/v1/templates/{template_id}",
+    response_model=PromptTemplate,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Template not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def get_template(
+    template_id: str,
+    api_key: str = Depends(verify_api_key)
+):
+    """Get a specific template by ID"""
+    try:
+        service = get_template_service()
+        template = await service.get_template_by_id(template_id)
+        
+        if not template:
+            error_response = ErrorResponse(
+                error_code="TEMPLATE_NOT_FOUND",
+                message=f"Template with ID {template_id} not found",
+                details={
+                    "template_id": template_id,
+                    "operation": "get_template"
+                }
+            )
+            raise HTTPException(status_code=404, detail=error_response.model_dump())
+        
+        return template
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions (like 404)
+        raise
+    except Exception as e:
+        logger.error(
+            f"Failed to get template {template_id}: {str(e)}",
+            extra={
+                "template_id": template_id,
+                "exception_type": type(e).__name__
+            }
+        )
+        error_response = ErrorResponse(
+            error_code="TEMPLATE_RETRIEVAL_FAILED",
+            message=f"Failed to retrieve template: {str(e)}",
+            details={
+                "template_id": template_id,
+                "operation": "get_template",
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=500, detail=error_response.model_dump())
+
+
+@app.post(
+    "/api/v1/templates",
+    response_model=PromptTemplate,
+    status_code=201,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        422: {"model": ValidationErrorResponse, "description": "Validation error"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def create_template(
+    request: CreateTemplateRequest,
+    api_key: str = Depends(verify_api_key)
+):
+    """Create a new prompt template"""
+    try:
+        service = get_template_service()
+        template = await service.create_template(request)
+        
+        logger.info(
+            f"Template created successfully",
+            extra={
+                "template_id": str(template.id),
+                "template_name": template.name,
+                "category": template.category
+            }
+        )
+        
+        return template
+        
+    except Exception as e:
+        logger.error(
+            f"Failed to create template: {str(e)}",
+            extra={
+                "template_name": request.name,
+                "category": request.category,
+                "exception_type": type(e).__name__
+            }
+        )
+        error_response = ErrorResponse(
+            error_code="TEMPLATE_CREATION_FAILED",
+            message=f"Failed to create template: {str(e)}",
+            details={
+                "template_name": request.name,
+                "category": request.category,
+                "operation": "create_template",
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=500, detail=error_response.model_dump())
+
+
+@app.put(
+    "/api/v1/templates/{template_id}",
+    response_model=PromptTemplate,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Template not found"},
+        422: {"model": ValidationErrorResponse, "description": "Validation error"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def update_template(
+    template_id: str,
+    request: UpdateTemplateRequest,
+    api_key: str = Depends(verify_api_key)
+):
+    """Update an existing template"""
+    try:
+        service = get_template_service()
+        template = await service.update_template(template_id, request)
+        
+        if not template:
+            error_response = ErrorResponse(
+                error_code="TEMPLATE_NOT_FOUND",
+                message=f"Template with ID {template_id} not found",
+                details={
+                    "template_id": template_id,
+                    "operation": "update_template"
+                }
+            )
+            raise HTTPException(status_code=404, detail=error_response.model_dump())
+        
+        logger.info(
+            f"Template updated successfully",
+            extra={
+                "template_id": template_id,
+                "template_name": template.name
+            }
+        )
+        
+        return template
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions (like 404)
+        raise
+    except Exception as e:
+        logger.error(
+            f"Failed to update template {template_id}: {str(e)}",
+            extra={
+                "template_id": template_id,
+                "exception_type": type(e).__name__
+            }
+        )
+        error_response = ErrorResponse(
+            error_code="TEMPLATE_UPDATE_FAILED",
+            message=f"Failed to update template: {str(e)}",
+            details={
+                "template_id": template_id,
+                "operation": "update_template",
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=500, detail=error_response.model_dump())
+
+
+@app.delete(
+    "/api/v1/templates/{template_id}",
+    response_model=DeleteTemplateResponse,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Template not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def delete_template(
+    template_id: str,
+    api_key: str = Depends(verify_api_key)
+):
+    """Soft delete a template (sets is_active to False)"""
+    try:
+        service = get_template_service()
+        deleted = await service.delete_template(template_id)
+        
+        if not deleted:
+            error_response = ErrorResponse(
+                error_code="TEMPLATE_NOT_FOUND",
+                message=f"Template with ID {template_id} not found",
+                details={
+                    "template_id": template_id,
+                    "operation": "delete_template"
+                }
+            )
+            raise HTTPException(status_code=404, detail=error_response.model_dump())
+        
+        logger.info(
+            f"Template soft deleted successfully",
+            extra={"template_id": template_id}
+        )
+        
+        return DeleteTemplateResponse(
+            message="Template successfully deactivated",
+            template_id=template_id
+        )
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions (like 404)
+        raise
+    except Exception as e:
+        logger.error(
+            f"Failed to delete template {template_id}: {str(e)}",
+            extra={
+                "template_id": template_id,
+                "exception_type": type(e).__name__
+            }
+        )
+        error_response = ErrorResponse(
+            error_code="TEMPLATE_DELETE_FAILED",
+            message=f"Failed to delete template: {str(e)}",
+            details={
+                "template_id": template_id,
+                "operation": "delete_template",
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=500, detail=error_response.model_dump())
 
 
 if __name__ == "__main__":
