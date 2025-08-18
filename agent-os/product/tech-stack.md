@@ -19,31 +19,44 @@
 - Real-time capabilities for ingestion status updates
 - Row Level Security for data access control
 
-## JavaScript Framework
+## Admin UI Framework
 
-**n/a** (Backend-only service)
-- Pure API service without frontend interface
-- Swagger UI provided by FastAPI for API documentation
+**Node.js + Express** (Simple admin interface)
+- Lightweight Express server for admin UI
+- Server-side rendering with EJS templates
+- Static file serving for Bootstrap assets
+- WebSocket support for real-time updates
 
-## Import Strategy
+## Frontend Framework
 
-**n/a** (Python backend service)
+**Vanilla JavaScript + Bootstrap 5**
+- Bootstrap 5 for responsive UI components
+- Vanilla JavaScript for interactivity
+- No complex build processes or frameworks
+- Fast development and easy maintenance
 
 ## CSS Framework
 
-**n/a** (API service)
+**Bootstrap 5**
+- Responsive grid system and components
+- Built-in dark mode support
+- Professional admin interface styling
+- Minimal custom CSS requirements
 
 ## UI Component Library
 
-**n/a** (API service)
-
-## Fonts Provider
-
-**n/a** (API service)
+**Bootstrap 5 Components**
+- Tables, forms, modals, alerts
+- Navigation and breadcrumb components
+- Cards and badges for data display
+- Icons via Bootstrap Icons
 
 ## Icon Library
 
-**n/a** (API service)
+**Bootstrap Icons**
+- Consistent with Bootstrap styling
+- Lightweight SVG icons
+- Admin interface appropriate icons
 
 ## Application Hosting
 
@@ -61,7 +74,10 @@
 
 ## Asset Hosting
 
-**n/a** (API service without static assets)
+**Express Static Files**
+- Bootstrap CSS/JS served from node_modules
+- Custom CSS and JavaScript assets
+- Profile images and company logos (if applicable)
 
 ## Deployment Solution
 
