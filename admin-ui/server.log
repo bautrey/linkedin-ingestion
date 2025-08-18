@@ -1,0 +1,6 @@
+
+> linkedin-ingestion-admin-ui@1.0.0 start
+> node server.js
+
+2025-08-18T19:12:00.394Z [[32minfo[39m]: LinkedIn Ingestion Admin UI server running on port 3003 {"service":"linkedin-ingestion-admin-ui","environment":"development","fastApiUrl":"http://localhost:8000"}
+2025-08-18T19:12:50.215Z [[32minfo[39m]: GET /health {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
