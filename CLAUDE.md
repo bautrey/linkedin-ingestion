@@ -37,7 +37,18 @@ When asked to work on this codebase:
 **NEVER HIDE TEST OUTPUT** - Project owner explicitly requires full test visibility
 
 - ✅ **ALWAYS** run: `source venv/bin/activate && pytest` (shows full dots format)
-- ❌ **NEVER** run: `pytest | tail -X` (hides test execution)
+- ❌ **NEVER** run: `pytest | tail-X` (hides test execution)
 - ❌ **NEVER** use any pipe that truncates or hides pytest output
 
 *This rule is also documented in `agent-os/product/tech-stack.md` Testing Framework section*
+
+### Memory Keeper MCP Integration
+**CRITICAL SESSION MANAGEMENT** - Memory Keeper MCP is essential for hibernation protocol
+
+- ✅ **ALWAYS** use Memory Keeper during hibernation: `call_mcp_tool` with correct tool names
+- 🔧 **Available Tools**: `create_entities`, `create_relations`, `add_observations`, `delete_entities`, `delete_observations`, `delete_relations`, `read_graph`, `search_nodes`, `open_nodes`
+- 📝 **Correct Usage**: Use `entityName` parameter (not `entity_name`), create entities before adding observations
+- 🎯 **Purpose**: Evaluate Memory Keeper as potential replacement for session files
+- ⚠️ **Never Skip**: Memory Keeper integration is mandatory during hibernation - failure to use undermines process evaluation
+
+*Memory Keeper MCP server visible in Warp terminal with `mcp-server-memory` command*
