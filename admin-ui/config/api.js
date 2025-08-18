@@ -2,7 +2,7 @@ const axios = require('axios');
 const logger = require('../utils/logger');
 
 const apiClient = axios.create({
-    baseURL: process.env.FASTAPI_BASE_URL || 'http://localhost:8000',
+    baseURL: (process.env.FASTAPI_BASE_URL || 'http://localhost:8000') + '/api/v1',
     headers: {
         'X-API-Key': process.env.API_KEY,
         'Content-Type': 'application/json',

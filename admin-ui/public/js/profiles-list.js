@@ -4,9 +4,9 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeTableSorting();
     initializeBulkSelection();
     initializeFilters();
+    initializeColumnResizing();
     
-    // Update active sidebar navigation
-    updateActiveNavigation('profiles');
+    console.log('Profiles list initialized with column resizing');
 });
 
 // Table Sorting Functionality
@@ -14,7 +14,13 @@ function initializeTableSorting() {
     const sortableHeaders = document.querySelectorAll('.sortable');
     
     sortableHeaders.forEach(header => {
-        header.addEventListener('click', function() {
+        header.addEventListener('click', function(e) {
+            // Don't sort if clicking on a resize handle
+            if (e.target.classList.contains('resize-handle') || e.target.closest('.resize-handle')) {
+                e.preventDefault();
+                return;
+            }
+            
             const sortBy = this.getAttribute('data-sort');
             const currentUrl = new URL(window.location);
             const currentSort = currentUrl.searchParams.get('sort_by');
@@ -28,6 +34,7 @@ function initializeTableSorting() {
             // Update URL parameters
             currentUrl.searchParams.set('sort_by', sortBy);
             currentUrl.searchParams.set('sort_order', newOrder);
+            
             
             // Navigate to sorted page
             window.location.href = currentUrl.toString();
@@ -318,9 +325,176 @@ function updateProfileCounts() {
 
 // Column Resizing (Advanced Feature)
 function initializeColumnResizing() {
-    // This would implement draggable column resizing
-    // For now, we'll rely on CSS min-width and the user's browser
-    // Could be enhanced with a library like ResizeObserver
+    const table = document.getElementById('profilesTable');
+    if (!table) {
+        console.log('❌ Table not found!');
+        return;
+    }
+
+    const resizableColumns = table.querySelectorAll('th.resizable');
+    console.log(`🔍 Found ${resizableColumns.length} resizable columns:`, resizableColumns);
+    
+    resizableColumns.forEach((th, index) => {
+        const handle = th.querySelector('.resize-handle');
+        console.log(`Column ${index}:`, {
+            element: th,
+            hasHandle: !!handle,
+            dataSort: th.getAttribute('data-sort')
+        });
+        
+        if (!handle) {
+            console.log(`❌ No resize handle found for column ${index}`);
+            return;
+        }
+        
+        console.log(`✅ Setting up resize handler for column: ${th.getAttribute('data-sort')}`);
+        handle.style.cursor = 'col-resize';
+
+        let isResizing = false;
+        let startX = 0;
+        let startWidth = 0;
+        let currentTh = null;
+
+        handle.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+            e.stopPropagation(); // Prevent bubbling to sort handler
+            isResizing = true;
+            currentTh = th;
+            startX = e.clientX;
+            
+            // Use the ACTUAL current width that's displayed, not computed width
+            const currentDisplayWidth = th.offsetWidth;
+            startWidth = currentDisplayWidth;
+            
+            // Debug: Log current state
+            const beforeWidth = th.style.width;
+            const computedWidth = document.defaultView.getComputedStyle(th).width;
+            console.log('Before resize:', {
+                columnName: th.getAttribute('data-sort'),
+                beforeStyleWidth: beforeWidth,
+                computedWidth: computedWidth,
+                offsetWidth: th.offsetWidth,
+                usingWidth: currentDisplayWidth
+            });
+            
+            // Set the ACTUAL displayed width to prevent any jump
+            th.style.width = currentDisplayWidth + 'px';
+            console.log('Set width to prevent jump:', currentDisplayWidth + 'px');
+            
+            document.body.classList.add('col-resize-active');
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+        });
+
+        function handleMouseMove(e) {
+            if (!isResizing) return;
+            
+            const diff = e.clientX - startX;
+            const newWidth = Math.max(startWidth + diff, 80); // Minimum width of 80px
+            
+            console.log('Mouse move:', {
+                startX: startX,
+                currentX: e.clientX,
+                diff: diff,
+                startWidth: startWidth,
+                newWidth: newWidth
+            });
+            
+            currentTh.style.width = newWidth + 'px';
+            
+            // Update corresponding column cells
+            updateColumnCells(currentTh, newWidth);
+        }
+
+        function handleMouseUp() {
+            if (!isResizing) return;
+            
+            isResizing = false;
+            currentTh = null;
+            document.body.classList.remove('col-resize-active');
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+            
+            saveColumnWidths();
+        }
+    });
+    
+    // Load saved column widths
+    loadColumnWidths();
+}
+
+// Update all cells in a column to match header width
+function updateColumnCells(th, width) {
+    const table = th.closest('table');
+    const index = Array.from(th.parentNode.children).indexOf(th);
+    
+    const cells = table.querySelectorAll(`tbody tr td:nth-child(${index + 1})`);
+    cells.forEach(cell => {
+        cell.style.width = width + 'px';
+    });
+}
+
+// Save column widths to localStorage
+function saveColumnWidths() {
+    const table = document.getElementById('profilesTable');
+    if (!table) return;
+
+    const widths = {};
+    const headers = table.querySelectorAll('thead th');
+    
+    headers.forEach((th, index) => {
+        const sortAttribute = th.getAttribute('data-sort');
+        if (sortAttribute) {
+            widths[sortAttribute] = th.style.width || th.offsetWidth + 'px';
+        }
+    });
+    
+    localStorage.setItem('profilesTableWidths', JSON.stringify(widths));
+    showNotification('Column widths saved', 'success');
+}
+
+// Load column widths from localStorage
+function loadColumnWidths() {
+    const savedWidths = localStorage.getItem('profilesTableWidths');
+    if (!savedWidths) {
+        // If no saved widths, convert CSS percentages to pixels to prevent jumps
+        stabilizeColumnWidths();
+        return;
+    }
+
+    try {
+        const widths = JSON.parse(savedWidths);
+        const table = document.getElementById('profilesTable');
+        if (!table) return;
+
+        const headers = table.querySelectorAll('thead th');
+        headers.forEach(th => {
+            const sortAttribute = th.getAttribute('data-sort');
+            if (sortAttribute && widths[sortAttribute]) {
+                th.style.width = widths[sortAttribute];
+                updateColumnCells(th, parseInt(widths[sortAttribute]));
+            }
+        });
+    } catch (error) {
+        console.error('Error loading column widths:', error);
+        stabilizeColumnWidths();
+    }
+}
+
+// Stabilize column widths by converting percentages to pixels on initial load
+function stabilizeColumnWidths() {
+    const table = document.getElementById('profilesTable');
+    if (!table) return;
+    
+    // Wait for layout to settle
+    setTimeout(() => {
+        const headers = table.querySelectorAll('thead th');
+        headers.forEach(th => {
+            const computedWidth = document.defaultView.getComputedStyle(th).width;
+            th.style.width = computedWidth;
+            updateColumnCells(th, parseInt(computedWidth));
+        });
+    }, 100);
 }
 
 // Export to CSV functionality
@@ -401,3 +575,43 @@ function stopAutoRefresh() {
 
 // Start auto-refresh when page loads
 // startAutoRefresh(60000); // Refresh every minute - commented out for now
+
+// Utility functions for notifications and loading overlay
+function showNotification(message, type = 'info') {
+    // Simple notification using browser alert for now
+    // In a real app, you'd use a proper notification library
+    console.log(`${type.toUpperCase()}: ${message}`);
+    
+    // Create a simple toast-like notification
+    const notification = document.createElement('div');
+    notification.className = `alert alert-${type} position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+        ${message}
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 3000);
+}
+
+function showLoadingOverlay() {
+    const overlay = document.createElement('div');
+    overlay.id = 'loadingOverlay';
+    overlay.className = 'loading-overlay';
+    overlay.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+    document.body.appendChild(overlay);
+}
+
+function hideLoadingOverlay() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.remove();
+    }
+}

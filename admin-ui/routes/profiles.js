@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
         
         res.render('profiles/list', {
             title: 'LinkedIn Profiles',
-            profiles: response.data.profiles || [],
+            profiles: response.data.data || [],
             pagination: response.data.pagination || {},
             query: req.query,
             currentPage: 'profiles',
@@ -49,8 +49,9 @@ router.get('/:id', async (req, res) => {
         const response = await apiClient.get(`/profiles/${req.params.id}`);
         
         res.render('profiles/detail', {
-            title: `Profile: ${response.data.full_name}`,
-            profile: response.data
+            title: `Profile: ${response.data.name}`,
+            profile: response.data,
+            currentPage: 'profiles'
         });
     } catch (error) {
         logger.error(`Error fetching profile ${req.params.id}:`, error);
