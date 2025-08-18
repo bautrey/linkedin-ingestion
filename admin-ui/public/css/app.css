@@ -16,6 +16,76 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     background-color: var(--light-bg);
     color: var(--secondary-color);
+    padding-top: 60px; /* Account for fixed navbar height */
+}
+
+/* Main Content Layout */
+.main-content {
+    padding-top: 1rem;
+}
+
+/* Ensure sidebar doesn't get cut off */
+.sidebar-wrapper {
+    position: fixed;
+    top: 56px; /* Height of Bootstrap navbar */
+    left: 0;
+    width: 16.66667%; /* Same as Bootstrap col-md-2 */
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    z-index: 1040;
+}
+
+/* Adjust main content to account for fixed sidebar */
+@media (min-width: 768px) {
+    .main-content {
+        margin-left: 16.66667%; /* Same width as sidebar */
+        padding-top: 1rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .sidebar-wrapper {
+        width: 16.66667%; /* col-lg-2 equivalent */
+    }
+    
+    .main-content {
+        margin-left: 16.66667%; /* Match sidebar width */
+    }
+}
+
+/* Mobile responsive behavior */
+@media (max-width: 767px) {
+    .sidebar-wrapper {
+        position: fixed;
+        top: 56px;
+        left: -100%; /* Hide sidebar by default */
+        width: 280px;
+        height: calc(100vh - 56px);
+        background-color: white;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        transition: left 0.3s ease;
+        z-index: 1050;
+    }
+    
+    .sidebar-wrapper.show {
+        left: 0; /* Show sidebar when toggled */
+    }
+    
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    body.sidebar-open::after {
+        content: '';
+        position: fixed;
+        top: 56px;
+        left: 0;
+        width: 100%;
+        height: calc(100vh - 56px);
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1045;
+    }
 }
 
 /* Navigation Styles */

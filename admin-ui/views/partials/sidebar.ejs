@@ -1,0 +1,147 @@
+<nav class="sidebar bg-white shadow-sm border-end">
+    <div class="sidebar-header p-3 border-bottom">
+        <div class="d-flex align-items-center">
+            <div class="linkedin-logo me-2">
+                <i class="bi bi-linkedin text-linkedin" style="font-size: 1.5rem;"></i>
+            </div>
+            <div>
+                <h5 class="mb-0 fw-bold">LinkedIn</h5>
+                <small class="text-muted">Ingestion Admin</small>
+            </div>
+        </div>
+    </div>
+    
+    <div class="sidebar-menu p-3">
+        <ul class="nav nav-pills flex-column">
+            <li class="nav-item mb-1">
+                <a class="nav-link d-flex align-items-center" href="/" data-page="dashboard">
+                    <i class="bi bi-speedometer2 me-2"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            
+            <li class="nav-item mb-1">
+                <a class="nav-link d-flex align-items-center <%= (typeof locals !== 'undefined' && locals.currentPage === 'profiles') ? 'active' : '' %>" href="/profiles" data-page="profiles">
+                    <i class="bi bi-people me-2"></i>
+                    <span>Profiles</span>
+                </a>
+            </li>
+            
+            <li class="nav-item mb-1">
+                <a class="nav-link d-flex align-items-center" href="/companies" data-page="companies">
+                    <i class="bi bi-building me-2"></i>
+                    <span>Companies</span>
+                </a>
+            </li>
+            
+            <li class="nav-item mb-1">
+                <a class="nav-link d-flex align-items-center" href="/ingestion" data-page="ingestion">
+                    <i class="bi bi-upload me-2"></i>
+                    <span>Ingestion</span>
+                </a>
+            </li>
+            
+            <li class="nav-item mb-1">
+                <a class="nav-link d-flex align-items-center" href="/scoring" data-page="scoring">
+                    <i class="bi bi-star me-2"></i>
+                    <span>Scoring</span>
+                </a>
+            </li>
+            
+            <li class="nav-item mb-1">
+                <a class="nav-link d-flex align-items-center" href="/templates" data-page="templates">
+                    <i class="bi bi-file-text me-2"></i>
+                    <span>Templates</span>
+                </a>
+            </li>
+        </ul>
+        
+        <hr class="my-3">
+        
+        <div class="sidebar-footer">
+            <div class="d-flex align-items-center text-muted small">
+                <i class="bi bi-info-circle me-2"></i>
+                <div>
+                    <div class="fw-medium">Admin UI v1.9</div>
+                    <div class="text-muted small">Status: Active</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<style>
+.sidebar {
+    min-height: 100vh;
+    width: 100%;
+}
+
+.sidebar-header {
+    background: linear-gradient(135deg, #0077b5 0%, #00a0dc 100%);
+    color: white;
+}
+
+.sidebar-header .text-linkedin {
+    color: white !important;
+}
+
+.sidebar-menu .nav-link {
+    color: #6c757d;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.sidebar-menu .nav-link:hover,
+.sidebar-menu .nav-link.active {
+    background-color: #0077b5;
+    color: white;
+}
+
+.sidebar-menu .nav-link i {
+    width: 20px;
+    text-align: center;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+}
+
+.stat-card {
+    transition: transform 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+    
+    .sidebar.show {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 1050;
+        width: 280px;
+        height: 100vh;
+    }
+}
+</style>

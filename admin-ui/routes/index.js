@@ -37,6 +37,7 @@ router.get('/', async (req, res) => {
         logger.error('Dashboard error:', error);
         res.render('error', {
             title: 'Dashboard Error',
+            message: 'Failed to load dashboard data. Please try again later.',
             error: { 
                 message: 'Failed to load dashboard data. Please try again later.',
                 details: process.env.NODE_ENV === 'development' ? error.message : undefined

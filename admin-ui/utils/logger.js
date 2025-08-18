@@ -17,7 +17,24 @@ const logger = winston.createLogger({
                 winston.format.printf(({ timestamp, level, message, ...meta }) => {
                     let msg = `${timestamp} [${level}]: ${message}`;
                     if (Object.keys(meta).length > 0) {
-                        msg += ` ${JSON.stringify(meta)}`;
+                        try {
+                            // Handle circular references safely
+                            const safeStringify = (obj) => {
+                                const cache = new Set();
+                                return JSON.stringify(obj, (key, value) => {
+                                    if (typeof value === 'object' && value !== null) {
+                                        if (cache.has(value)) {
+                                            return '[Circular]';
+                                        }
+                                        cache.add(value);
+                                    }
+                                    return value;
+                                });
+                            };
+                            msg += ` ${safeStringify(meta)}`;
+                        } catch (error) {
+                            msg += ` [Logging Error: ${error.message}]`;
+                        }
                     }
                     return msg;
                 })

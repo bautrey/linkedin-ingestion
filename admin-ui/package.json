@@ -5,7 +5,13 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js",
+    "dev": "nodemon server.js --ignore logs/ --ignore *.log",
+    "dev:quiet": "nodemon server.js --quiet --ignore logs/ --ignore *.log",
+    "background": "nohup npm start > logs/server.log 2>&1 & echo \"Server started in background. PID: $!\"",
+    "stop": "pkill -f \"node server.js\" || echo \"No server process found\"",
+    "status": "ps aux | grep -v grep | grep \"node server.js\" || echo \"Server not running\"",
+    "logs": "tail -f logs/server.log",
+    "logs:error": "tail -f logs/error.log",
     "test": "jest",
     "lint": "eslint ."
   },

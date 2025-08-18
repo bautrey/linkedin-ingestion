@@ -20,11 +20,18 @@ router.get('/', async (req, res) => {
         
         const response = await apiClient.get('/profiles', { params });
         
+        // Build base URL for pagination
+        const baseUrl = req.originalUrl.split('?')[0];
+        const queryString = new URLSearchParams(req.query);
+        
         res.render('profiles/list', {
             title: 'LinkedIn Profiles',
             profiles: response.data.profiles || [],
             pagination: response.data.pagination || {},
-            query: req.query
+            query: req.query,
+            currentPage: 'profiles',
+            baseUrl: baseUrl,
+            queryParams: queryString.toString()
         });
     } catch (error) {
         logger.error('Error fetching profiles:', error);

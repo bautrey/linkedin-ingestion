@@ -2,5 +2,30 @@
 > linkedin-ingestion-admin-ui@1.0.0 start
 > node server.js
 
-2025-08-18T19:12:00.394Z [[32minfo[39m]: LinkedIn Ingestion Admin UI server running on port 3003 {"service":"linkedin-ingestion-admin-ui","environment":"development","fastApiUrl":"http://localhost:8000"}
-2025-08-18T19:12:50.215Z [[32minfo[39m]: GET /health {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
+2025-08-18T19:42:29.696Z [[32minfo[39m]: LinkedIn Ingestion Admin UI server running on port 3003 {"service":"linkedin-ingestion-admin-ui","environment":"development","fastApiUrl":"http://localhost:8000"}
+2025-08-18T19:42:36.173Z [[32minfo[39m]: GET /health {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
+2025-08-18T19:42:40.014Z [[32minfo[39m]: HEAD /profiles {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
+2025-08-18T19:42:40.038Z [[31merror[39m]: API No Response: {"service":"linkedin-ingestion-admin-ui","method":"get","url":"/profiles"}
+/Users/burke/projects/linkedin-ingestion/admin-ui/utils/logger.js:20
+                        msg += ` ${JSON.stringify(meta)}`;
+                                        ^
+
+TypeError: Converting circular structure to JSON
+    --> starting at object with constructor 'Agent'
+    |     property 'sockets' -> object with constructor 'Object'
+    |     property 'localhost:8000:' -> object with constructor 'Array'
+    |     ...
+    |     property '_httpMessage' -> object with constructor 'ClientRequest'
+    --- property 'agent' closes the circle
+    at JSON.stringify (<anonymous>)
+    at Printf.template (/Users/burke/projects/linkedin-ingestion/admin-ui/utils/logger.js:20:41)
+    at Printf.transform (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/logform/printf.js:11:26)
+    at Format.transform (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/logform/combine.js:20:24)
+    at Console._write (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/winston-transport/modern.js:91:33)
+    at doWrite (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/readable-stream/lib/_stream_writable.js:390:139)
+    at writeOrBuffer (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/readable-stream/lib/_stream_writable.js:381:5)
+    at Writable.write (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/readable-stream/lib/_stream_writable.js:302:11)
+    at DerivedLogger.ondata (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/readable-stream/lib/_stream_readable.js:629:20)
+    at DerivedLogger.emit (node:events:507:28)
+
+Node.js v23.11.0
