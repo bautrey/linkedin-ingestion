@@ -380,7 +380,7 @@ assert job_data["status"] in ["pending", "processing", "completed"]
 - **Comprehensive Response**: Includes category scores, summaries, recommendations, alternative roles
 
 #### Current Project State
-- **Test Count: 344 tests passing (from v1.7 completion)
+- **Test Count: 350 tests passing (from v1.7 completion)
 - **Warnings Policy**: Zero deprecation warnings maintained
 - **Production Status**: V1.7 fully deployed and stable on Railway
 - **Database**: Supabase with CanonicalProfile models implemented
