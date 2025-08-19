@@ -1,0 +1,32 @@
+{
+  "timestamp": "2025-08-19T08:34:39.296649",
+  "base_url": "https://linkedin-ingestion-production.up.railway.app",
+  "checks": [
+    {
+      "name": "Root endpoint check",
+      "url": "https://linkedin-ingestion-production.up.railway.app/",
+      "description": "Basic connectivity test",
+      "status_code": 404,
+      "response": {
+        "status": "error",
+        "code": 404,
+        "message": "Application not found",
+        "request_id": "mPmoSF3hRY-0J7fCezItjw"
+      },
+      "success": false
+    },
+    {
+      "name": "Health endpoint check",
+      "url": "https://linkedin-ingestion-production.up.railway.app/api/v1/health",
+      "description": "Application health check",
+      "status_code": 404,
+      "response": {
+        "status": "error",
+        "code": 404,
+        "message": "Application not found",
+        "request_id": "GYh5nMvCQZCA5Gt-Aax-fw"
+      },
+      "success": false
+    }
+  ]
+}

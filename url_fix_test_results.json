@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-08-19T08:36:19.144538",
+  "base_url": "https://smooth-mailbox-production.up.railway.app",
+  "tests": [
+    {
+      "name": "Old LinkedIn URL Format Test",
+      "url": "https://www.linkedin.com/pub/richard-harris/8/946/143",
+      "expected_status": 400,
+      "description": "Should return 400 Bad Request with helpful error message",
+      "actual_status": 400,
+      "response_body": {
+        "error_code": "INVALID_LINKEDIN_URL",
+        "message": "Invalid LinkedIn profile URL format",
+        "details": {
+          "endpoint": "http://smooth-mailbox-production.up.railway.app/api/v1/profiles",
+          "method": "POST",
+          "invalid_url": "https://www.linkedin.com/pub/richard-harris/8/946/143",
+          "cassidy_error": "Cassidy workflow failed: The provided URL is not a valid LinkedIn profile URL.\n\nURL: *https://www.linkedin.com/pub/richard-harris/8/946/143*"
+        },
+        "suggestions": [
+          "Use the modern LinkedIn URL format: https://www.linkedin.com/in/username",
+          "Avoid old LinkedIn URL formats like /pub/ which are no longer supported",
+          "Ensure the LinkedIn URL is publicly accessible"
+        ]
+      },
+      "success": true
+    },
+    {
+      "name": "Modern LinkedIn URL Format Test",
+      "url": "https://www.linkedin.com/in/richard-harris",
+      "expected_status": 201,
+      "description": "Should successfully process and return 201 Created",
+      "actual_status": "ERROR",
+      "error": "HTTPSConnectionPool(host='smooth-mailbox-production.up.railway.app', port=443): Read timed out. (read timeout=30)",
+      "success": false
+    }
+  ],
+  "summary": {
+    "total_tests": 2,
+    "passed": 1,
+    "failed": 1,
+    "fix_working": true
+  }
+}
