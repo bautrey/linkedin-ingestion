@@ -5,6 +5,8 @@ const socketIo = require('socket.io');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const cors = require('cors');
+const axios = require('axios');
+const fs = require('fs');
 require('dotenv').config();
 
 const logger = require('./utils/logger');
@@ -12,6 +14,63 @@ const logger = require('./utils/logger');
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
+
+// Version information - loaded at startup
+let versionInfo = {
+    version: '1.0.0',
+    build_time: 'unknown',
+    git_commit: 'unknown',
+    git_branch: 'unknown',
+    environment: 'development'
+};
+
+// Function to fetch version information
+async function loadVersionInfo() {
+    try {
+        // First, try to load from local version.json file (created by build script)
+        const versionPath = path.join(__dirname, 'version.json');
+        if (fs.existsSync(versionPath)) {
+            const localVersion = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
+            versionInfo = { ...versionInfo, ...localVersion };
+            logger.info('Loaded version info from local file', versionInfo);
+        }
+        
+        // Then, try to fetch from FastAPI backend
+        const fastApiUrl = process.env.FASTAPI_BASE_URL || 'http://localhost:8000';
+        try {
+            const response = await axios.get(`${fastApiUrl}/api/version`, {
+                timeout: 5000, // 5 second timeout
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            
+            if (response.data) {
+                versionInfo = { ...versionInfo, ...response.data };
+                logger.info('Updated version info from FastAPI backend', versionInfo);
+            }
+        } catch (backendError) {
+            logger.warn('Could not fetch version info from backend:', {
+                error: backendError.message,
+                fastApiUrl
+            });
+        }
+    } catch (error) {
+        logger.error('Failed to load version information:', error);
+    }
+}
+
+// Load version info at startup
+loadVersionInfo();
+
+// Refresh version info periodically (every 5 minutes)
+setInterval(loadVersionInfo, 5 * 60 * 1000);
+
+// Middleware to add version info to all requests
+app.use((req, res, next) => {
+    res.locals.versionInfo = versionInfo;
+    next();
+});
 
 // Security middleware
 app.use(helmet({
@@ -80,6 +139,16 @@ app.get('/health', async (req, res) => {
     }
 });
 
+// Version endpoint
+app.get('/version', (req, res) => {
+    res.json({
+        ...versionInfo,
+        admin_ui_version: require('./package.json').version,
+        uptime: process.uptime(),
+        timestamp: new Date().toISOString()
+    });
+});
+
 // WebSocket handling
 io.on('connection', (socket) => {
     logger.info('Client connected to WebSocket');
@@ -100,6 +169,7 @@ app.use((err, req, res, next) => {
     logger.error('Unhandled error:', err);
     res.status(500).render('error', {
         title: 'Server Error',
+        message: 'An unexpected error occurred while processing your request.',
         error: process.env.NODE_ENV === 'development' ? err : { message: 'Internal server error' }
     });
 });
@@ -108,6 +178,7 @@ app.use((err, req, res, next) => {
 app.use('*', (req, res) => {
     res.status(404).render('error', {
         title: 'Page Not Found',
+        message: 'The requested page could not be found.',
         error: { message: 'The requested page could not be found' }
     });
 });

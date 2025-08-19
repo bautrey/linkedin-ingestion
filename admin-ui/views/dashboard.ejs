@@ -167,6 +167,41 @@
                                     
                                     <hr class="my-3">
                                     
+                                    <div class="version-status mb-3">
+                                        <h6 class="fw-bold mb-2">System Version</h6>
+                                        <div class="small text-muted">
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span>Backend:</span>
+                                                <span class="fw-medium">v<%= versionInfo.version || '1.0.0' %></span>
+                                            </div>
+                                            <div class="d-flex justify-content-between mb-1">
+                                                <span>Admin UI:</span>
+                                                <span class="fw-medium">v<%= versionInfo.admin_ui_version || '1.0.0' %></span>
+                                            </div>
+                                            <% if (versionInfo.git_commit && versionInfo.git_commit !== 'unknown') { %>
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <span>Commit:</span>
+                                                    <a href="https://github.com/bautrey/linkedin-ingestion/commit/<%= versionInfo.git_commit %>" 
+                                                       target="_blank" 
+                                                       class="text-decoration-none text-muted fw-medium"
+                                                       title="View commit on GitHub">
+                                                        <i class="bi bi-git"></i> <%= versionInfo.git_commit.substring(0, 7) %>
+                                                    </a>
+                                                </div>
+                                            <% } %>
+                                            <% if (versionInfo.environment && versionInfo.environment !== 'unknown') { %>
+                                                <div class="d-flex justify-content-between mb-1">
+                                                    <span>Environment:</span>
+                                                    <span class="badge bg-<%= versionInfo.environment === 'production' ? 'success' : 'warning' %> badge-sm">
+                                                        <%= versionInfo.environment %>
+                                                    </span>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                    
+                                    <hr class="my-3">
+                                    
                                     <div class="quick-actions">
                                         <h6 class="fw-bold mb-2">Quick Actions</h6>
                                         <div class="d-grid gap-2">

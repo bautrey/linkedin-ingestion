@@ -1,0 +1,21 @@
+[phases.build]
+# Install dependencies and generate version info
+cmds = [
+  "chmod +x scripts/version.sh",
+  "bash scripts/version.sh",
+  "pip install -r requirements.txt"
+]
+
+[phases.setup]
+# Ensure build tools are available
+nixPkgs = ["python310", "git", "bash", "curl"]
+
+[variables]
+# Ensure Railway git variables are available during build
+RAILWAY_GIT_COMMIT_SHA = "$RAILWAY_GIT_COMMIT_SHA"
+RAILWAY_GIT_BRANCH = "$RAILWAY_GIT_BRANCH"
+RAILWAY_GIT_AUTHOR = "$RAILWAY_GIT_AUTHOR"
+RAILWAY_GIT_MESSAGE = "$RAILWAY_GIT_MESSAGE"
+RAILWAY_SERVICE_ID = "$RAILWAY_SERVICE_ID"
+RAILWAY_ENVIRONMENT_NAME = "$RAILWAY_ENVIRONMENT_NAME"
+RAILWAY_DEPLOYMENT_ID = "$RAILWAY_DEPLOYMENT_ID"

@@ -6,6 +6,8 @@
       "main.py",
       "requirements.txt",
       "railway.json",
+      "nixpacks.toml",
+      "scripts/version.sh",
       "Procfile"
     ]
   },

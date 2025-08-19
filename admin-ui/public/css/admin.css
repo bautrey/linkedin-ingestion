@@ -204,6 +204,48 @@ main {
     }
 }
 
+/* Version information styles */
+.version-info {
+    border: 1px solid rgba(0,0,0,.125);
+    font-size: 0.75rem;
+}
+
+.version-info .badge-success {
+    background-color: #198754 !important;
+}
+
+.version-info .badge-warning {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
+
+.version-info .badge-sm {
+    font-size: 0.65rem;
+    padding: 0.25em 0.4em;
+}
+
+.version-info a {
+    transition: color 0.2s ease;
+}
+
+.version-info a:hover {
+    color: #0d6efd !important;
+}
+
+/* Dashboard version display */
+.version-status .badge-sm {
+    font-size: 0.65rem;
+    padding: 0.25em 0.4em;
+}
+
+.version-status a {
+    transition: color 0.2s ease;
+}
+
+.version-status a:hover {
+    color: #0d6efd !important;
+}
+
 /* Utility classes */
 .text-truncate-2 {
     display: -webkit-box;

@@ -349,3 +349,11 @@ INFO:     127.0.0.1:57568 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 
 INFO:     127.0.0.1:57568 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
 INFO:     127.0.0.1:57583 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
 INFO:     127.0.0.1:57569 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:62891 - "GET /api/version HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:62902 - "GET /version HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:62947 - "GET /api/version HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:62964 - "GET /live HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [13830]

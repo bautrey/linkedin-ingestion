@@ -808,13 +808,24 @@ async def readiness_probe():
 
 @app.get("/live")
 async def liveness_probe():
-    """Kubernetes liveness probe - checks if service is alive and should not be restarted"""
+    """Kubernetes liveness probe - checks if service is alive"""
     # Simple check that the application is responsive
     # This should be very lightweight and not depend on external services
     return {
         "status": "alive",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "version": settings.VERSION
+    }
+
+
+@app.get("/api/version")
+async def get_version():
+    """Get comprehensive version and deployment information"""
+    return {
+        "version": settings.VERSION,
+        "service": "LinkedIn Ingestion Service",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        **settings.version_info
     }
 
 

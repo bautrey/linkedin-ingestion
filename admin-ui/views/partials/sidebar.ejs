@@ -59,11 +59,45 @@
         <hr class="my-3">
         
         <div class="sidebar-footer">
+            <div class="version-info bg-light rounded p-2 mb-2">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-tag me-2 text-primary"></i>
+                        <div>
+                            <div class="fw-medium small">v<%= versionInfo.version || '1.0.0' %></div>
+                            <% if (versionInfo.git_commit && versionInfo.git_commit !== 'unknown') { %>
+                                <div class="text-muted" style="font-size: 0.7rem;">
+                                    <i class="bi bi-git"></i> 
+                                    <a href="https://github.com/bautrey/linkedin-ingestion/commit/<%= versionInfo.git_commit %>" 
+                                       target="_blank" 
+                                       class="text-decoration-none text-muted"
+                                       title="View commit on GitHub">
+                                        <%= versionInfo.git_commit ? versionInfo.git_commit.substring(0, 7) : 'local' %>
+                                    </a>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <% if (versionInfo.environment) { %>
+                            <span class="badge badge-<%= versionInfo.environment === 'production' ? 'success' : 'warning' %> badge-sm">
+                                <%= versionInfo.environment %>
+                            </span>
+                        <% } %>
+                        <% if (versionInfo.build_time && versionInfo.build_time !== 'unknown') { %>
+                            <div class="text-muted" style="font-size: 0.65rem;" title="Build time: <%= versionInfo.build_time %>">
+                                <i class="bi bi-clock"></i> <%= new Date(versionInfo.build_time).toLocaleDateString() %>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            
             <div class="d-flex align-items-center text-muted small">
                 <i class="bi bi-info-circle me-2"></i>
                 <div>
-                    <div class="fw-medium">Admin UI v1.9</div>
-                    <div class="text-muted small">Status: Active</div>
+                    <div class="fw-medium">LinkedIn Ingestion</div>
+                    <div class="text-muted small">Admin Dashboard</div>
                 </div>
             </div>
         </div>

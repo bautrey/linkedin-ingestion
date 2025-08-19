@@ -1,0 +1,22 @@
+{
+  "version": "2.1.0-development+ae6d5ec9",
+  "base_version": "2.1.0",
+  "build_time": "2025-08-19T21:47:59Z",
+  "git": {
+    "commit": "ae6d5ec9ca14b38d1ee6178dab8ba92db21892f9",
+    "commit_short": "ae6d5ec9",
+    "branch": "master",
+    "author": "Burke Autrey",
+    "message": "Session hibernation: Complete testing infrastructure established"
+  },
+  "deployment": {
+    "service_id": "local",
+    "environment": "development",
+    "deployment_id": "local-build",
+    "platform": "railway"
+  },
+  "app": {
+    "name": "linkedin-ingestion",
+    "description": "LinkedIn Profile and Company Data Ingestion Service"
+  }
+}
