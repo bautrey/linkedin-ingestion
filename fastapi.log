@@ -1,8 +1,177 @@
-INFO:     Will watch for changes in these directories: ['/Users/burke/projects/linkedin-ingestion']
-INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [4833] using WatchFiles
-INFO:     Started server process [4875]
+INFO:     Started server process [13830]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
-INFO:     127.0.0.1:50272 - "GET /health HTTP/1.1" 404 Not Found
-INFO:     127.0.0.1:50285 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     127.0.0.1:52439 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:52440 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:52441 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+2025-08-19 07:36:47 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 07:36:47 [info     ] Profile search completed       count=34
+INFO:     127.0.0.1:52441 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+2025-08-19 07:36:55 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 07:36:56 [info     ] Profile search completed       count=34
+INFO:     127.0.0.1:52480 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+2025-08-19 07:37:14 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 07:37:14 [info     ] Profile search completed       count=34
+INFO:     127.0.0.1:52542 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+2025-08-19 07:37:17 [info     ] Retrieving profile by ID       profile_id=test
+2025-08-19 07:37:17 [error    ] Failed to retrieve profile by ID error={'message': 'invalid input syntax for type uuid: "test"', 'code': '22P02', 'hint': None, 'details': None} profile_id=test
+Unexpected error: {'message': 'invalid input syntax for type uuid: "test"', 'code': '22P02', 'hint': None, 'details': None}
+INFO:     127.0.0.1:52542 - "GET /api/v1/profiles/test HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/uvicorn/protocols/http/httptools_impl.py", line 426, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/uvicorn/middleware/proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/fastapi/applications.py", line 1106, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/starlette/applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/starlette/middleware/errors.py", line 184, in __call__
+    raise exc
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/starlette/middleware/errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/starlette/middleware/cors.py", line 83, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py", line 79, in __call__
+    raise exc
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py", line 20, in __call__
+    raise e
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py", line 17, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/starlette/routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/starlette/routing.py", line 66, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/fastapi/routing.py", line 274, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/burke/projects/linkedin-ingestion/main.py", line 799, in get_profile
+    return await controller.get_profile(profile_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/burke/projects/linkedin-ingestion/main.py", line 444, in get_profile
+    profile = await self.db_client.get_profile_by_id(profile_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/burke/projects/linkedin-ingestion/app/database/supabase_client.py", line 479, in get_profile_by_id
+    result = await table.select("*").eq("id", profile_id).execute()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/postgrest/_async/request_builder.py", line 78, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'invalid input syntax for type uuid: "test"', 'code': '22P02', 'hint': None, 'details': None}
+INFO:     127.0.0.1:52564 - "GET /api/v1/jobs?limit=20&type=scoring HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:52565 - "GET /api/v1/jobs/stats HTTP/1.1" 404 Not Found
+2025-08-19 07:37:18 [info     ] Listing templates              category=None include_inactive=False limit=None
+2025-08-19 07:37:18 [info     ] Templates retrieved successfully category=None count=3 include_inactive=False
+INFO:     127.0.0.1:52565 - "GET /api/v1/templates HTTP/1.1" 200 OK
+2025-08-19 07:37:18 [info     ] Retrieving profile by ID       profile_id=test
+2025-08-19 07:37:18 [error    ] Failed to retrieve profile by ID error={'message': 'invalid input syntax for type uuid: "test"', 'code': '22P02', 'hint': None, 'details': None} profile_id=test
+Unexpected error: {'message': 'invalid input syntax for type uuid: "test"', 'code': '22P02', 'hint': None, 'details': None}
+INFO:     127.0.0.1:52565 - "GET /api/v1/profiles/test HTTP/1.1" 500 Internal Server Error
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/uvicorn/protocols/http/httptools_impl.py", line 426, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        self.scope, self.receive, self.send
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/uvicorn/middleware/proxy_headers.py", line 84, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/fastapi/applications.py", line 1106, in __call__
+    await super().__call__(scope, receive, send)
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/starlette/applications.py", line 122, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/starlette/middleware/errors.py", line 184, in __call__
+    raise exc
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/starlette/middleware/errors.py", line 162, in __call__
+    await self.app(scope, receive, _send)
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/starlette/middleware/cors.py", line 83, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py", line 79, in __call__
+    raise exc
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/starlette/middleware/exceptions.py", line 68, in __call__
+    await self.app(scope, receive, sender)
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py", line 20, in __call__
+    raise e
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/fastapi/middleware/asyncexitstack.py", line 17, in __call__
+    await self.app(scope, receive, send)
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/starlette/routing.py", line 718, in __call__
+    await route.handle(scope, receive, send)
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/starlette/routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/starlette/routing.py", line 66, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/fastapi/routing.py", line 274, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        dependant=dependant, values=values, is_coroutine=is_coroutine
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/burke/projects/linkedin-ingestion/main.py", line 799, in get_profile
+    return await controller.get_profile(profile_id)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/burke/projects/linkedin-ingestion/main.py", line 444, in get_profile
+    profile = await self.db_client.get_profile_by_id(profile_id)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/burke/projects/linkedin-ingestion/app/database/supabase_client.py", line 479, in get_profile_by_id
+    result = await table.select("*").eq("id", profile_id).execute()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/burke/projects/linkedin-ingestion/venv/lib/python3.13/site-packages/postgrest/_async/request_builder.py", line 78, in execute
+    raise APIError(dict(json_obj))
+postgrest.exceptions.APIError: {'message': 'invalid input syntax for type uuid: "test"', 'code': '22P02', 'hint': None, 'details': None}
+2025-08-19 07:38:15 [info     ] Deleting profile by ID         profile_id=3516e2cd-b25f-40b0-830f-03ff9846ff47
+2025-08-19 07:38:16 [info     ] Profile deleted                deleted_count=1 profile_id=3516e2cd-b25f-40b0-830f-03ff9846ff47
+INFO:     127.0.0.1:52751 - "DELETE /api/v1/profiles/3516e2cd-b25f-40b0-830f-03ff9846ff47 HTTP/1.1" 204 No Content
+2025-08-19 07:38:21 [info     ] Deleting profile by ID         profile_id=72df7def-3a3c-43e2-898f-4de63534ce77
+2025-08-19 07:38:21 [info     ] Profile deleted                deleted_count=1 profile_id=72df7def-3a3c-43e2-898f-4de63534ce77
+INFO:     127.0.0.1:52767 - "DELETE /api/v1/profiles/72df7def-3a3c-43e2-898f-4de63534ce77 HTTP/1.1" 204 No Content
+2025-08-19 07:38:26 [info     ] Deleting profile by ID         profile_id=48f435e2-191e-4b0e-8571-554110ed232a
+2025-08-19 07:38:26 [info     ] Profile deleted                deleted_count=1 profile_id=48f435e2-191e-4b0e-8571-554110ed232a
+INFO:     127.0.0.1:52767 - "DELETE /api/v1/profiles/48f435e2-191e-4b0e-8571-554110ed232a HTTP/1.1" 204 No Content
+2025-08-19 07:38:37 [info     ] Deleting profile by ID         profile_id=423eda0c-cb51-45e2-8ea6-c2e6798db8a5
+2025-08-19 07:38:37 [info     ] Deleting profile by ID         profile_id=dd21f3ea-d94a-4d04-bd67-e7ed9f453a79
+2025-08-19 07:38:37 [info     ] Profile deleted                deleted_count=1 profile_id=dd21f3ea-d94a-4d04-bd67-e7ed9f453a79
+INFO:     127.0.0.1:52822 - "DELETE /api/v1/profiles/dd21f3ea-d94a-4d04-bd67-e7ed9f453a79 HTTP/1.1" 204 No Content
+2025-08-19 07:38:37 [info     ] Profile deleted                deleted_count=1 profile_id=423eda0c-cb51-45e2-8ea6-c2e6798db8a5
+INFO:     127.0.0.1:52820 - "DELETE /api/v1/profiles/423eda0c-cb51-45e2-8ea6-c2e6798db8a5 HTTP/1.1" 204 No Content
+2025-08-19 07:38:51 [info     ] Deleting profile by ID         profile_id=43e2204d-901f-46d6-be20-7d65e1a2b279
+2025-08-19 07:38:51 [info     ] Deleting profile by ID         profile_id=10b8bab5-bdbe-4bb0-88d7-47595e719e28
+2025-08-19 07:38:51 [info     ] Deleting profile by ID         profile_id=5bf6ed13-9bea-4f0e-9bd0-a6d82bb09ff4
+2025-08-19 07:38:51 [info     ] Profile deleted                deleted_count=1 profile_id=43e2204d-901f-46d6-be20-7d65e1a2b279
+INFO:     127.0.0.1:52855 - "DELETE /api/v1/profiles/43e2204d-901f-46d6-be20-7d65e1a2b279 HTTP/1.1" 204 No Content
+2025-08-19 07:38:51 [info     ] Profile deleted                deleted_count=1 profile_id=5bf6ed13-9bea-4f0e-9bd0-a6d82bb09ff4
+INFO:     127.0.0.1:52859 - "DELETE /api/v1/profiles/5bf6ed13-9bea-4f0e-9bd0-a6d82bb09ff4 HTTP/1.1" 204 No Content
+2025-08-19 07:38:51 [info     ] Profile deleted                deleted_count=1 profile_id=10b8bab5-bdbe-4bb0-88d7-47595e719e28
+INFO:     127.0.0.1:52858 - "DELETE /api/v1/profiles/10b8bab5-bdbe-4bb0-88d7-47595e719e28 HTTP/1.1" 204 No Content
+2025-08-19 07:39:03 [info     ] Retrieving profile by ID       profile_id=872e8708-774b-4bf6-b819-f2c1897486a3
+2025-08-19 07:39:03 [info     ] Profile found by ID            profile_id=872e8708-774b-4bf6-b819-f2c1897486a3
+INFO:     127.0.0.1:52905 - "GET /api/v1/profiles/872e8708-774b-4bf6-b819-f2c1897486a3 HTTP/1.1" 200 OK
+2025-08-19 07:39:06 [info     ] Listing templates              category=None include_inactive=False limit=None
+2025-08-19 07:39:06 [info     ] Templates retrieved successfully category=None count=3 include_inactive=False
+INFO:     127.0.0.1:52905 - "GET /api/v1/templates HTTP/1.1" 200 OK

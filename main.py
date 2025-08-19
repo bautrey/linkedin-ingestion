@@ -34,6 +34,7 @@ from app.exceptions import (
     ProfileAlreadyExistsError
 )
 from app.models.canonical import CanonicalProfile
+from app.models.canonical.profile import RoleType
 from app.models.scoring import ScoringRequest, ScoringResponse, JobRetryRequest
 from app.controllers.scoring_controllers import ProfileScoringController, ScoringJobController
 from app.services.template_service import TemplateService
@@ -316,6 +317,7 @@ class ProfileCreateRequest(BaseModel):
     linkedin_url: HttpUrl
     name: Optional[str] = None
     include_companies: bool = Field(default=True, description="Include company profiles for all experience entries")
+    suggested_role: RoleType = Field(..., description="The suggested role for this profile: CIO, CTO, or CISO for role-specific scoring")
     
     @field_validator('linkedin_url', mode='before')
     @classmethod
@@ -356,6 +358,7 @@ class ProfileResponse(BaseModel):
     experience: List[Dict[str, Any]] = []
     education: List[Dict[str, Any]] = []
     certifications: List[Dict[str, Any]] = []
+    suggested_role: Optional[RoleType] = None
     created_at: str
     timestamp: Optional[str] = None
 
@@ -390,6 +393,7 @@ class ProfileController:
             experience=db_profile.get("experience", []),
             education=db_profile.get("education", []),
             certifications=db_profile.get("certifications", []),
+            suggested_role=db_profile.get("suggested_role"),
             created_at=db_profile["created_at"],
             timestamp=db_profile.get("timestamp")
         )
@@ -475,6 +479,9 @@ class ProfileController:
         
         # Process profile through workflow for complete data
         request_id, enriched_profile = await self.linkedin_workflow.process_profile(workflow_request)
+        
+        # Set the suggested_role on the profile before storing
+        enriched_profile.profile.suggested_role = request.suggested_role
         
         # Store in database using the enriched profile data
         record_id = await self.db_client.store_profile(enriched_profile.profile)
@@ -1304,6 +1311,190 @@ async def delete_template(
             details={
                 "template_id": template_id,
                 "operation": "delete_template",
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=500, detail=error_response.model_dump())
+
+
+# ============================================================================
+# V1.90 ROLE-BASED TEMPLATE RECOMMENDATION ENDPOINTS
+# ============================================================================
+
+@app.get(
+    "/api/v1/profiles/{profile_id}/recommended-templates",
+    response_model=TemplateListResponse,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Profile not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def get_recommended_templates_for_profile(
+    profile_id: str,
+    api_key: str = Depends(verify_api_key)
+):
+    """Get template recommendations based on profile's suggested role"""
+    try:
+        # Get the profile to determine the suggested role
+        db_client = get_db_client()
+        profile = await db_client.get_profile_by_id(profile_id)
+        
+        if not profile:
+            error_response = ErrorResponse(
+                error_code="PROFILE_NOT_FOUND",
+                message=f"Profile with ID {profile_id} not found",
+                details={
+                    "profile_id": profile_id,
+                    "operation": "get_recommended_templates"
+                }
+            )
+            raise HTTPException(status_code=404, detail=error_response.model_dump())
+        
+        # Get the suggested role from profile
+        suggested_role = profile.get("suggested_role")
+        if not suggested_role:
+            # If no suggested role, return all templates
+            service = get_template_service()
+            templates = await service.list_templates(include_inactive=False, limit=10)
+            
+            logger.info(
+                f"No suggested role for profile, returning general templates",
+                extra={
+                    "profile_id": profile_id,
+                    "template_count": len(templates)
+                }
+            )
+        else:
+            # Get role-specific templates
+            service = get_template_service()
+            templates = await service.get_templates_for_role(suggested_role)
+            
+            logger.info(
+                f"Retrieved role-based template recommendations",
+                extra={
+                    "profile_id": profile_id,
+                    "suggested_role": suggested_role,
+                    "template_count": len(templates)
+                }
+            )
+        
+        return TemplateListResponse(
+            templates=templates,
+            count=len(templates)
+        )
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions (like 404)
+        raise
+    except Exception as e:
+        logger.error(
+            f"Failed to get template recommendations for profile {profile_id}: {str(e)}",
+            extra={
+                "profile_id": profile_id,
+                "exception_type": type(e).__name__
+            }
+        )
+        error_response = ErrorResponse(
+            error_code="TEMPLATE_RECOMMENDATION_FAILED",
+            message=f"Failed to get template recommendations: {str(e)}",
+            details={
+                "profile_id": profile_id,
+                "operation": "get_recommended_templates",
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=500, detail=error_response.model_dump())
+
+
+@app.get(
+    "/api/v1/profiles/{profile_id}/default-template",
+    response_model=PromptTemplate,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Profile or default template not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def get_default_template_for_profile(
+    profile_id: str,
+    api_key: str = Depends(verify_api_key)
+):
+    """Get the default template recommendation for a profile's role"""
+    try:
+        # Get the profile to determine the suggested role
+        db_client = get_db_client()
+        profile = await db_client.get_profile_by_id(profile_id)
+        
+        if not profile:
+            error_response = ErrorResponse(
+                error_code="PROFILE_NOT_FOUND",
+                message=f"Profile with ID {profile_id} not found",
+                details={
+                    "profile_id": profile_id,
+                    "operation": "get_default_template"
+                }
+            )
+            raise HTTPException(status_code=404, detail=error_response.model_dump())
+        
+        # Get the suggested role from profile
+        suggested_role = profile.get("suggested_role")
+        if not suggested_role:
+            error_response = ErrorResponse(
+                error_code="NO_SUGGESTED_ROLE",
+                message="Profile has no suggested role for template recommendation",
+                details={
+                    "profile_id": profile_id,
+                    "suggestion": "Use the general templates endpoint or specify a role"
+                }
+            )
+            raise HTTPException(status_code=404, detail=error_response.model_dump())
+        
+        # Get the default template for the role
+        service = get_template_service()
+        default_template = await service.get_default_template_for_role(suggested_role)
+        
+        if not default_template:
+            error_response = ErrorResponse(
+                error_code="NO_DEFAULT_TEMPLATE",
+                message=f"No default template found for role {suggested_role}",
+                details={
+                    "profile_id": profile_id,
+                    "suggested_role": suggested_role,
+                    "suggestion": f"Create templates for the {suggested_role} category"
+                }
+            )
+            raise HTTPException(status_code=404, detail=error_response.model_dump())
+        
+        logger.info(
+            f"Default template retrieved for profile role",
+            extra={
+                "profile_id": profile_id,
+                "suggested_role": suggested_role,
+                "template_id": str(default_template.id),
+                "template_name": default_template.name
+            }
+        )
+        
+        return default_template
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions (like 404)
+        raise
+    except Exception as e:
+        logger.error(
+            f"Failed to get default template for profile {profile_id}: {str(e)}",
+            extra={
+                "profile_id": profile_id,
+                "exception_type": type(e).__name__
+            }
+        )
+        error_response = ErrorResponse(
+            error_code="DEFAULT_TEMPLATE_RETRIEVAL_FAILED",
+            message=f"Failed to get default template: {str(e)}",
+            details={
+                "profile_id": profile_id,
+                "operation": "get_default_template",
                 "exception_type": type(e).__name__
             }
         )

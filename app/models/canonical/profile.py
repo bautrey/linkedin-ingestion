@@ -20,6 +20,12 @@ class CanonicalWorkflowStatus(str, Enum):
     FAILED = "failed"
     TIMEOUT = "timeout"
 
+class RoleType(str, Enum):
+    """Supported role types for profile scoring."""
+    CIO = "CIO"
+    CTO = "CTO"
+    CISO = "CISO"
+
 # --- Nested Profile Models ---
 
 class CanonicalEducationEntry(BaseModel):
@@ -141,6 +147,9 @@ class CanonicalProfile(BaseModel):
     is_creator: Optional[bool] = Field(None, description="Flag indicating if the user is in LinkedIn's creator mode.")
     is_influencer: Optional[bool] = Field(None, description="Flag indicating if the user is classified as an influencer.")
     is_verified: Optional[bool] = Field(None, description="Flag indicating if the user's profile is verified.")
+    
+    # --- Role Information ---
+    suggested_role: Optional[RoleType] = Field(None, description="The suggested role for this profile: CIO, CTO, or CISO for role-specific scoring.")
     
     # --- Timestamps & Metadata ---
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), description="The timestamp when the data was processed.")

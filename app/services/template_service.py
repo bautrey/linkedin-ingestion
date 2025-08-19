@@ -137,6 +137,64 @@ class TemplateService(LoggerMixin):
             )
             raise
     
+    async def get_templates_for_role(self, role: str) -> List[PromptTemplate]:
+        """
+        Get templates that match a specific role category
+        
+        Args:
+            role: Role string (CTO, CIO, CISO)
+            
+        Returns:
+            List of active PromptTemplate instances for the role
+        """
+        self.logger.info("Retrieving templates for role", role=role)
+        
+        # Get templates for the specific role category
+        templates = await self.list_templates(
+            category=role.upper(),
+            include_inactive=False,  # Only active templates
+            limit=10  # Reasonable limit
+        )
+        
+        self.logger.info(
+            "Retrieved templates for role",
+            role=role,
+            template_count=len(templates)
+        )
+        
+        return templates
+    
+    async def get_default_template_for_role(self, role: str) -> Optional[PromptTemplate]:
+        """
+        Get the default/recommended template for a specific role
+        
+        Args:
+            role: Role string (CTO, CIO, CISO)
+            
+        Returns:
+            Default PromptTemplate for the role, or None if none found
+        """
+        self.logger.info("Retrieving default template for role", role=role)
+        
+        templates = await self.get_templates_for_role(role)
+        
+        if not templates:
+            self.logger.info("No templates found for role", role=role)
+            return None
+        
+        # Return the first (most recently created) active template
+        # In the future, this could be enhanced with a "is_default" flag
+        default_template = templates[0]
+        
+        self.logger.info(
+            "Default template selected for role",
+            role=role,
+            template_id=str(default_template.id),
+            template_name=default_template.name
+        )
+        
+        return default_template
+    
     async def list_template_summaries(
         self, 
         category: Optional[str] = None,
