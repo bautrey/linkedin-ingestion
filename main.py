@@ -33,6 +33,7 @@ from app.exceptions import (
     InvalidLinkedInURLError,
     ProfileAlreadyExistsError
 )
+from app.cassidy.exceptions import CassidyWorkflowError
 from app.models.canonical import CanonicalProfile
 from app.models.canonical.profile import RoleType
 from app.models.scoring import ScoringRequest, ScoringResponse, JobRetryRequest
@@ -206,6 +207,66 @@ async def profile_already_exists_handler(request: Request, exc: ProfileAlreadyEx
         status_code=exc.status_code or 409,
         content=error_response.model_dump()
     )
+
+@app.exception_handler(CassidyWorkflowError)
+async def cassidy_workflow_error_handler(request: Request, exc: CassidyWorkflowError):
+    """Handle CassidyWorkflowError with 400 status code for invalid URLs"""
+    # Log the error for tracking
+    logger.warning(
+        f"Cassidy workflow error: {exc.message}",
+        extra={
+            "endpoint": str(request.url),
+            "method": request.method,
+            "error_message": str(exc)
+        }
+    )
+    
+    # Check if this is a LinkedIn URL format error
+    error_message = str(exc)
+    if "not a valid LinkedIn profile URL" in error_message:
+        # Extract the URL from the error message if possible
+        url_start = error_message.find("*https://")
+        url_end = error_message.find("*", url_start + 1)
+        invalid_url = error_message[url_start+1:url_end] if url_start != -1 and url_end != -1 else "unknown"
+        
+        error_response = ErrorResponse(
+            error_code="INVALID_LINKEDIN_URL",
+            message="Invalid LinkedIn profile URL format",
+            details={
+                "endpoint": str(request.url),
+                "method": request.method,
+                "invalid_url": invalid_url,
+                "cassidy_error": str(exc)
+            },
+            suggestions=[
+                "Use the modern LinkedIn URL format: https://www.linkedin.com/in/username",
+                "Avoid old LinkedIn URL formats like /pub/ which are no longer supported",
+                "Ensure the LinkedIn URL is publicly accessible"
+            ]
+        )
+        return JSONResponse(
+            status_code=400,
+            content=error_response.model_dump()
+        )
+    else:
+        # Handle other Cassidy workflow errors
+        error_response = ErrorResponse(
+            error_code="WORKFLOW_ERROR",
+            message="LinkedIn profile processing failed",
+            details={
+                "endpoint": str(request.url),
+                "method": request.method,
+                "workflow_error": str(exc)
+            },
+            suggestions=[
+                "Verify the LinkedIn URL is correct and accessible",
+                "Try again in a few minutes if this was a temporary issue"
+            ]
+        )
+        return JSONResponse(
+            status_code=400,
+            content=error_response.model_dump()
+        )
 
 @app.exception_handler(LinkedInIngestionError)
 async def linkedin_ingestion_error_handler(request: Request, exc: LinkedInIngestionError):
