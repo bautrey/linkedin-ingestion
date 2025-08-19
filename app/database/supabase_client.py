@@ -101,6 +101,7 @@ class SupabaseClient(LoggerMixin):
             "country_code": profile.country,  # Using country instead of country_code
             "followers": profile.follower_count,
             "connections": profile.connection_count,
+            "profile_image_url": str(profile.profile_image_url) if profile.profile_image_url else None,
             "experience": [self._serialize_model(exp) for exp in profile.experiences],
             "education": [self._serialize_model(edu) for edu in profile.educations],
             "certifications": [],  # CanonicalProfile doesn't have certifications field

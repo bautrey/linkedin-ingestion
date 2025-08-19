@@ -72,7 +72,7 @@ cat linkedin-ingestion-SESSION_HISTORY.md  # Check project timeline
 ### Short-term (Next session)
 ```bash
 # Begin implementing v1.6 Task 1: Create Canonical Data Models
-@~/.agent-os/instructions/execute-tasks.md
+@~/agent-os/instructions/execute-tasks.md
 # Follow the tasks.md file in the v1.6 spec directory
 ```
 

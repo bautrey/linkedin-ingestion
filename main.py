@@ -351,6 +351,7 @@ class ProfileResponse(BaseModel):
     country_code: Optional[str] = None
     followers: Optional[int] = None
     connections: Optional[int] = None
+    profile_image_url: Optional[str] = None
     current_company: Optional[Dict[str, Any]] = None
     experience: List[Dict[str, Any]] = []
     education: List[Dict[str, Any]] = []
@@ -384,6 +385,7 @@ class ProfileController:
             country_code=db_profile.get("country_code"),
             followers=db_profile.get("followers"),
             connections=db_profile.get("connections"),
+            profile_image_url=db_profile.get("profile_image_url"),
             current_company=db_profile.get("current_company"),
             experience=db_profile.get("experience", []),
             education=db_profile.get("education", []),

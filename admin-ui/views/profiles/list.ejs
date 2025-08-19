@@ -112,7 +112,7 @@
                                 <table class="table table-hover mb-0" id="profilesTable">
                                     <thead class="table-light">
                                         <tr>
-                                            <th class="ps-4">
+                                            <th class="ps-2">
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" id="selectAll">
                                                 </div>
@@ -160,7 +160,7 @@
                                         <% if (profiles && profiles.length > 0) { %>
                                             <% profiles.forEach(profile => { %>
                                                 <tr data-profile-id="<%= profile.id %>">
-                                                    <td class="ps-4">
+                                                    <td class="ps-2">
                                                         <div class="form-check">
                                                             <input class="form-check-input profile-checkbox" type="checkbox" 
                                                                    value="<%= profile.id %>">
@@ -168,10 +168,15 @@
                                                     </td>
                                                     <td>
                                                         <div class="d-flex align-items-center">
-                                                            <% if (profile.profile_image) { %>
-                                                                <img src="<%= profile.profile_image %>" 
-                                                                     alt="<%= profile.full_name || 'Profile' %>" 
-                                                                     class="profile-img me-3">
+                                                            <% if (profile.profile_image_url) { %>
+                                                                <img src="<%= profile.profile_image_url %>" alt="<%= profile.name || 'Profile' %> photo" 
+                                                                     class="profile-img me-3 rounded-circle" 
+                                                                     style="width: 40px; height: 40px; object-fit: cover;"
+                                                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                                <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                                     style="width: 40px; height: 40px; display: none;">
+                                                                    <i class="bi bi-person text-white"></i>
+                                                                </div>
                                                             <% } else { %>
                                                                 <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3" 
                                                                      style="width: 40px; height: 40px;">
@@ -257,7 +262,7 @@
                                                                     </a>
                                                                 </li>
                                                                 <li>
-                                                                    <a class="dropdown-item" href="#" onclick="scoreProfile('<%= profile.id %>')">
+                                                                <a class="dropdown-item" href="javascript:void(0)" onclick="scoreProfile('<%= profile.id %>')"
                                                                         <i class="bi bi-star me-2"></i>Score Profile
                                                                     </a>
                                                                 </li>
@@ -270,8 +275,8 @@
                                                                 <% } %>
                                                                 <li><hr class="dropdown-divider"></li>
                                                                 <li>
-                                                                    <a class="dropdown-item text-danger" href="#" 
-                                                                       onclick="deleteProfile('<%= profile.id %>', '<%= profile.full_name || 'this profile' %>')">
+                                                                <a class="dropdown-item text-danger" href="javascript:void(0)" 
+                                                                   onclick="deleteProfile('<%= profile.id %>', '<%= (profile.full_name || profile.name || 'Unknown Profile').replace(/'/g, '&#39;') %>')"
                                                                         <i class="bi bi-trash me-2"></i>Delete
                                                                     </a>
                                                                 </li>
@@ -355,6 +360,43 @@
                             </div>
                         <% } %>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Confirm Deletion
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="text-danger me-3">
+                            <i class="bi bi-trash" style="font-size: 2rem;"></i>
+                        </div>
+                        <div>
+                            <p class="mb-2 fw-bold">Are you sure you want to delete this profile?</p>
+                            <p class="mb-0 text-muted" id="deleteProfileName">Profile Name</p>
+                        </div>
+                    </div>
+                    <div class="alert alert-warning d-flex align-items-center" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <small>This action cannot be undone. The profile and all associated data will be permanently removed.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i>Cancel
+                    </button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                        <i class="bi bi-trash me-1"></i>Delete Profile
+                    </button>
                 </div>
             </div>
         </div>

@@ -4,7 +4,7 @@
 
 ### 🎯 **What Was Done**
 
-#### 1. Updated Global Warp Commands (`~/.agent-os/warp-commands.md`)
+#### 1. Updated Global Warp Commands (`~/agent-os/warp-commands.md`)
 - ❌ **Fixed dangerous references**: Removed `cat SESSION_SUMMARY.md` commands
 - ✅ **Added project-specific commands**: `cat ${PROJECT_NAME}-SESSION_SUMMARY.md`
 - 🛡️ **Added safety section**: Comprehensive Warp session management rules
@@ -47,7 +47,7 @@ When using Warp Agent Mode, AI agents must:
 
 #### Global Safety Rules
 Warp commands now enforce rules from:
-- `~/.agent-os/instructions/session-hibernation.md`
+- `~/agent-os/instructions/session-hibernation.md`
 - `/Users/burke/projects/burke-agent-os-standards/CRITICAL_SESSION_MANAGEMENT_RULES.md`
 
 #### Command Updates

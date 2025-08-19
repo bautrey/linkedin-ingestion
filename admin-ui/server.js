@@ -19,9 +19,11 @@ app.use(helmet({
         directives: {
             defaultSrc: ["'self'"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
-            scriptSrc: ["'self'", "'unsafe-inline'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-hashes'", "https://cdn.jsdelivr.net"],
+            scriptSrcAttr: ["'unsafe-inline'", "'unsafe-hashes'"],
             imgSrc: ["'self'", "data:", "https:"],
-            fontSrc: ["'self'", "https://cdn.jsdelivr.net"]
+            fontSrc: ["'self'", "https://cdn.jsdelivr.net"],
+            connectSrc: ["'self'", "ws:", "wss:"]
         }
     }
 }));

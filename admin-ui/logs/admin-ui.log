@@ -1,0 +1,9 @@
+
+> linkedin-ingestion-admin-ui@1.0.0 start
+> node server.js
+
+2025-08-18T20:08:27.013Z [[32minfo[39m]: LinkedIn Ingestion Admin UI server running on port 3003 {"service":"linkedin-ingestion-admin-ui","environment":"development","fastApiUrl":"https://smooth-mailbox-production.up.railway.app"}
+2025-08-18T20:08:34.831Z [[32minfo[39m]: GET /profiles/d5901d90-75d1-424d-a320-453185b87fa4 {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
+2025-08-18T20:08:46.594Z [[32minfo[39m]: GET /profiles/d5901d90-75d1-424d-a320-453185b87fa4 {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
+2025-08-18T20:08:57.589Z [[32minfo[39m]: SIGTERM received, shutting down gracefully {"service":"linkedin-ingestion-admin-ui"}
+2025-08-18T20:08:57.591Z [[32minfo[39m]: Process terminated {"service":"linkedin-ingestion-admin-ui"}

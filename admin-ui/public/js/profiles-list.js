@@ -5,9 +5,29 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeBulkSelection();
     initializeFilters();
     initializeColumnResizing();
+    initializeBootstrapComponents();
     
     console.log('Profiles list initialized with column resizing');
 });
+
+// Initialize Bootstrap components (dropdowns, modals, etc.)
+function initializeBootstrapComponents() {
+    // Initialize all dropdowns
+    const dropdownElementList = document.querySelectorAll('.dropdown-toggle');
+    const dropdownList = [...dropdownElementList].map(dropdownToggleEl => {
+        return new bootstrap.Dropdown(dropdownToggleEl);
+    });
+    
+    console.log(`Initialized ${dropdownList.length} dropdowns`);
+    
+    // Initialize modals
+    const modalElementList = document.querySelectorAll('.modal');
+    const modalList = [...modalElementList].map(modalEl => {
+        return new bootstrap.Modal(modalEl);
+    });
+    
+    console.log(`Initialized ${modalList.length} modals`);
+}
 
 // Table Sorting Functionality
 function initializeTableSorting() {
@@ -175,7 +195,24 @@ function scoreProfile(profileId) {
 }
 
 function deleteProfile(profileId, profileName) {
-    if (confirm(`Are you sure you want to delete ${profileName}?\n\nThis action cannot be undone.`)) {
+    // Set up the confirmation modal
+    const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+    const profileNameElement = document.getElementById('deleteProfileName');
+    const confirmButton = document.getElementById('confirmDeleteBtn');
+    
+    // Update modal content
+    profileNameElement.textContent = profileName || 'Unknown Profile';
+    
+    // Remove any existing click handlers
+    const newConfirmButton = confirmButton.cloneNode(true);
+    confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
+    
+    // Add click handler for confirmation
+    newConfirmButton.addEventListener('click', function() {
+        // Close modal first
+        modal.hide();
+        
+        // Show loading overlay
         showLoadingOverlay();
         
         fetch(`/profiles/${profileId}`, {
@@ -205,7 +242,10 @@ function deleteProfile(profileId, profileName) {
             console.error('Error deleting profile:', error);
             showNotification('An error occurred while deleting the profile', 'danger');
         });
-    }
+    });
+    
+    // Show the modal
+    modal.show();
 }
 
 // Bulk Actions
@@ -318,8 +358,23 @@ function updateProfileCounts() {
     const headerText = document.querySelector('h2').nextElementSibling;
     if (headerText && remainingRows === 0) {
         headerText.textContent = 'No profiles found';
-        // Could reload page or show empty state
-        setTimeout(() => window.location.reload(), 1000);
+        // Show empty state without auto-reload to prevent infinite delete loops
+        const tbody = document.querySelector('#profilesTable tbody');
+        if (tbody) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center py-5">
+                        <div class="text-muted">
+                            <i class="bi bi-people" style="font-size: 3rem;"></i>
+                            <p class="mt-2">No profiles remaining</p>
+                            <a href="/profiles" class="btn btn-primary mt-2">
+                                <i class="bi bi-arrow-clockwise"></i> Refresh Page
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }
     }
 }
 

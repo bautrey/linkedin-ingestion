@@ -38,8 +38,8 @@
 
 ### Context System Implementation
 - **Pre-commit hook**: `/.git/hooks/pre-commit` - Auto-updates test counts and session state
-- **Session state tracking**: `.agent-os/current-session-state.txt` - Real-time session context
-- **Subtask progress logging**: `.agent-os/subtask-progress.log` - Granular progress tracking
+- **Session state tracking**: `agent-os/current-session-state.txt` - Real-time session context
+- **Subtask progress logging**: `agent-os/subtask-progress.log` - Granular progress tracking
 - **Task status updates**: Enhanced all V1.8 subtasks with context read/write patterns
 
 ### V1.8 Task Status Updates  
@@ -73,7 +73,7 @@
 # V1.8 Task 2 Implementation 
 cd /Users/burke/projects/linkedin-ingestion
 source venv/bin/activate
-cat .agent-os/current-session-state.txt  # Read current context
+cat agent-os/current-session-state.txt  # Read current context
 # Begin Subtask 2.1: Session Recovery & Context Verification
 ```
 

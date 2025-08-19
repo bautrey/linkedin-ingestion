@@ -185,11 +185,11 @@ When you read a task/subtask that says to do something, that IS the user's instr
 
 ### AgentOS Hidden Directory Error
 
-**Problem**: Agent searched `.agent-os/` (hidden) when Burke eliminated all hidden directories
+**Problem**: Agent searched `agent-os/` (hidden) when Burke eliminated all hidden directories
 - Correct path: `agent-os/product/roadmap.md` (visible directory)
-- Wrong path: `.agent-os/product/roadmap.md` (doesn't exist)
+- Wrong path: `agent-os/product/roadmap.md` (doesn't exist)
 
-**Rule**: AgentOS uses VISIBLE directories (`agent-os/`) not hidden (`.agent-os/`)
+**Rule**: AgentOS uses VISIBLE directories (`agent-os/`) not hidden (`agent-os/`)
 
 ---
 

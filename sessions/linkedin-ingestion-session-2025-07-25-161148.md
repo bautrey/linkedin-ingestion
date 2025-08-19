@@ -4,7 +4,7 @@
 **Status**: 🟢 SPEC COMPLETE - REST API Refactor Planning Complete
 
 > **📚 Session History**: See `SESSION_HISTORY.md` for complete project timeline
-> **🗄️ Archived Sessions**: See `.agent-os/sessions/` for detailed session files
+> **🗄️ Archived Sessions**: See `agent-os/sessions/` for detailed session files
 
 ## 🎯 **Current Session Objectives**
 - [x] Create comprehensive REST API refactor specification following Google AIP-121
@@ -26,10 +26,10 @@
 ## 🛠️ **Recent Work**
 
 ### Specification Documents Created
-- `.agent-os/specs/2025-07-25-rest-api-refactor/spec.md` - Main specification requirements
-- `.agent-os/specs/2025-07-25-rest-api-refactor/sub-specs/technical-spec.md` - Technical implementation approach
-- `.agent-os/specs/2025-07-25-rest-api-refactor/sub-specs/api-spec.md` - Detailed API endpoint specifications
-- `.agent-os/specs/2025-07-25-rest-api-refactor/sub-specs/tests.md` - Comprehensive test coverage plan
+- `agent-os/specs/2025-07-25-rest-api-refactor/spec.md` - Main specification requirements
+- `agent-os/specs/2025-07-25-rest-api-refactor/sub-specs/technical-spec.md` - Technical implementation approach
+- `agent-os/specs/2025-07-25-rest-api-refactor/sub-specs/api-spec.md` - Detailed API endpoint specifications
+- `agent-os/specs/2025-07-25-rest-api-refactor/sub-specs/tests.md` - Comprehensive test coverage plan
 
 ### Configuration Updates
 - `DEPLOYMENT.md` - Updated with Railway deployment best practices from previous sessions
@@ -53,7 +53,7 @@
 # Continue with AgentOS create-spec process
 cd /Users/burke/projects/linkedin-ingestion
 # Step 12: Create tasks.md (next step in create-spec workflow)
-# Review spec documentation at @.agent-os/specs/2025-07-25-rest-api-refactor/
+# Review spec documentation at @agent-os/specs/2025-07-25-rest-api-refactor/
 ```
 
 ### Short-term (Next session)
@@ -89,4 +89,4 @@ cd /Users/burke/projects/linkedin-ingestion
 
 ---
 **Status**: 🟢 **READY FOR IMPLEMENTATION PHASE**
-**History**: `SESSION_HISTORY.md` • **Archives**: `.agent-os/sessions/`
+**History**: `SESSION_HISTORY.md` • **Archives**: `agent-os/sessions/`

@@ -65,7 +65,7 @@ git push
 ```bash
 # Start implementing Task 1 of v1.7 spec
 source venv/bin/activate
-@~/.agent-os/instructions/execute-tasks.md
+@~/agent-os/instructions/execute-tasks.md
 ```
 
 ### Future Sessions

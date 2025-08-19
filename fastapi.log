@@ -1,0 +1,8 @@
+INFO:     Will watch for changes in these directories: ['/Users/burke/projects/linkedin-ingestion']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [4833] using WatchFiles
+INFO:     Started server process [4875]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:50272 - "GET /health HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:50285 - "GET /api/v1/health HTTP/1.1" 200 OK

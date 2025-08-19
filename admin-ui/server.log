@@ -2,30 +2,29 @@
 > linkedin-ingestion-admin-ui@1.0.0 start
 > node server.js
 
-2025-08-18T19:42:29.696Z [[32minfo[39m]: LinkedIn Ingestion Admin UI server running on port 3003 {"service":"linkedin-ingestion-admin-ui","environment":"development","fastApiUrl":"http://localhost:8000"}
-2025-08-18T19:42:36.173Z [[32minfo[39m]: GET /health {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
-2025-08-18T19:42:40.014Z [[32minfo[39m]: HEAD /profiles {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
-2025-08-18T19:42:40.038Z [[31merror[39m]: API No Response: {"service":"linkedin-ingestion-admin-ui","method":"get","url":"/profiles"}
-/Users/burke/projects/linkedin-ingestion/admin-ui/utils/logger.js:20
-                        msg += ` ${JSON.stringify(meta)}`;
-                                        ^
+node:events:485
+      throw er; // Unhandled 'error' event
+      ^
 
-TypeError: Converting circular structure to JSON
-    --> starting at object with constructor 'Agent'
-    |     property 'sockets' -> object with constructor 'Object'
-    |     property 'localhost:8000:' -> object with constructor 'Array'
-    |     ...
-    |     property '_httpMessage' -> object with constructor 'ClientRequest'
-    --- property 'agent' closes the circle
-    at JSON.stringify (<anonymous>)
-    at Printf.template (/Users/burke/projects/linkedin-ingestion/admin-ui/utils/logger.js:20:41)
-    at Printf.transform (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/logform/printf.js:11:26)
-    at Format.transform (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/logform/combine.js:20:24)
-    at Console._write (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/winston-transport/modern.js:91:33)
-    at doWrite (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/readable-stream/lib/_stream_writable.js:390:139)
-    at writeOrBuffer (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/readable-stream/lib/_stream_writable.js:381:5)
-    at Writable.write (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/readable-stream/lib/_stream_writable.js:302:11)
-    at DerivedLogger.ondata (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/readable-stream/lib/_stream_readable.js:629:20)
-    at DerivedLogger.emit (node:events:507:28)
+Error: listen EADDRINUSE: address already in use :::3003
+    at Server.setupListenHandle [as _listen2] (node:net:1939:16)
+    at listenInCluster (node:net:1996:12)
+    at Server.listen (node:net:2101:7)
+    at Object.<anonymous> (/Users/burke/projects/linkedin-ingestion/admin-ui/server.js:113:8)
+    at Module._compile (node:internal/modules/cjs/loader:1734:14)
+    at Object..js (node:internal/modules/cjs/loader:1899:10)
+    at Module.load (node:internal/modules/cjs/loader:1469:32)
+    at Function._load (node:internal/modules/cjs/loader:1286:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+Emitted 'error' event on Server instance at:
+    at emitErrorNT (node:net:1975:8)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  code: 'EADDRINUSE',
+  errno: -48,
+  syscall: 'listen',
+  address: '::',
+  port: 3003
+}
 
 Node.js v23.11.0

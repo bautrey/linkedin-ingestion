@@ -27,9 +27,11 @@
     "winston": "^3.17.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.2",
     "eslint": "^8.55.0",
     "jest": "^29.7.0",
     "nodemon": "^3.1.10",
+    "playwright": "^1.54.2",
     "supertest": "^6.3.4"
   },
   "engines": {

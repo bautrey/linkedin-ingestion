@@ -1,0 +1,26 @@
+
+> linkedin-ingestion-admin-ui@1.0.0 dev
+> nodemon server.js --ignore logs/ --ignore *.log
+
+[33m[nodemon] 3.1.10[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[32m[nodemon] starting `node server.js`[39m
+2025-08-18T20:09:04.433Z [[32minfo[39m]: LinkedIn Ingestion Admin UI server running on port 3003 {"service":"linkedin-ingestion-admin-ui","environment":"development","fastApiUrl":"https://smooth-mailbox-production.up.railway.app"}
+node:events:485
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: read EIO
+    at TTY.onStreamRead (node:internal/stream_base_commons:216:20)
+Emitted 'error' event on ReadStream instance at:
+    at emitErrorNT (node:internal/streams/destroy:170:8)
+    at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  errno: -5,
+  code: 'EIO',
+  syscall: 'read'
+}
+
+Node.js v23.11.0

@@ -37,9 +37,9 @@
 
 ### Session Recovery System Integration
 - `/Users/burke/projects/burke-agent-os-standards/instructions/session-recovery.md` - Updated to read [project-name]-SESSION_HISTORY.md and recent session files
-- Eliminated `/Users/burke/.agent-os/instructions/session-recovery.md` and other duplicates
+- Eliminated `/Users/burke/agent-os/instructions/session-recovery.md` and other duplicates
 - Updated detection hierarchy to look for [project-name]-SESSION_HISTORY.md instead of generic SESSION_SUMMARY.md
-- Fixed all .agent-os/ references to agent-os/ in recovery instructions
+- Fixed all agent-os/ references to agent-os/ in recovery instructions
 
 ### Warp Rule Updates
 - Extended MANDATORY SESSION MANAGEMENT PROTOCOL to include RECOVERY section

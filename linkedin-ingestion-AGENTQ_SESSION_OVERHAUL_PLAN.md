@@ -20,11 +20,11 @@ linkedin-ingestion-SESSION_SUMMARY.md     # Current session (was: SESSION_SUMMAR
 linkedin-ingestion-SESSION_HISTORY.md     # Navigation hub (was: SESSION_HISTORY.md)
 sessions/                                  # All archived sessions
 ├── linkedin-ingestion-session-2025-07-23-143000.md  (was: SESSION_SUMMARY_FINAL.md)
-├── linkedin-ingestion-session-2025-07-24-003016.md  (was: ~/.agent-os/session-history/...)
+├── linkedin-ingestion-session-2025-07-24-003016.md  (was: ~/agent-os/session-history/...)
 ├── linkedin-ingestion-session-2025-07-24-085332.md  (was: SESSION_SUMMARY_backup_...)
-├── linkedin-ingestion-session-2025-07-24-090744.md  (was: .agent-os/sessions/...)
+├── linkedin-ingestion-session-2025-07-24-090744.md  (was: agent-os/sessions/...)
 ├── linkedin-ingestion-session-2025-07-24-134700.md  (was: SESSION_SUMMARY_2025-07-24T13-47.md)
-├── linkedin-ingestion-session-2025-07-25-113132.md  (was: ~/.agent-os/session-history/...)
+├── linkedin-ingestion-session-2025-07-25-113132.md  (was: ~/agent-os/session-history/...)
 └── linkedin-ingestion-session-2025-07-25-165400.md  (current session archived)
 ```
 
@@ -36,12 +36,12 @@ sessions/                                  # All archived sessions
 **Priority**: HIGH
 
 ### ✅ Completed:
-- [x] Updated `~/.agent-os/instructions/session-hibernation.md` with project-specific naming
+- [x] Updated `~/agent-os/instructions/session-hibernation.md` with project-specific naming
 - [x] Added critical rule: NEVER create generic SESSION_SUMMARY.md files
 - [x] Modified template to require project identification
 
 ### 🔄 Still Needed:
-- [ ] Update `~/.agent-os/instructions/session-recovery.md` for new structure
+- [ ] Update `~/agent-os/instructions/session-recovery.md` for new structure
 - [ ] Update Burke's standards repository (`/Users/burke/projects/burke-agent-os-standards`)
 - [ ] Sync changes to global standards using `sync-standards.sh push`
 - [ ] Update Warp commands to use project-specific naming
@@ -50,16 +50,16 @@ sessions/                                  # All archived sessions
 ### Priority Files to Update:
 ```bash
 # Global AgentOS Instructions
-~/.agent-os/instructions/session-recovery.md
-~/.agent-os/commands/session-hibernation.md
-~/.agent-os/commands/session-recovery.md
+~/agent-os/instructions/session-recovery.md
+~/agent-os/commands/session-hibernation.md
+~/agent-os/commands/session-recovery.md
 
 # Burke's Standards Repository  
 /Users/burke/projects/burke-agent-os-standards/instructions/session-hibernation.md
 /Users/burke/projects/burke-agent-os-standards/sync-standards.sh
 
 # Warp Integration
-~/.agent-os/warp-commands.md
+~/agent-os/warp-commands.md
 ```
 
 ---
@@ -84,7 +84,7 @@ ls /Users/burke/projects/*/SESSION_SUMMARY.md
 - [ ] Create project assessment checklist
 - [ ] Develop automated conversion script
 - [ ] Apply to high-priority projects first
-- [ ] Update each project's `.agent-os/product/` configuration
+- [ ] Update each project's `agent-os/product/` configuration
 - [ ] Ensure all projects follow new naming convention
 
 ### Project Priority Order:
@@ -98,7 +98,7 @@ ls /Users/burke/projects/*/SESSION_SUMMARY.md
 
 ### 🚫 **NEVER DO:**
 - Create generic `SESSION_SUMMARY.md` files without project names
-- Store session files in global `~/.agent-os/session-history/`
+- Store session files in global `~/agent-os/session-history/`
 - Overwrite sessions without archiving to `./sessions/`
 - Use scattered backup files in project root
 

@@ -44,7 +44,7 @@
 - `agent-os/specs/2025-07-28-v1.5-error-handling/sub-specs/tests.md` - Comprehensive test coverage plan
 
 ### AgentOS Updates
-- `/Users/burke/.agent-os/instructions/create-spec.md` - Added Step 5 for version determination
+- `/Users/burke/agent-os/instructions/create-spec.md` - Added Step 5 for version determination
 - `agent-os/specs/next-version.txt` - Version counter initialized to 6 for next spec
 
 ### Spec Management
@@ -73,7 +73,7 @@
 # If continuing with v1.5 implementation
 cd /Users/burke/projects/linkedin-ingestion
 source venv/bin/activate  # Always activate venv
-@/Users/burke/.agent-os/instructions/execute-tasks.md  # Start Task 1
+@/Users/burke/agent-os/instructions/execute-tasks.md  # Start Task 1
 ```
 
 ### Short-term (Next session)

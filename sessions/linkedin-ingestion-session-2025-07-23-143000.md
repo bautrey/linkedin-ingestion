@@ -113,7 +113,7 @@ linkedin-ingestion/
 │   ├── cassidy/             # Cassidy AI integration layer
 │   ├── core/                # Configuration and logging
 │   └── tests/fixtures/      # Mock data and test infrastructure
-├── .agent-os/product/       # AgentOS project documentation
+├── agent-os/product/       # AgentOS project documentation
 ├── specs/                   # Feature specifications
 ├── main.py                  # Application entry point
 └── requirements.txt         # Python dependencies
@@ -137,7 +137,7 @@ linkedin-ingestion/
 ## ✅ Hibernation Complete: LinkedIn Ingestion Service
 
 **Session Preserved**: 2025-01-23 with 8 major objectives completed
-**Recovery Ready**: Use `@~/.agent-os/instructions/session-recovery.md` next time
+**Recovery Ready**: Use `@~/agent-os/instructions/session-recovery.md` next time
 **Quick Start**: `cd /Users/burke/projects/linkedin-ingestion` and check this summary
 
 **Project Status**: 🟢 Ready for hibernation

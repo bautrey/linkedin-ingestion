@@ -1,0 +1,570 @@
+
+> linkedin-ingestion-admin-ui@1.0.0 start
+> node server.js
+
+2025-08-18T20:13:04.923Z [[32minfo[39m]: LinkedIn Ingestion Admin UI server running on port 3003 {"service":"linkedin-ingestion-admin-ui","environment":"development","fastApiUrl":"https://smooth-mailbox-production.up.railway.app"}
+2025-08-18T20:13:06.876Z [[32minfo[39m]: GET /profiles {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:20:51.831Z [[32minfo[39m]: GET /profiles {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:24:58.042Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:25:00.338Z [[32minfo[39m]: GET /profiles?sort_by=name&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:25:09.526Z [[32minfo[39m]: GET /profiles?sort_by=company&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:25:27.899Z [[32minfo[39m]: GET /profiles?sort_by=name&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:25:32.578Z [[32minfo[39m]: GET /profiles?sort_by=name&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:35:46.153Z [[32minfo[39m]: GET /profiles?sort_by=name&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:35:58.119Z [[32minfo[39m]: GET /profiles/d5901d90-75d1-424d-a320-453185b87fa4 {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:35:58.755Z [[32minfo[39m]: GET /api/profiles/d5901d90-75d1-424d-a320-453185b87fa4/score {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:36:10.852Z [[32minfo[39m]: GET /profiles {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:37:11.466Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:38:02.583Z [[32minfo[39m]: GET /profiles?sort_by=current_company&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:39:09.433Z [[32minfo[39m]: GET /profiles?sort_by=current_company&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:39:14.136Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:39:31.917Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:39:35.302Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=desc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:39:40.190Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:39:53.572Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:39:59.602Z [[32minfo[39m]: GET /profiles?sort_by=current_company&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:40:51.117Z [[32minfo[39m]: GET /profiles?sort_by=location&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:41:35.028Z [[32minfo[39m]: GET /profiles?sort_by=location&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:41:40.372Z [[32minfo[39m]: GET /profiles?sort_by=current_company&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:43:14.632Z [[32minfo[39m]: GET /profiles?sort_by=current_company&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:43:36.742Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:43:48.892Z [[32minfo[39m]: GET /profiles?sort_by=current_company&sort_order=desc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:43:49.955Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:45:08.513Z [[32minfo[39m]: GET /profiles?sort_by=current_company&sort_order=desc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:45:09.711Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:45:57.163Z [[32minfo[39m]: GET /profiles?sort_by=current_company&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:45:58.358Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:46:58.412Z [[32minfo[39m]: GET /profiles?sort_by=current_company&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:46:59.668Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:48:17.113Z [[32minfo[39m]: GET /profiles?sort_by=current_company&sort_order=desc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:48:18.452Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:49:30.647Z [[32minfo[39m]: GET /profiles?sort_by=current_company&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:49:31.656Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:49:48.900Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:49:50.102Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:50:09.333Z [[32minfo[39m]: GET /profiles?sort_by=name&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:50:10.448Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:50:28.738Z [[32minfo[39m]: GET /profiles?sort_by=current_company&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:50:29.796Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:51:09.779Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:51:10.904Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:52:09.255Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:52:10.548Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:52:44.707Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=desc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:52:45.770Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:53:00.638Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=desc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:53:01.774Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:53:05.131Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:53:06.085Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:53:22.471Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:53:23.554Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:53:25.615Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:53:26.362Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:53:35.423Z [[32minfo[39m]: GET /profiles?sort_by=current_company&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:53:36.376Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:53:42.151Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:53:43.233Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:54:41.318Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=asc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:54:42.684Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:54:50.624Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=desc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:54:51.556Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:56:42.260Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=desc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:56:43.566Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T20:58:30.509Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=desc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T20:58:31.904Z [[32minfo[39m]: GET /.well-known/appspecific/com.chrome.devtools.json {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T21:16:10.387Z [[32minfo[39m]: GET /health {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
+2025-08-18T21:16:15.063Z [[32minfo[39m]: GET /profiles {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
+2025-08-18T21:16:20.259Z [[32minfo[39m]: HEAD /profiles/d5901d90-75d1-424d-a320-453185b87fa4 {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
+2025-08-18T21:19:41.345Z [[32minfo[39m]: DELETE /profiles/test-id {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
+2025-08-18T21:19:42.069Z [[31merror[39m]: API Error Response: 500 DELETE /profiles/test-id {"service":"linkedin-ingestion-admin-ui","status":500,"data":{"detail":{"error_code":"DATABASE_ERROR","message":"Failed to delete profile: {'message': 'invalid input syntax for type uuid: \"test-id\"', 'code': '22P02', 'hint': None, 'details': None}","details":{"profile_id":"test-id","operation":"delete_profile","exception_type":"APIError"},"suggestions":null}},"headers":{"content-length":"302","content-type":"application/json","date":"Mon, 18 Aug 2025 21:19:41 GMT","server":"railway-edge","x-railway-edge":"railway/us-east4-eqdc4a","x-railway-request-id":"cDmF0adfTVWPrJauCx5-qw"}}
+2025-08-18T21:19:42.081Z [[31merror[39m]: Error deleting profile test-id: Request failed with status code 500 {"service":"linkedin-ingestion-admin-ui","name":"AxiosError","code":"ERR_BAD_RESPONSE","config":{"transitional":{"silentJSONParsing":true,"forcedJSONParsing":true,"clarifyTimeoutError":false},"adapter":["xhr","http","fetch"],"transformRequest":[null],"transformResponse":[null],"timeout":30000,"xsrfCookieName":"XSRF-TOKEN","xsrfHeaderName":"X-XSRF-TOKEN","maxContentLength":-1,"maxBodyLength":-1,"env":{},"headers":{"Accept":"application/json, text/plain, */*","Content-Type":"application/json","X-API-Key":"li_HieZz-IjBp0uE7d-rZkRE0qyy12r5_ZJS_FR4jMvv0I","User-Agent":"LinkedIn-Ingestion-Admin-UI/1.0","Accept-Encoding":"gzip, compress, deflate, br"},"baseURL":"https://smooth-mailbox-production.up.railway.app/api/v1","method":"delete","url":"/profiles/test-id","allowAbsoluteUrls":true},"request":{"_events":{},"_eventsCount":7,"outputData":[],"outputSize":0,"writable":true,"destroyed":true,"_last":true,"chunkedEncoding":false,"shouldKeepAlive":true,"maxRequestsOnConnectionReached":false,"_defaultKeepAlive":true,"useChunkedEncodingByDefault":false,"sendDate":false,"_removedConnection":false,"_removedContLen":false,"_removedTE":false,"strictContentLength":false,"_contentLength":0,"_hasBody":true,"_trailer":"","finished":true,"_headerSent":true,"_closed":true,"_header":"DELETE /api/v1/profiles/test-id HTTP/1.1\r\nAccept: application/json, text/plain, */*\r\nContent-Type: application/json\r\nX-API-Key: li_HieZz-IjBp0uE7d-rZkRE0qyy12r5_ZJS_FR4jMvv0I\r\nUser-Agent: LinkedIn-Ingestion-Admin-UI/1.0\r\nAccept-Encoding: gzip, compress, deflate, br\r\nHost: smooth-mailbox-production.up.railway.app\r\nConnection: keep-alive\r\n\r\n","_keepAliveTimeout":0,"agent":{"_events":{},"_eventsCount":2,"defaultPort":443,"protocol":"https:","options":{"keepAlive":true,"scheduling":"lifo","timeout":5000,"noDelay":true,"path":null},"requests":{},"sockets":{},"freeSockets":{"smooth-mailbox-production.up.railway.app:443:::::::::::::::::::::":[{"_tlsOptions":{"pipe":false,"secureContext":{"context":{}},"isServer":false,"requestCert":true,"rejectUnauthorized":true,"session":{"type":"Buffer","data":[48,130,6,232,2,1,1,2,2,3,4,4,2,19,1,4,32,59,167,26,164,88,98,216,224,32,118,118,131,42,248,41,22,78,150,52,201,14,75,50,65,171,87,56,198,175,44,220,167,4,32,193,153,33,199,189,81,46,218,46,101,147,242,65,3,46,83,239,111,53,44,121,225,162,49,131,97,191,64,92,93,119,77,161,6,2,4,104,163,152,31,162,4,2,2,28,32,163,130,6,1,48,130,5,253,48,130,4,229,160,3,2,1,2,2,18,6,200,192,232,35,111,157,198,205,56,125,23,227,75,158,37,66,97,48,13,6,9,42,134,72,134,247,13,1,1,11,5,0,48,51,49,11,48,9,6,3,85,4,6,19,2,85,83,49,22,48,20,6,3,85,4,10,19,13,76,101,116,39,115,32,69,110,99,114,121,112,116,49,12,48,10,6,3,85,4,3,19,3,82,49,49,48,30,23,13,50,53,48,56,48,51,49,52,48,49,52,51,90,23,13,50,53,49,49,48,49,49,52,48,49,52,50,90,48,27,49,25,48,23,6,3,85,4,3,12,16,42,46,117,112,46,114,97,105,108,119,97,121,46,97,112,112,48,130,2,34,48,13,6,9,42,134,72,134,247,13,1,1,1,5,0,3,130,2,15,0,48,130,2,10,2,130,2,1,0,172,163,182,118,15,252,217,246,9,194,202,157,224,53,215,83,202,32,11,141,45,61,13,239,121,24,17,29,85,162,61,129,165,182,0,238,236,85,137,74,70,91,127,9,226,68,47,54,216,49,224,145,234,223,193,244,88,71,71,23,224,38,234,93,3,204,41,154,116,94,122,123,64,251,229,193,83,156,201,158,107,24,210,169,145,222,176,160,55,146,118,135,123,12,131,78,122,139,209,127,185,162,114,182,116,30,247,196,236,198,35,228,40,224,4,92,111,242,47,16,220,96,137,192,15,86,17,107,129,197,108,184,24,53,30,38,122,141,27,32,203,39,246,84,176,60,74,152,111,109,70,27,40,5,228,37,24,32,212,220,159,195,146,30,55,119,218,99,248,205,232,241,203,231,190,42,82,132,132,226,229,34,228,205,207,57,47,170,157,194,76,23,33,226,53,42,27,119,114,117,243,100,36,231,6,113,57,200,0,65,1,31,14,146,176,186,140,62,145,177,180,254,84,75,159,0,31,191,6,255,251,135,238,188,162,138,125,38,218,58,131,165,19,53,12,89,242,55,236,110,219,19,42,174,13,151,154,216,206,188,133,112,236,121,173,253,170,242,189,58,181,102,156,218,95,48,49,252,4,171,239,32,18,64,193,217,32,45,49,40,52,109,44,138,101,16,198,173,37,152,27,70,17,253,125,179,189,60,229,118,225,85,231,58,190,154,86,160,208,59,131,207,227,251,231,176,223,47,126,87,92,21,10,72,149,228,150,27,236,133,60,193,85,195,178,124,194,9,28,160,184,246,217,81,85,92,91,240,66,91,238,45,75,124,98,148,196,58,48,11,1,126,54,201,4,35,136,194,144,140,92,22,209,136,61,6,67,111,32,247,3,110,182,209,148,42,9,87,183,156,70,172,215,99,233,167,149,115,147,84,139,81,31,1,209,124,25,206,247,245,55,229,57,202,19,19,182,217,38,182,250,171,214,72,130,174,236,229,210,253,109,227,210,205,215,214,66,104,107,116,196,136,100,207,22,17,123,140,23,181,24,9,203,241,82,7,124,199,60,83,102,193,69,105,80,81,184,192,140,202,25,50,153,132,175,207,83,62,129,234,165,89,1,228,204,25,30,100,188,144,0,32,38,86,233,140,56,115,105,219,253,137,2,3,1,0,1,163,130,2,33,48,130,2,29,48,14,6,3,85,29,15,1,1,255,4,4,3,2,5,160,48,29,6,3,85,29,37,4,22,48,20,6,8,43,6,1,5,5,7,3,1,6,8,43,6,1,5,5,7,3,2,48,12,6,3,85,29,19,1,1,255,4,2,48,0,48,29,6,3,85,29,14,4,22,4,20,70,173,206,168,222,31,161,10,147,120,115,122,143,32,228,74,207,75,225,56,48,31,6,3,85,29,35,4,24,48,22,128,20,197,207,70,164,234,244,195,192,122,108,149,196,45,176,94,146,47,38,227,185,48,51,6,8,43,6,1,5,5,7,1,1,4,39,48,37,48,35,6,8,43,6,1,5,5,7,48,2,134,23,104,116,116,112,58,47,47,114,49,49,46,105,46,108,101,110,99,114,46,111,114,103,47,48,27,6,3,85,29,17,4,20,48,18,130,16,42,46,117,112,46,114,97,105,108,119,97,121,46,97,112,112,48,19,6,3,85,29,32,4,12,48,10,48,8,6,6,103,129,12,1,2,1,48,46,6,3,85,29,31,4,39,48,37,48,35,160,33,160,31,134,29,104,116,116,112,58,47,47,114,49,49,46,99,46,108,101,110,99,114,46,111,114,103,47,57,56,46,99,114,108,48,130,1,5,6,10,43,6,1,4,1,214,121,2,4,2,4,129,246,4,129,243,0,241,0,119,0,13,225,242,48,43,211,13,193,64,98,18,9,234,85,46,252,71,116,124,177,215,233,48,239,14,66,30,180,126,78,170,52,0,0,1,152,112,114,145,118,0,0,4,3,0,72,48,70,2,33,0,198,148,198,51,155,212,116,39,225,251,27,224,2,197,85,118,92,101,128,129,45,40,26,15,44,89,247,198,65,112,191,162,2,33,0,144,150,225,76,88,151,239,19,51,252,221,103,41,253,169,16,1,161,1,228,12,70,205,97,61,116,12,120,210,47,101,225,0,118,0,18,241,78,52,189,83,114,76,132,6,25,195,143,63,122,19,248,231,181,98,135,136,156,109,48,5,132,235,229,134,38,58,0,0,1,152,112,114,145,137,0,0,4,3,0,71,48,69,2,32,105,62,111,31,95,69,164,216,14,16,48,141,213,190,9,167,157,76,40,35,196,161,170,164,182,130,19,36,88,250,8,168,2,33,0,233,103,229,34,228,34,112,193,11,206,182,29,151,105,90,229,144,91,22,89,255,45,20,111,19,235,154,30,245,210,154,237,48,13,6,9,42,134,72,134,247,13,1,1,11,5,0,3,130,1,1,0,173,26,231,82,231,192,193,157,139,105,206,102,209,246,185,250,67,21,31,126,96,116,111,250,251,155,120,34,64,124,15,1,119,194,224,167,155,35,86,223,90,174,217,111,165,255,192,234,4,255,249,101,38,46,97,135,250,231,6,57,141,100,112,129,57,97,34,195,137,8,84,136,163,50,124,9,104,240,27,18,3,172,77,133,170,22,35,171,138,103,196,224,122,125,53,20,27,238,133,31,65,61,23,162,241,248,191,18,51,237,253,30,115,18,98,222,213,94,234,250,48,181,210,31,209,113,175,163,141,111,144,242,176,81,7,155,208,11,175,188,16,79,153,128,250,207,15,166,232,61,195,94,49,69,213,149,188,119,183,135,81,99,52,192,110,56,44,127,177,69,188,108,18,63,56,218,97,30,51,205,233,172,143,85,115,100,66,61,6,33,246,47,26,251,10,72,246,215,130,215,4,94,97,40,87,70,200,183,68,20,131,34,208,153,118,63,114,68,164,112,120,82,184,62,105,54,128,236,128,79,30,60,48,207,210,171,118,156,12,178,250,114,78,146,87,95,40,46,46,197,250,103,55,129,13,178,164,2,4,0,169,5,2,3,9,58,128,170,107,4,105,6,26,74,30,135,203,116,112,67,44,76,116,176,255,1,251,146,51,7,147,26,24,254,67,199,250,149,151,222,248,141,105,78,115,207,87,17,246,146,128,214,101,46,165,188,122,127,28,55,43,85,24,82,201,47,56,89,251,198,189,234,214,63,49,27,73,255,107,81,42,81,4,217,175,101,101,18,106,20,53,163,173,186,55,223,248,28,62,141,254,167,132,201,153,34,229,15,240,24,222,142,83,38,191,252,174,6,2,4,71,231,27,166,179,4,2,2,17,236]}},"_secureEstablished":true,"_securePending":false,"_newSessionPending":false,"_controlReleased":true,"secureConnecting":false,"_SNICallback":null,"servername":"smooth-mailbox-production.up.railway.app","alpnProtocol":false,"authorized":true,"authorizationError":null,"encrypted":true,"_events":{"close":[null,null,null],"timeout":[null,null]},"_eventsCount":9,"connecting":false,"_hadError":false,"_parent":null,"_host":"smooth-mailbox-production.up.railway.app","_closeAfterHandlingError":false,"_readableState":{"highWaterMark":65536,"buffer":[],"bufferIndex":0,"length":0,"pipes":[],"awaitDrainWriters":null},"_writableState":{"highWaterMark":65536,"length":0,"corked":0,"writelen":0,"bufferedIndex":0,"pendingcb":0},"allowHalfOpen":false,"_sockname":null,"_pendingData":null,"_pendingEncoding":"","_server":null,"ssl":{"_parent":{"reading":true,"onconnection":null},"_parentWrap":null,"_secureContext":"[Circular]","reading":true},"_requestCert":true,"_rejectUnauthorized":true,"timeout":5000,"parser":null,"_httpMessage":null}]},"keepAliveMsecs":1000,"keepAlive":true,"maxSockets":null,"maxFreeSockets":256,"scheduling":"lifo","maxTotalSockets":null,"totalSocketCount":1,"maxCachedSessions":100,"_sessionCache":{"map":{"smooth-mailbox-production.up.railway.app:443:::::::::::::::::::::":{"type":"Buffer","data":[48,130,6,233,2,1,1,2,2,3,4,4,2,19,1,4,32,36,17,137,22,71,69,87,85,0,181,167,35,30,81,181,128,111,98,87,142,50,203,157,54,229,118,214,84,64,255,15,253,4,32,85,219,224,50,252,167,68,87,228,113,70,89,215,173,198,219,129,199,178,83,84,204,62,41,113,26,12,143,77,37,52,64,161,6,2,4,104,163,152,237,162,4,2,2,28,32,163,130,6,1,48,130,5,253,48,130,4,229,160,3,2,1,2,2,18,6,200,192,232,35,111,157,198,205,56,125,23,227,75,158,37,66,97,48,13,6,9,42,134,72,134,247,13,1,1,11,5,0,48,51,49,11,48,9,6,3,85,4,6,19,2,85,83,49,22,48,20,6,3,85,4,10,19,13,76,101,116,39,115,32,69,110,99,114,121,112,116,49,12,48,10,6,3,85,4,3,19,3,82,49,49,48,30,23,13,50,53,48,56,48,51,49,52,48,49,52,51,90,23,13,50,53,49,49,48,49,49,52,48,49,52,50,90,48,27,49,25,48,23,6,3,85,4,3,12,16,42,46,117,112,46,114,97,105,108,119,97,121,46,97,112,112,48,130,2,34,48,13,6,9,42,134,72,134,247,13,1,1,1,5,0,3,130,2,15,0,48,130,2,10,2,130,2,1,0,172,163,182,118,15,252,217,246,9,194,202,157,224,53,215,83,202,32,11,141,45,61,13,239,121,24,17,29,85,162,61,129,165,182,0,238,236,85,137,74,70,91,127,9,226,68,47,54,216,49,224,145,234,223,193,244,88,71,71,23,224,38,234,93,3,204,41,154,116,94,122,123,64,251,229,193,83,156,201,158,107,24,210,169,145,222,176,160,55,146,118,135,123,12,131,78,122,139,209,127,185,162,114,182,116,30,247,196,236,198,35,228,40,224,4,92,111,242,47,16,220,96,137,192,15,86,17,107,129,197,108,184,24,53,30,38,122,141,27,32,203,39,246,84,176,60,74,152,111,109,70,27,40,5,228,37,24,32,212,220,159,195,146,30,55,119,218,99,248,205,232,241,203,231,190,42,82,132,132,226,229,34,228,205,207,57,47,170,157,194,76,23,33,226,53,42,27,119,114,117,243,100,36,231,6,113,57,200,0,65,1,31,14,146,176,186,140,62,145,177,180,254,84,75,159,0,31,191,6,255,251,135,238,188,162,138,125,38,218,58,131,165,19,53,12,89,242,55,236,110,219,19,42,174,13,151,154,216,206,188,133,112,236,121,173,253,170,242,189,58,181,102,156,218,95,48,49,252,4,171,239,32,18,64,193,217,32,45,49,40,52,109,44,138,101,16,198,173,37,152,27,70,17,253,125,179,189,60,229,118,225,85,231,58,190,154,86,160,208,59,131,207,227,251,231,176,223,47,126,87,92,21,10,72,149,228,150,27,236,133,60,193,85,195,178,124,194,9,28,160,184,246,217,81,85,92,91,240,66,91,238,45,75,124,98,148,196,58,48,11,1,126,54,201,4,35,136,194,144,140,92,22,209,136,61,6,67,111,32,247,3,110,182,209,148,42,9,87,183,156,70,172,215,99,233,167,149,115,147,84,139,81,31,1,209,124,25,206,247,245,55,229,57,202,19,19,182,217,38,182,250,171,214,72,130,174,236,229,210,253,109,227,210,205,215,214,66,104,107,116,196,136,100,207,22,17,123,140,23,181,24,9,203,241,82,7,124,199,60,83,102,193,69,105,80,81,184,192,140,202,25,50,153,132,175,207,83,62,129,234,165,89,1,228,204,25,30,100,188,144,0,32,38,86,233,140,56,115,105,219,253,137,2,3,1,0,1,163,130,2,33,48,130,2,29,48,14,6,3,85,29,15,1,1,255,4,4,3,2,5,160,48,29,6,3,85,29,37,4,22,48,20,6,8,43,6,1,5,5,7,3,1,6,8,43,6,1,5,5,7,3,2,48,12,6,3,85,29,19,1,1,255,4,2,48,0,48,29,6,3,85,29,14,4,22,4,20,70,173,206,168,222,31,161,10,147,120,115,122,143,32,228,74,207,75,225,56,48,31,6,3,85,29,35,4,24,48,22,128,20,197,207,70,164,234,244,195,192,122,108,149,196,45,176,94,146,47,38,227,185,48,51,6,8,43,6,1,5,5,7,1,1,4,39,48,37,48,35,6,8,43,6,1,5,5,7,48,2,134,23,104,116,116,112,58,47,47,114,49,49,46,105,46,108,101,110,99,114,46,111,114,103,47,48,27,6,3,85,29,17,4,20,48,18,130,16,42,46,117,112,46,114,97,105,108,119,97,121,46,97,112,112,48,19,6,3,85,29,32,4,12,48,10,48,8,6,6,103,129,12,1,2,1,48,46,6,3,85,29,31,4,39,48,37,48,35,160,33,160,31,134,29,104,116,116,112,58,47,47,114,49,49,46,99,46,108,101,110,99,114,46,111,114,103,47,57,56,46,99,114,108,48,130,1,5,6,10,43,6,1,4,1,214,121,2,4,2,4,129,246,4,129,243,0,241,0,119,0,13,225,242,48,43,211,13,193,64,98,18,9,234,85,46,252,71,116,124,177,215,233,48,239,14,66,30,180,126,78,170,52,0,0,1,152,112,114,145,118,0,0,4,3,0,72,48,70,2,33,0,198,148,198,51,155,212,116,39,225,251,27,224,2,197,85,118,92,101,128,129,45,40,26,15,44,89,247,198,65,112,191,162,2,33,0,144,150,225,76,88,151,239,19,51,252,221,103,41,253,169,16,1,161,1,228,12,70,205,97,61,116,12,120,210,47,101,225,0,118,0,18,241,78,52,189,83,114,76,132,6,25,195,143,63,122,19,248,231,181,98,135,136,156,109,48,5,132,235,229,134,38,58,0,0,1,152,112,114,145,137,0,0,4,3,0,71,48,69,2,32,105,62,111,31,95,69,164,216,14,16,48,141,213,190,9,167,157,76,40,35,196,161,170,164,182,130,19,36,88,250,8,168,2,33,0,233,103,229,34,228,34,112,193,11,206,182,29,151,105,90,229,144,91,22,89,255,45,20,111,19,235,154,30,245,210,154,237,48,13,6,9,42,134,72,134,247,13,1,1,11,5,0,3,130,1,1,0,173,26,231,82,231,192,193,157,139,105,206,102,209,246,185,250,67,21,31,126,96,116,111,250,251,155,120,34,64,124,15,1,119,194,224,167,155,35,86,223,90,174,217,111,165,255,192,234,4,255,249,101,38,46,97,135,250,231,6,57,141,100,112,129,57,97,34,195,137,8,84,136,163,50,124,9,104,240,27,18,3,172,77,133,170,22,35,171,138,103,196,224,122,125,53,20,27,238,133,31,65,61,23,162,241,248,191,18,51,237,253,30,115,18,98,222,213,94,234,250,48,181,210,31,209,113,175,163,141,111,144,242,176,81,7,155,208,11,175,188,16,79,153,128,250,207,15,166,232,61,195,94,49,69,213,149,188,119,183,135,81,99,52,192,110,56,44,127,177,69,188,108,18,63,56,218,97,30,51,205,233,172,143,85,115,100,66,61,6,33,246,47,26,251,10,72,246,215,130,215,4,94,97,40,87,70,200,183,68,20,131,34,208,153,118,63,114,68,164,112,120,82,184,62,105,54,128,236,128,79,30,60,48,207,210,171,118,156,12,178,250,114,78,146,87,95,40,46,46,197,250,103,55,129,13,178,164,2,4,0,169,5,2,3,9,58,128,170,107,4,105,151,60,98,73,172,209,61,223,206,65,241,237,101,162,69,139,59,8,149,224,185,151,190,43,114,91,149,199,135,118,1,173,59,226,254,138,91,224,42,229,142,78,232,156,244,175,112,188,159,223,254,89,101,3,117,62,3,44,248,39,167,188,194,234,91,132,79,100,45,186,153,95,84,245,249,135,172,233,206,163,39,72,215,184,88,158,209,242,100,195,214,94,248,76,26,73,145,175,26,238,71,152,48,205,31,174,7,2,5,0,164,183,7,140,179,4,2,2,17,236]}},"list":["smooth-mailbox-production.up.railway.app:443:::::::::::::::::::::"]}},"method":"DELETE","path":"/api/v1/profiles/test-id","_ended":true,"res":{"_events":{"end":[null,null]},"_readableState":{"highWaterMark":65536,"buffer":[],"bufferIndex":0,"length":0,"pipes":[],"awaitDrainWriters":null},"socket":null,"httpVersionMajor":1,"httpVersionMinor":1,"httpVersion":"1.1","complete":true,"rawHeaders":["Content-Length","302","Content-Type","application/json","Date","Mon, 18 Aug 2025 21:19:41 GMT","Server","railway-edge","X-Railway-Edge","railway/us-east4-eqdc4a","X-Railway-Request-Id","cDmF0adfTVWPrJauCx5-qw"],"rawTrailers":[],"aborted":false,"upgrade":false,"url":"","method":null,"statusCode":500,"statusMessage":"Internal Server Error","client":"[Circular]","_consuming":false,"_dumped":false,"req":"[Circular]","_eventsCount":4,"responseUrl":"https://smooth-mailbox-production.up.railway.app/api/v1/profiles/test-id","redirects":[]},"aborted":false,"timeoutCb":null,"upgradeOrConnect":false,"parser":null,"maxHeadersCount":null,"reusedSocket":false,"host":"smooth-mailbox-production.up.railway.app","protocol":"https:","_redirectable":{"_events":{"socket":[null,null]},"_writableState":{"highWaterMark":65536,"length":0,"corked":0,"writelen":0,"bufferedIndex":0,"pendingcb":0},"_options":{"maxRedirects":21,"maxBodyLength":null,"protocol":"https:","path":"/api/v1/profiles/test-id","method":"DELETE","headers":{"Accept":"application/json, text/plain, */*","Content-Type":"application/json","X-API-Key":"li_HieZz-IjBp0uE7d-rZkRE0qyy12r5_ZJS_FR4jMvv0I","User-Agent":"LinkedIn-Ingestion-Admin-UI/1.0","Accept-Encoding":"gzip, compress, deflate, br"},"agents":{},"beforeRedirects":{},"hostname":"smooth-mailbox-production.up.railway.app","port":"","nativeProtocols":{"http:":{"METHODS":["ACL","BIND","CHECKOUT","CONNECT","COPY","DELETE","GET","HEAD","LINK","LOCK","M-SEARCH","MERGE","MKACTIVITY","MKCALENDAR","MKCOL","MOVE","NOTIFY","OPTIONS","PATCH","POST","PROPFIND","PROPPATCH","PURGE","PUT","QUERY","REBIND","REPORT","SEARCH","SOURCE","SUBSCRIBE","TRACE","UNBIND","UNLINK","UNLOCK","UNSUBSCRIBE"],"STATUS_CODES":{"100":"Continue","101":"Switching Protocols","102":"Processing","103":"Early Hints","200":"OK","201":"Created","202":"Accepted","203":"Non-Authoritative Information","204":"No Content","205":"Reset Content","206":"Partial Content","207":"Multi-Status","208":"Already Reported","226":"IM Used","300":"Multiple Choices","301":"Moved Permanently","302":"Found","303":"See Other","304":"Not Modified","305":"Use Proxy","307":"Temporary Redirect","308":"Permanent Redirect","400":"Bad Request","401":"Unauthorized","402":"Payment Required","403":"Forbidden","404":"Not Found","405":"Method Not Allowed","406":"Not Acceptable","407":"Proxy Authentication Required","408":"Request Timeout","409":"Conflict","410":"Gone","411":"Length Required","412":"Precondition Failed","413":"Payload Too Large","414":"URI Too Long","415":"Unsupported Media Type","416":"Range Not Satisfiable","417":"Expectation Failed","418":"I'm a Teapot","421":"Misdirected Request","422":"Unprocessable Entity","423":"Locked","424":"Failed Dependency","425":"Too Early","426":"Upgrade Required","428":"Precondition Required","429":"Too Many Requests","431":"Request Header Fields Too Large","451":"Unavailable For Legal Reasons","500":"Internal Server Error","501":"Not Implemented","502":"Bad Gateway","503":"Service Unavailable","504":"Gateway Timeout","505":"HTTP Version Not Supported","506":"Variant Also Negotiates","507":"Insufficient Storage","508":"Loop Detected","509":"Bandwidth Limit Exceeded","510":"Not Extended","511":"Network Authentication Required"},"maxHeaderSize":16384,"globalAgent":{"_events":{},"_eventsCount":2,"defaultPort":80,"protocol":"http:","options":{"keepAlive":true,"scheduling":"lifo","timeout":5000,"noDelay":true,"path":null},"requests":{},"sockets":{},"freeSockets":{},"keepAliveMsecs":1000,"keepAlive":true,"maxSockets":null,"maxFreeSockets":256,"scheduling":"lifo","maxTotalSockets":null,"totalSocketCount":0}},"https:":{"globalAgent":"[Circular]"}},"pathname":"/api/v1/profiles/test-id"},"_ended":true,"_ending":true,"_redirectCount":0,"_redirects":"[Circular]","_requestBodyLength":0,"_requestBodyBuffers":[],"_eventsCount":3,"_currentRequest":"[Circular]","_currentUrl":"https://smooth-mailbox-production.up.railway.app/api/v1/profiles/test-id","_timeout":null}},"response":{"status":500,"statusText":"Internal Server Error","headers":{"content-length":"302","content-type":"application/json","date":"Mon, 18 Aug 2025 21:19:41 GMT","server":"railway-edge","x-railway-edge":"railway/us-east4-eqdc4a","x-railway-request-id":"cDmF0adfTVWPrJauCx5-qw"},"config":"[Circular]","request":"[Circular]","data":{"detail":{"error_code":"DATABASE_ERROR","message":"Failed to delete profile: {'message': 'invalid input syntax for type uuid: \"test-id\"', 'code': '22P02', 'hint': None, 'details': None}","details":{"profile_id":"test-id","operation":"delete_profile","exception_type":"APIError"},"suggestions":null}}},"status":500,"stack":"AxiosError: Request failed with status code 500\n    at settle (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/axios/dist/node/axios.cjs:2090:12)\n    at IncomingMessage.handleStreamEnd (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/axios/dist/node/axios.cjs:3207:11)\n    at IncomingMessage.emit (node:events:519:35)\n    at endReadableNT (node:internal/streams/readable:1696:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)\n    at Axios.request (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/axios/dist/node/axios.cjs:4317:41)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async /Users/burke/projects/linkedin-ingestion/admin-ui/routes/profiles.js:76:9"}
+2025-08-18T21:23:17.076Z [[32minfo[39m]: GET /profiles {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
+2025-08-18T21:23:40.421Z [[32minfo[39m]: GET /profiles {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
+2025-08-18T21:23:45.967Z [[32minfo[39m]: GET /profiles {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
+2025-08-18T21:23:51.404Z [[32minfo[39m]: GET /profiles {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
+2025-08-18T21:23:57.502Z [[32minfo[39m]: GET /profiles {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
+2025-08-18T21:28:11.542Z [[32minfo[39m]: GET /profiles {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
+2025-08-18T21:28:17.317Z [[32minfo[39m]: GET /profiles {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
+2025-08-18T21:28:59.651Z [[32minfo[39m]: GET /profiles {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"curl/8.7.1"}
+2025-08-18T21:30:02.249Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=desc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T21:30:30.669Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=desc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T21:32:32.228Z [[32minfo[39m]: GET /profiles?sort_by=position&sort_order=desc {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T21:35:03.891Z [[32minfo[39m]: GET /profiles {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+2025-08-18T21:35:05.344Z [[32minfo[39m]: GET /favicon.ico {"service":"linkedin-ingestion-admin-ui","ip":"::1","userAgent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36"}
+ReferenceError: /Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs:19
+    17|                     </div>
+    18|                     <h1 class="display-4 fw-bold text-dark mb-3"><%= title %></h1>
+ >> 19|                     <p class="fs-5 text-muted mb-4"><%= message %></p>
+    20|                     <% if (error && error.status) { %>
+    21|                         <p class="text-muted">Status Code: <%= error.status %></p>
+    22|                     <% } %>
+
+message is not defined
+    at eval ("/Users/burke/projects/linkedin-ingestion/admin-ui/views/error.ejs":18:26)
+    at error (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:703:17)
+    at tryHandleCache (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:274:36)
+    at exports.renderFile [as engine] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/ejs/lib/ejs.js:491:10)
+    at View.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/view.js:135:8)
+    at tryRender (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:657:10)
+    at Function.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/application.js:609:3)
+    at ServerResponse.render (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/response.js:1049:7)
+    at /Users/burke/projects/linkedin-ingestion/admin-ui/server.js:104:21
+    at Layer.handle [as handle_request] (/Users/burke/projects/linkedin-ingestion/admin-ui/node_modules/express/lib/router/layer.js:95:5)
+2025-08-18T21:36:14.320Z [[32minfo[39m]: SIGTERM received, shutting down gracefully {"service":"linkedin-ingestion-admin-ui"}
+2025-08-18T21:36:14.321Z [[32minfo[39m]: Process terminated {"service":"linkedin-ingestion-admin-ui"}

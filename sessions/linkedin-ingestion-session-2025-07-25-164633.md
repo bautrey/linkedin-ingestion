@@ -12,17 +12,17 @@
 **Memory Quality**: COMPLETE - Full access to all session context
 **Key Context Preserved**:
 - **Session File Cleanup**: Eliminated generic SESSION_SUMMARY.md and SESSION_HISTORY.md files
-- **AgentOS Structure Fix**: Renamed .agent-os/ to agent-os/ for visibility
+- **AgentOS Structure Fix**: Renamed agent-os/ to agent-os/ for visibility
 - **Hibernation Instructions**: Fixed timestamp variable redundancy in session-hibernation.md
-- **File Reference Updates**: Updated all @.agent-os/ references to @agent-os/
+- **File Reference Updates**: Updated all @agent-os/ references to @agent-os/
 
 **Context Gaps**: None - complete session preserved
 
 ## 🎯 **Current Session Objectives**
 - [x] Clean up improperly named session files (SESSION_SUMMARY.md → timestamped archives)
-- [x] Eliminate hidden directories (.agent-os → agent-os)
+- [x] Eliminate hidden directories (agent-os → agent-os)
 - [x] Fix session hibernation instructions (remove unnecessary timestamp variable)
-- [x] Update all file references from .agent-os to agent-os
+- [x] Update all file references from agent-os to agent-os
 - [x] Establish single source of truth for session hibernation instructions
 - [x] Complete proper session hibernation following updated process
 
@@ -38,8 +38,8 @@
 ### File Structure Changes
 - `SESSION_SUMMARY.md` → `./sessions/linkedin-ingestion-session-2025-07-25-161148.md` (archived)
 - `SESSION_HISTORY.md` → deleted (was generic, replaced by project-specific version)
-- `.agent-os/` → `agent-os/` (made visible, no hidden directories)
-- Updated all @.agent-os/ references to @agent-os/ in spec files
+- `agent-os/` → `agent-os/` (made visible, no hidden directories)
+- Updated all @agent-os/ references to @agent-os/ in spec files
 
 ### Session Hibernation Process Improvements
 - `/Users/burke/projects/burke-agent-os-standards/instructions/session-hibernation.md` - Removed redundant timestamp variable
@@ -50,7 +50,7 @@
 
 ### Technical Discoveries
 - **Session File Consistency**: Generic session files cause confusion - always use project-specific naming
-- **Hidden Directory Problems**: Dot-prefixed directories (.agent-os) reduce visibility and cause reference issues
+- **Hidden Directory Problems**: Dot-prefixed directories (agent-os) reduce visibility and cause reference issues
 - **Timestamp Variable Redundancy**: Creating separate timestamp variables is unnecessary complexity
 
 ### Architecture Understanding

@@ -75,7 +75,7 @@
 ```bash
 cd /Users/burke/projects/linkedin-ingestion
 source venv/bin/activate
-cat .agent-os/current-session-state.txt  # Read current context
+cat agent-os/current-session-state.txt  # Read current context
 # Begin V1.8 Task 2: Scoring Engine Core Implementation
 ```
 

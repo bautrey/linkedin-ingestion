@@ -132,11 +132,11 @@ linkedin-ingestion/
 - Use `railway variables` to get correct URL
 
 > **📚 Session History**: See `SESSION_HISTORY.md` for complete project timeline
-> **🗄️ Archived Sessions**: See `.agent-os/sessions/` for detailed session files
+> **🗄️ Archived Sessions**: See `agent-os/sessions/` for detailed session files
 
 ## 🎯 **Current Session Objectives**
 - [x] **FIXED CRITICAL FLAW**: Completely rewrote AgentOS session hibernation to never overwrite history
-- [x] **Session Preservation**: All previous sessions now preserved in `.agent-os/sessions/` with timestamps
+- [x] **Session Preservation**: All previous sessions now preserved in `agent-os/sessions/` with timestamps
 - [x] **Cumulative History**: Created `SESSION_HISTORY.md` for project timeline tracking
 - [x] **Auto-Hibernation**: Added proactive triggers for session preservation
 - [x] **Historical Analysis**: Created session history management tools for retrospective analysis
@@ -154,10 +154,10 @@ linkedin-ingestion/
 ## 🛠️ **Recent Work**
 
 ### AgentOS Framework Improvements
-- `~/.agent-os/instructions/session-hibernation.md` - Complete rewrite with NEVER OVERWRITE approach
-- `~/.agent-os/instructions/session-recovery.md` - Enhanced to support history review
-- `~/.agent-os/instructions/session-history-management.md` - New tools for retrospective analysis
-- `.agent-os/sessions/` - Project-specific session archive directory created
+- `~/agent-os/instructions/session-hibernation.md` - Complete rewrite with NEVER OVERWRITE approach
+- `~/agent-os/instructions/session-recovery.md` - Enhanced to support history review
+- `~/agent-os/instructions/session-history-management.md` - New tools for retrospective analysis
+- `agent-os/sessions/` - Project-specific session archive directory created
 - `SESSION_HISTORY.md` - Cumulative project timeline initiated
 
 ### LinkedIn Project Files (Previous Session)
@@ -246,7 +246,7 @@ curl http://localhost:8000/health/linkedin
 
 ## 🔄 **Session Continuity Checklist**
 - [x] Work committed and pushed to AgentOS standards repo
-- [x] Session history preserved in `.agent-os/sessions/`
+- [x] Session history preserved in `agent-os/sessions/`
 - [x] Environment stable and ready for continuation
 - [x] Next actions clearly identified
 - [x] Session preserved in cumulative history
@@ -254,5 +254,5 @@ curl http://localhost:8000/health/linkedin
 
 ---
 **Status**: 🟢 **READY FOR CONTINUATION**
-**History**: `SESSION_HISTORY.md` • **Archives**: `.agent-os/sessions/`
+**History**: `SESSION_HISTORY.md` • **Archives**: `agent-os/sessions/`
 **Next Focus**: Investigate profile API validation issues OR continue AgentOS improvements

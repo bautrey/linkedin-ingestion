@@ -125,80 +125,11 @@ function refreshCurrentPage() {
     }, 2000);
 }
 
-// Profile scoring functionality
-function scoreProfile(profileId, templateId = null) {
-    if (!profileId) return;
-    
-    const loadingButton = event.target;
-    loadingButton.disabled = true;
-    loadingButton.innerHTML = '<span class="spinner-grow spinner-grow-sm me-1"></span>Scoring...';
-    
-    const requestData = {};
-    if (templateId) {
-        requestData.template_id = templateId;
-    } else {
-        const prompt = prompt('Enter scoring prompt:');
-        if (!prompt) {
-            resetButton(loadingButton, 'Score Profile');
-            return;
-        }
-        requestData.prompt = prompt;
-    }
-    
-    fetch(`/api/profiles/${profileId}/score`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showNotification('Scoring job started successfully', 'success');
-        } else {
-            showNotification(data.message || 'Failed to start scoring', 'danger');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('Failed to start scoring', 'danger');
-    })
-    .finally(() => {
-        resetButton(loadingButton, 'Score Profile');
-    });
-}
+// Profile scoring functionality - Removed to avoid conflicts with profiles-list.js
+// See profiles-list.js for actual implementation
 
-// Delete profile functionality
-function deleteProfile(profileId) {
-    if (!confirm('Are you sure you want to delete this profile? This action cannot be undone.')) {
-        return;
-    }
-    
-    fetch(`/profiles/${profileId}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            showNotification('Profile deleted successfully', 'success');
-            // Remove the row from table if present
-            const row = document.querySelector(`[data-profile-id="${profileId}"]`);
-            if (row) {
-                row.remove();
-            }
-        } else {
-            showNotification(data.message || 'Failed to delete profile', 'danger');
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        showNotification('Failed to delete profile', 'danger');
-    });
-}
+// Delete profile functionality - Removed to avoid conflicts with profiles-list.js
+// See profiles-list.js for actual implementation
 
 // LinkedIn URL ingestion
 function ingestLinkedInUrls() {

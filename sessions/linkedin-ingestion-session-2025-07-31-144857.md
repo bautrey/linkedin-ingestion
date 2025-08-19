@@ -73,7 +73,7 @@
 # Start V1.8 Task 1 implementation
 cd /Users/burke/projects/linkedin-ingestion
 source venv/bin/activate
-# Execute AgentOS process: @~/.agent-os/instructions/execute-tasks.md
+# Execute AgentOS process: @~/agent-os/instructions/execute-tasks.md
 ```
 
 ### Short-term (V1.8 Implementation)

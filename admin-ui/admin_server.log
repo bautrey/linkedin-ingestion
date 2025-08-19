@@ -1,0 +1,10 @@
+
+> linkedin-ingestion-admin-ui@1.0.0 dev
+> nodemon server.js --ignore logs/ --ignore *.log
+
+[33m[nodemon] 3.1.10[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): *.*[39m
+[33m[nodemon] watching extensions: js,mjs,cjs,json[39m
+[32m[nodemon] starting `node server.js server.log`[39m
+2025-08-19T12:24:41.415Z [[32minfo[39m]: LinkedIn Ingestion Admin UI server running on port 3003 {"service":"linkedin-ingestion-admin-ui","environment":"development","fastApiUrl":"http://localhost:8000"}

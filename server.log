@@ -1,0 +1,64 @@
+INFO:     Will watch for changes in these directories: ['/Users/burke/projects/linkedin-ingestion']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [35029] using WatchFiles
+INFO:     Started server process [35071]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:58121 - "POST /api/v1/profiles HTTP/1.1" 403 Forbidden
+2025-08-18 18:31:23 [info     ] Retrieving profile by LinkedIn URL linkedin_url=https://www.linkedin.com/in/satyanadella/
+2025-08-18 18:31:23 [info     ] Profile found by URL           linkedin_url=https://www.linkedin.com/in/satyanadella/
+2025-08-18 18:31:23 [info     ] Deleting profile by ID         profile_id=3655aeac-62db-41ed-be1d-8421c1480f6f
+2025-08-18 18:31:24 [info     ] Profile deleted                deleted_count=1 profile_id=3655aeac-62db-41ed-be1d-8421c1480f6f
+2025-08-18 18:31:24 [info     ] Starting profile processing workflow include_companies=True linkedin_url=https://www.linkedin.com/in/satyanadella/ request_id=8d870c86-f4a8-4713-b7cf-ca8fc018f450
+2025-08-18 18:31:24 [info     ] Fetching profile data          request_id=8d870c86-f4a8-4713-b7cf-ca8fc018f450
+2025-08-18 18:31:24 [info     ] Starting profile fetch         linkedin_url=https://www.linkedin.com/in/satyanadella/
+2025-08-18 18:31:24 [debug    ] Executing profile workflow     payload={'profile': 'https://www.linkedin.com/in/satyanadella/'} url=https://app.cassidyai.com/api/webhook/workflows/cmbv9eaaz00139pa7krnjmoa0?results=true
+2025-08-18 18:31:28 [info     ] DEBUG: Cassidy profile response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-18T23:31:24.449Z', 'finishedAt': '2025-08-18T23:31:28.784Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/in/satyanadella/'}, 'actionResults': [{'name': 'Get LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"about":"As chairman and CEO of Microsoft, I define my mission and that of my company as empowering every person and every organization on the p
+2025-08-18 18:31:28 [debug    ] Workflow profile completed     execution_time_seconds=4.723251 status_code=200
+2025-08-18 18:31:28 [info     ] DEBUG: Extracted profile data structure experiences_length=5 experiences_type=list has_educations=True has_experiences=True profile_keys=['about', 'city', 'company', 'company_description', 'company_domain', 'company_employee_count', 'company_employee_range', 'company_industry', 'company_linkedin_url', 'company_logo_url', 'company_website', 'company_year_founded', 'connection_count', 'country', 'current_company_join_month', 'current_company_join_year', 'current_job_duration', 'educations', 'email', 'experiences', 'first_name', 'follower_count', 'full_name', 'headline', 'hq_city', 'hq_country', 'hq_region', 'is_creator', 'is_influencer', 'is_premium', 'is_verified', 'job_title', 'languages', 'last_name', 'linkedin_url', 'location', 'phone', 'profile_id', 'profile_image_url', 'public_id', 'school', 'state', 'urn'] sample_fields={'about': 'As chairman and CEO of Microsoft, I define my mission and that of my company as empowering every per...', 'city': 'Redmond', 'company': 'Microsoft', 'company_description': "Every company has a mission. What's ours? To empower every person and every organization to achieve ...", 'company_domain': 'news.microsoft.com'}
+2025-08-18 18:31:28 [info     ] Profile fetch completed successfully experience_count=5 linkedin_url=https://www.linkedin.com/in/satyanadella/ profile_id=19186432
+2025-08-18 18:31:28 [info     ] Fetching company data for experiences experience_count=5 request_id=8d870c86-f4a8-4713-b7cf-ca8fc018f450
+2025-08-18 18:31:28 [info     ] Fetching companies for profile profile_id=19186432 request_id=8d870c86-f4a8-4713-b7cf-ca8fc018f450 unique_companies=5
+2025-08-18 18:31:28 [info     ] Starting batch company fetch   company_count=5 delay_seconds=5.0
+2025-08-18 18:31:28 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/1035
+2025-08-18 18:31:28 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/1035'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-18 18:31:32 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-18T23:31:29.044Z', 'finishedAt': '2025-08-18T23:31:32.779Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/1035'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[{"company_id":"18612750","linkedin_url":"https://www.linkedin.com/company/m12vc","name":"M12, Microsoft\'s Ventur
+2025-08-18 18:31:32 [debug    ] Workflow company completed     execution_time_seconds=3.972504 status_code=200
+2025-08-18 18:31:32 [info     ] Company fetch completed successfully company_name=Microsoft company_url=https://www.linkedin.com/company/1035 employee_count=230422
+2025-08-18 18:31:32 [debug    ] Waiting 5.0s before next company fetch current_index=0 remaining=4
+2025-08-18 18:31:37 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/3881
+2025-08-18 18:31:37 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/3881'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-18 18:31:41 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-18T23:31:38.255Z', 'finishedAt': '2025-08-18T23:31:41.036Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/3881'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[{"company_id":"18824680","linkedin_url":"https://www.linkedin.com/company/uchicagocs","name":"University of Chica
+2025-08-18 18:31:41 [debug    ] Workflow company completed     execution_time_seconds=3.236705 status_code=200
+2025-08-18 18:31:41 [info     ] Company fetch completed successfully company_name=University of Chicago company_url=https://www.linkedin.com/company/3881 employee_count=17498
+2025-08-18 18:31:41 [debug    ] Waiting 5.0s before next company fetch current_index=1 remaining=3
+2025-08-18 18:31:46 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/2271
+2025-08-18 18:31:46 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/2271'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-18 18:31:50 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-18T23:31:46.259Z', 'finishedAt': '2025-08-18T23:31:50.720Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/2271'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[{"company_id":"404019","linkedin_url":"https://www.linkedin.com/company/teavana","name":"Teavana"},{"company_id":
+2025-08-18 18:31:50 [debug    ] Workflow company completed     execution_time_seconds=4.68449 status_code=200
+2025-08-18 18:31:50 [info     ] Company fetch completed successfully company_name=Starbucks company_url=https://www.linkedin.com/company/2271 employee_count=171385
+2025-08-18 18:31:50 [debug    ] Waiting 5.0s before next company fetch current_index=2 remaining=2
+2025-08-18 18:31:55 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/5301945
+2025-08-18 18:31:55 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/5301945'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-18 18:31:58 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-18T23:31:56.186Z', 'finishedAt': '2025-08-18T23:31:58.392Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/5301945'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[],"company_id":"5301945","company_name":"The Business Council U.S.","description":"The Business Council is an 
+2025-08-18 18:31:58 [debug    ] Workflow company completed     execution_time_seconds=2.670688 status_code=200
+2025-08-18 18:31:58 [info     ] Company fetch completed successfully company_name=The Business Council U.S. company_url=https://www.linkedin.com/company/5301945 employee_count=10
+2025-08-18 18:31:58 [debug    ] Waiting 5.0s before next company fetch current_index=3 remaining=1
+2025-08-18 18:32:03 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/7158
+2025-08-18 18:32:03 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/7158'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-18 18:32:06 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-18T23:32:03.856Z', 'finishedAt': '2025-08-18T23:32:06.687Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/7158'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[{"company_id":"20296","linkedin_url":"https://www.linkedin.com/company/seattle-cancer-care-alliance","name":"Seat
+2025-08-18 18:32:06 [debug    ] Workflow company completed     execution_time_seconds=3.303506 status_code=200
+2025-08-18 18:32:06 [info     ] Company fetch completed successfully company_name=Fred Hutch company_url=https://www.linkedin.com/company/7158 employee_count=6032
+2025-08-18 18:32:06 [info     ] Batch company fetch completed  failed=0 successful=5 total_requested=5
+2025-08-18 18:32:06 [info     ] Company fetch completed for profile failed=0 profile_id=19186432 request_id=8d870c86-f4a8-4713-b7cf-ca8fc018f450 successful=5 total_requested=5
+2025-08-18 18:32:06 [info     ] Profile processing workflow completed successfully companies_fetched=5 execution_time_seconds=42.620765 profile_id=19186432 request_id=8d870c86-f4a8-4713-b7cf-ca8fc018f450
+2025-08-18 18:32:06 [info     ] Storing LinkedIn profile       profile_id=19186432 profile_name=Satya Nadella
+2025-08-18 18:32:06 [info     ] Profile stored successfully    has_embedding=False linkedin_id=19186432 record_id=872e8708-774b-4bf6-b819-f2c1897486a3
+2025-08-18 18:32:06 [info     ] Retrieving profile by ID       profile_id=872e8708-774b-4bf6-b819-f2c1897486a3
+2025-08-18 18:32:07 [info     ] Profile found by ID            profile_id=872e8708-774b-4bf6-b819-f2c1897486a3
+INFO:     127.0.0.1:58154 - "POST /api/v1/profiles HTTP/1.1" 201 Created
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [35071]
+INFO:     Stopping reloader process [35029]
