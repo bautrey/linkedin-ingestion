@@ -175,3 +175,44 @@ INFO:     127.0.0.1:52905 - "GET /api/v1/profiles/872e8708-774b-4bf6-b819-f2c189
 2025-08-19 07:39:06 [info     ] Listing templates              category=None include_inactive=False limit=None
 2025-08-19 07:39:06 [info     ] Templates retrieved successfully category=None count=3 include_inactive=False
 INFO:     127.0.0.1:52905 - "GET /api/v1/templates HTTP/1.1" 200 OK
+2025-08-19 08:20:26 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 08:20:26 [info     ] Profile search completed       count=27
+INFO:     127.0.0.1:60354 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60391 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60392 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60393 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+2025-08-19 08:28:20 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 08:28:20 [info     ] Profile search completed       count=28
+INFO:     127.0.0.1:61846 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+2025-08-19 08:28:38 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 08:28:38 [info     ] Profile search completed       count=28
+INFO:     127.0.0.1:61904 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+2025-08-19 08:30:17 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 08:30:18 [info     ] Profile search completed       count=29
+INFO:     127.0.0.1:62333 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+2025-08-19 08:30:26 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-19 08:30:26 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     127.0.0.1:62362 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+2025-08-19 08:30:44 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 08:30:44 [info     ] Profile search completed       count=29
+INFO:     127.0.0.1:62418 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+2025-08-19 08:36:51 [info     ] Deleting profile by ID         profile_id=fe8b793d-f1cc-428e-bcd1-936b55aa8a06
+2025-08-19 08:36:51 [warning  ] Profile not found for deletion profile_id=fe8b793d-f1cc-428e-bcd1-936b55aa8a06
+INFO:     127.0.0.1:63610 - "DELETE /api/v1/profiles/fe8b793d-f1cc-428e-bcd1-936b55aa8a06 HTTP/1.1" 404 Not Found
+2025-08-19 08:36:56 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 08:36:56 [info     ] Profile search completed       count=28
+INFO:     127.0.0.1:63610 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+2025-08-19 08:51:29 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 08:51:30 [info     ] Profile search completed       count=29
+INFO:     127.0.0.1:50326 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50567 - "GET /api/v1/jobs?limit=20&type=scoring HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:50568 - "GET /api/v1/jobs/stats HTTP/1.1" 404 Not Found
+2025-08-19 08:52:34 [info     ] Listing templates              category=None include_inactive=False limit=None
+2025-08-19 08:52:34 [info     ] Templates retrieved successfully category=None count=3 include_inactive=False
+INFO:     127.0.0.1:50568 - "GET /api/v1/templates HTTP/1.1" 200 OK
+2025-08-19 08:58:17 [info     ] Listing templates              category=None include_inactive=False limit=None
+2025-08-19 08:58:17 [info     ] Templates retrieved successfully category=None count=3 include_inactive=False
+INFO:     127.0.0.1:51811 - "GET /api/v1/templates HTTP/1.1" 200 OK
+2025-08-19 09:00:29 [info     ] Listing templates              category=None include_inactive=False limit=None
+2025-08-19 09:00:29 [info     ] Templates retrieved successfully category=None count=3 include_inactive=False
+INFO:     127.0.0.1:52362 - "GET /api/v1/templates HTTP/1.1" 200 OK

@@ -20,16 +20,16 @@ from app.models.template_models import (
     TemplateSummary
 )
 
-
-# Test client setup
-client = TestClient(app)
-
 # Mock API key for testing
 TEST_API_KEY = "test-api-key-12345"
 
 
 class TestTemplateAPIEndpoints:
     """Test the Template Management API endpoints"""
+
+    def setup_method(self):
+        """Setup test client for each test"""
+        self.client = TestClient(app)
 
     @pytest.fixture(autouse=True)
     def setup_api_key_mock(self):
@@ -76,7 +76,7 @@ class TestTemplateAPIEndpoints:
         mock_service.list_templates.return_value = [sample_template]
         mock_get_service.return_value = mock_service
 
-        response = client.get(
+        response = self.client.get(
             "/api/v1/templates",
             headers={"X-API-Key": TEST_API_KEY}
         )
@@ -102,7 +102,7 @@ class TestTemplateAPIEndpoints:
         mock_service.list_templates.return_value = [sample_template]
         mock_get_service.return_value = mock_service
 
-        response = client.get(
+        response = self.client.get(
             "/api/v1/templates?category=CTO&include_inactive=true&limit=10",
             headers={"X-API-Key": TEST_API_KEY}
         )
@@ -121,7 +121,7 @@ class TestTemplateAPIEndpoints:
     @patch('main.get_template_service')
     def test_list_templates_unauthorized(self, mock_get_service):
         """Test template listing without API key"""
-        response = client.get("/api/v1/templates")
+        response = self.client.get("/api/v1/templates")
         
         assert response.status_code == 403
         data = response.json()
@@ -134,7 +134,7 @@ class TestTemplateAPIEndpoints:
         mock_service.list_templates.side_effect = Exception("Database error")
         mock_get_service.return_value = mock_service
 
-        response = client.get(
+        response = self.client.get(
             "/api/v1/templates",
             headers={"X-API-Key": TEST_API_KEY}
         )
@@ -150,7 +150,7 @@ class TestTemplateAPIEndpoints:
         mock_service.list_template_summaries.return_value = [sample_template_summary]
         mock_get_service.return_value = mock_service
 
-        response = client.get(
+        response = self.client.get(
             "/api/v1/templates/summaries",
             headers={"X-API-Key": TEST_API_KEY}
         )
@@ -177,7 +177,7 @@ class TestTemplateAPIEndpoints:
         mock_get_service.return_value = mock_service
 
         template_id = "123e4567-e89b-12d3-a456-426614174000"
-        response = client.get(
+        response = self.client.get(
             f"/api/v1/templates/{template_id}",
             headers={"X-API-Key": TEST_API_KEY}
         )
@@ -198,7 +198,7 @@ class TestTemplateAPIEndpoints:
         mock_get_service.return_value = mock_service
 
         template_id = "nonexistent-id"
-        response = client.get(
+        response = self.client.get(
             f"/api/v1/templates/{template_id}",
             headers={"X-API-Key": TEST_API_KEY}
         )
@@ -223,7 +223,7 @@ class TestTemplateAPIEndpoints:
             "metadata": {"created_by": "test"}
         }
 
-        response = client.post(
+        response = self.client.post(
             "/api/v1/templates",
             headers={"X-API-Key": TEST_API_KEY},
             json=template_data
@@ -253,7 +253,7 @@ class TestTemplateAPIEndpoints:
             # Missing category and prompt_text
         }
 
-        response = client.post(
+        response = self.client.post(
             "/api/v1/templates",
             headers={"X-API-Key": TEST_API_KEY},
             json=template_data
@@ -281,7 +281,7 @@ class TestTemplateAPIEndpoints:
             "description": "Updated description"
         }
 
-        response = client.put(
+        response = self.client.put(
             f"/api/v1/templates/{template_id}",
             headers={"X-API-Key": TEST_API_KEY},
             json=update_data
@@ -307,7 +307,7 @@ class TestTemplateAPIEndpoints:
         template_id = "nonexistent-id"
         update_data = {"name": "Updated Name"}
 
-        response = client.put(
+        response = self.client.put(
             f"/api/v1/templates/{template_id}",
             headers={"X-API-Key": TEST_API_KEY},
             json=update_data
@@ -325,7 +325,7 @@ class TestTemplateAPIEndpoints:
         mock_get_service.return_value = mock_service
 
         template_id = "123e4567-e89b-12d3-a456-426614174000"
-        response = client.delete(
+        response = self.client.delete(
             f"/api/v1/templates/{template_id}",
             headers={"X-API-Key": TEST_API_KEY}
         )
@@ -345,7 +345,7 @@ class TestTemplateAPIEndpoints:
         mock_get_service.return_value = mock_service
 
         template_id = "nonexistent-id"
-        response = client.delete(
+        response = self.client.delete(
             f"/api/v1/templates/{template_id}",
             headers={"X-API-Key": TEST_API_KEY}
         )
@@ -367,13 +367,13 @@ class TestTemplateAPIEndpoints:
 
         for method, url in endpoints:
             if method == "GET":
-                response = client.get(url)
+                response = self.client.get(url)
             elif method == "POST":
-                response = client.post(url, json={})
+                response = self.client.post(url, json={})
             elif method == "PUT":
-                response = client.put(url, json={})
+                response = self.client.put(url, json={})
             elif method == "DELETE":
-                response = client.delete(url)
+                response = self.client.delete(url)
 
             assert response.status_code == 403, f"Endpoint {method} {url} should require authentication"
             data = response.json()
@@ -387,7 +387,7 @@ class TestTemplateAPIEndpoints:
         mock_get_service.return_value = mock_service
 
         with patch('main.logger') as mock_logger:
-            response = client.get(
+            response = self.client.get(
                 "/api/v1/templates",
                 headers={"X-API-Key": TEST_API_KEY}
             )
@@ -413,7 +413,7 @@ class TestTemplateAPIEndpoints:
         }
 
         with patch('main.logger') as mock_logger:
-            response = client.post(
+            response = self.client.post(
                 "/api/v1/templates",
                 headers={"X-API-Key": TEST_API_KEY},
                 json=template_data
@@ -434,7 +434,7 @@ class TestTemplateAPIEndpoints:
         mock_get_service.return_value = mock_service
 
         # Test invalid limit (too high)
-        response = client.get(
+        response = self.client.get(
             "/api/v1/templates?limit=200",
             headers={"X-API-Key": TEST_API_KEY}
         )
@@ -444,7 +444,7 @@ class TestTemplateAPIEndpoints:
         assert data["error_code"] == "VALIDATION_ERROR"
 
         # Test invalid limit (negative)
-        response = client.get(
+        response = self.client.get(
             "/api/v1/templates?limit=-1",
             headers={"X-API-Key": TEST_API_KEY}
         )
@@ -460,7 +460,7 @@ class TestTemplateAPIEndpoints:
 
         # Test with valid UUID format
         valid_uuid = "123e4567-e89b-12d3-a456-426614174000"
-        response = client.get(
+        response = self.client.get(
             f"/api/v1/templates/{valid_uuid}",
             headers={"X-API-Key": TEST_API_KEY}
         )
@@ -470,7 +470,7 @@ class TestTemplateAPIEndpoints:
         # Test with invalid UUID format - should still work as it's just a string parameter
         invalid_uuid = "not-a-uuid"
         mock_service.get_template_by_id.return_value = None
-        response = client.get(
+        response = self.client.get(
             f"/api/v1/templates/{invalid_uuid}",
             headers={"X-API-Key": TEST_API_KEY}
         )

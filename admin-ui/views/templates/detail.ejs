@@ -1,0 +1,206 @@
+&lt;%- include('../layout.ejs', { 
+    title: title,
+    content: `
+    &lt;div class="container-fluid"&gt;
+        &lt;div class="d-flex justify-content-between align-items-center mb-4"&gt;
+            &lt;div&gt;
+                &lt;nav aria-label="breadcrumb"&gt;
+                    &lt;ol class="breadcrumb"&gt;
+                        &lt;li class="breadcrumb-item"&gt;&lt;a href="/templates"&gt;Templates&lt;/a&gt;&lt;/li&gt;
+                        &lt;li class="breadcrumb-item active"&gt;${template.name}&lt;/li&gt;
+                    &lt;/ol&gt;
+                &lt;/nav&gt;
+                &lt;h2 class="mb-0"&gt;&lt;i class="bi bi-file-text me-2"&gt;&lt;/i&gt;${template.name}&lt;/h2&gt;
+                &lt;p class="text-muted mb-0"&gt;${template.description || 'No description provided'}&lt;/p&gt;
+            &lt;/div&gt;
+            &lt;div&gt;
+                &lt;a href="/templates" class="btn btn-outline-secondary me-2"&gt;
+                    &lt;i class="bi bi-arrow-left me-1"&gt;&lt;/i&gt; Back to Templates
+                &lt;/a&gt;
+                &lt;a href="/templates/${template.id}/edit" class="btn btn-outline-primary me-2"&gt;
+                    &lt;i class="bi bi-pencil me-1"&gt;&lt;/i&gt; Edit Template
+                &lt;/a&gt;
+                &lt;button class="btn btn-success" onclick="useTemplate('${template.id}', '${template.name}')"&gt;
+                    &lt;i class="bi bi-play-circle me-1"&gt;&lt;/i&gt; Use for Scoring
+                &lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class="row"&gt;
+            &lt;div class="col-lg-8"&gt;
+                &lt;!-- Template Content --&gt;
+                &lt;div class="card mb-4"&gt;
+                    &lt;div class="card-header"&gt;
+                        &lt;h5 class="mb-0"&gt;&lt;i class="bi bi-code me-2"&gt;&lt;/i&gt;Prompt Template&lt;/h5&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-body"&gt;
+                        &lt;pre class="bg-light p-3 rounded" style="white-space: pre-wrap; max-height: 500px; overflow-y: auto;"&gt;&lt;code id="promptText"&gt;${template.prompt_text}&lt;/code&gt;&lt;/pre&gt;
+                        &lt;div class="d-flex justify-content-between align-items-center mt-3"&gt;
+                            &lt;div&gt;
+                                &lt;span class="text-muted"&gt;${template.prompt_text ? template.prompt_text.length : 0} characters&lt;/span&gt;
+                            &lt;/div&gt;
+                            &lt;div&gt;
+                                &lt;button class="btn btn-outline-secondary btn-sm me-2" onclick="copyPrompt()"&gt;
+                                    &lt;i class="bi bi-clipboard me-1"&gt;&lt;/i&gt; Copy
+                                &lt;/button&gt;
+                                &lt;button class="btn btn-outline-info btn-sm" onclick="testTemplate('${template.id}')"&gt;
+                                    &lt;i class="bi bi-play-circle me-1"&gt;&lt;/i&gt; Test
+                                &lt;/button&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;!-- Usage Statistics --&gt;
+                &lt;div class="card"&gt;
+                    &lt;div class="card-header"&gt;
+                        &lt;h5 class="mb-0"&gt;&lt;i class="bi bi-graph-up me-2"&gt;&lt;/i&gt;Usage Statistics&lt;/h5&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-body"&gt;
+                        &lt;div class="row"&gt;
+                            &lt;div class="col-md-3"&gt;
+                                &lt;div class="text-center"&gt;
+                                    &lt;h4 class="text-primary"&gt;${template.usage_count || 0}&lt;/h4&gt;
+                                    &lt;p class="text-muted mb-0"&gt;Total Uses&lt;/p&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;div class="col-md-3"&gt;
+                                &lt;div class="text-center"&gt;
+                                    &lt;h4 class="text-success"&gt;${template.success_count || 0}&lt;/h4&gt;
+                                    &lt;p class="text-muted mb-0"&gt;Successful Runs&lt;/p&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;div class="col-md-3"&gt;
+                                &lt;div class="text-center"&gt;
+                                    &lt;h4 class="text-info"&gt;${template.avg_score || 'N/A'}&lt;/h4&gt;
+                                    &lt;p class="text-muted mb-0"&gt;Avg Score&lt;/p&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                            &lt;div class="col-md-3"&gt;
+                                &lt;div class="text-center"&gt;
+                                    &lt;h4 class="text-warning"&gt;${template.last_used ? new Date(template.last_used).toLocaleDateString() : 'Never'}&lt;/h4&gt;
+                                    &lt;p class="text-muted mb-0"&gt;Last Used&lt;/p&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                        
+                        &lt;hr&gt;
+                        
+                        &lt;div class="text-center"&gt;
+                            &lt;button class="btn btn-outline-primary btn-sm me-2" onclick="viewUsageHistory('${template.id}')"&gt;
+                                &lt;i class="bi bi-clock-history me-1"&gt;&lt;/i&gt; Usage History
+                            &lt;/button&gt;
+                            &lt;button class="btn btn-outline-info btn-sm" onclick="viewPerformanceMetrics('${template.id}')"&gt;
+                                &lt;i class="bi bi-bar-chart me-1"&gt;&lt;/i&gt; Performance Metrics
+                            &lt;/button&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;div class="col-lg-4"&gt;
+                &lt;!-- Template Information --&gt;
+                &lt;div class="card mb-3"&gt;
+                    &lt;div class="card-header"&gt;
+                        &lt;h6 class="mb-0"&gt;&lt;i class="bi bi-info-circle me-2"&gt;&lt;/i&gt;Template Information&lt;/h6&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-body"&gt;
+                        &lt;dl class="row mb-0"&gt;
+                            &lt;dt class="col-sm-4"&gt;ID:&lt;/dt&gt;
+                            &lt;dd class="col-sm-8"&gt;&lt;code&gt;${template.id}&lt;/code&gt;&lt;/dd&gt;
+                            
+                            &lt;dt class="col-sm-4"&gt;Category:&lt;/dt&gt;
+                            &lt;dd class="col-sm-8"&gt;&lt;span class="badge bg-primary"&gt;${template.category}&lt;/span&gt;&lt;/dd&gt;
+                            
+                            &lt;dt class="col-sm-4"&gt;Version:&lt;/dt&gt;
+                            &lt;dd class="col-sm-8"&gt;${template.version || '1.0'}&lt;/dd&gt;
+                            
+                            &lt;dt class="col-sm-4"&gt;Model:&lt;/dt&gt;
+                            &lt;dd class="col-sm-8"&gt;${template.model || 'gpt-4o'}&lt;/dd&gt;
+                            
+                            &lt;dt class="col-sm-4"&gt;Status:&lt;/dt&gt;
+                            &lt;dd class="col-sm-8"&gt;
+                                &lt;span class="badge ${template.is_active ? 'bg-success' : 'bg-secondary'}"&gt;
+                                    ${template.is_active ? 'Active' : 'Inactive'}
+                                &lt;/span&gt;
+                            &lt;/dd&gt;
+                            
+                            &lt;dt class="col-sm-4"&gt;Created:&lt;/dt&gt;
+                            &lt;dd class="col-sm-8"&gt;${new Date(template.created_at).toLocaleString()}&lt;/dd&gt;
+                            
+                            ${template.updated_at ? \`
+                                &lt;dt class="col-sm-4"&gt;Updated:&lt;/dt&gt;
+                                &lt;dd class="col-sm-8"&gt;\${new Date(template.updated_at).toLocaleString()}&lt;/dd&gt;
+                            \` : ''}
+                        &lt;/dl&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;!-- Quick Actions --&gt;
+                &lt;div class="card mb-3"&gt;
+                    &lt;div class="card-header"&gt;
+                        &lt;h6 class="mb-0"&gt;&lt;i class="bi bi-lightning me-2"&gt;&lt;/i&gt;Quick Actions&lt;/h6&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-body"&gt;
+                        &lt;div class="d-grid gap-2"&gt;
+                            &lt;button class="btn btn-outline-success" onclick="useTemplate('${template.id}', '${template.name}')"&gt;
+                                &lt;i class="bi bi-play-circle me-1"&gt;&lt;/i&gt; Use for Scoring
+                            &lt;/button&gt;
+                            &lt;button class="btn btn-outline-primary" onclick="duplicateTemplate('${template.id}')"&gt;
+                                &lt;i class="bi bi-files me-1"&gt;&lt;/i&gt; Duplicate Template
+                            &lt;/button&gt;
+                            &lt;button class="btn btn-outline-info" onclick="exportTemplate('${template.id}')"&gt;
+                                &lt;i class="bi bi-download me-1"&gt;&lt;/i&gt; Export Template
+                            &lt;/button&gt;
+                            &lt;hr class="my-2"&gt;
+                            ${template.is_active ? \`
+                                &lt;button class="btn btn-outline-warning" onclick="deactivateTemplate('\${template.id}', '\${template.name}')"&gt;
+                                    &lt;i class="bi bi-pause-circle me-1"&gt;&lt;/i&gt; Deactivate
+                                &lt;/button&gt;
+                            \` : \`
+                                &lt;button class="btn btn-outline-success" onclick="activateTemplate('\${template.id}', '\${template.name}')"&gt;
+                                    &lt;i class="bi bi-play-circle me-1"&gt;&lt;/i&gt; Activate
+                                &lt;/button&gt;
+                            \`}
+                            &lt;button class="btn btn-outline-danger" onclick="deleteTemplate('${template.id}', '${template.name}')"&gt;
+                                &lt;i class="bi bi-trash me-1"&gt;&lt;/i&gt; Delete Template
+                            &lt;/button&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;!-- Template Variables --&gt;
+                &lt;div class="card"&gt;
+                    &lt;div class="card-header"&gt;
+                        &lt;h6 class="mb-0"&gt;&lt;i class="bi bi-code me-2"&gt;&lt;/i&gt;Template Variables Used&lt;/h6&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-body"&gt;
+                        &lt;div id="variablesUsed"&gt;
+                            ${template.prompt_text && template.prompt_text.includes('{{profile_data}}') ? 
+                                '&lt;div class="mb-2"&gt;&lt;i class="bi bi-check-circle text-success me-1"&gt;&lt;/i&gt;&lt;code&gt;{{profile_data}}&lt;/code&gt;&lt;/div&gt;' : 
+                                '&lt;div class="mb-2"&gt;&lt;i class="bi bi-x-circle text-danger me-1"&gt;&lt;/i&gt;&lt;code&gt;{{profile_data}}&lt;/code&gt; (missing)&lt;/div&gt;'
+                            }
+                            ${template.prompt_text && template.prompt_text.includes('{{profile_name}}') ? 
+                                '&lt;div class="mb-2"&gt;&lt;i class="bi bi-check-circle text-success me-1"&gt;&lt;/i&gt;&lt;code&gt;{{profile_name}}&lt;/code&gt;&lt;/div&gt;' : ''
+                            }
+                            ${template.prompt_text && template.prompt_text.includes('{{current_title}}') ? 
+                                '&lt;div class="mb-2"&gt;&lt;i class="bi bi-check-circle text-success me-1"&gt;&lt;/i&gt;&lt;code&gt;{{current_title}}&lt;/code&gt;&lt;/div&gt;' : ''
+                            }
+                            ${template.prompt_text && template.prompt_text.includes('{{current_company}}') ? 
+                                '&lt;div class="mb-2"&gt;&lt;i class="bi bi-check-circle text-success me-1"&gt;&lt;/i&gt;&lt;code&gt;{{current_company}}&lt;/code&gt;&lt;/div&gt;' : ''
+                            }
+                        &lt;/div&gt;
+                        
+                        ${!template.prompt_text || !template.prompt_text.includes('{{profile_data}}') ? 
+                            '&lt;div class="alert alert-warning mt-2"&gt;&lt;i class="bi bi-exclamation-triangle me-1"&gt;&lt;/i&gt;&lt;small&gt;Template missing required &lt;code&gt;{{profile_data}}&lt;/code&gt; variable&lt;/small&gt;&lt;/div&gt;' : ''
+                        }
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Template Detail JavaScript --&gt;
+    &lt;script src="/js/templates-detail.js"&gt;&lt;/script&gt;
+    ` 
+}) %&gt;

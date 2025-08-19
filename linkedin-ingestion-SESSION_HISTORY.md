@@ -601,3 +601,23 @@ Session File: ./admin-ui/sessions/linkedin-ingestion-session-2025-08-18-160712.m
 
 ---
 
+## Session 2025-08-19 13:38:20
+
+Session File: ./sessions/linkedin-ingestion-session-2025-08-19-133820.md
+
+**Objective**: Fix LinkedIn URL error handling for old `/pub/` URL formats
+**Status**: ✅ COMPLETED
+**Duration**: ~30 minutes
+
+### Key Accomplishments:
+- **LinkedIn URL Error Handling**: Fixed 500 Internal Server Errors for old `/pub/` URLs
+- **Production Validation**: Confirmed fix works correctly in Railway deployment  
+- **Error Response Quality**: Proper 400 Bad Request with helpful user guidance
+
+### Technical Details:
+- Exception handler was already implemented in main.py (CassidyWorkflowError)
+- Created validation test scripts and confirmed production behavior
+- Found correct Railway deployment URL: `https://smooth-mailbox-production.up.railway.app`
+
+---
+

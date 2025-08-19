@@ -1,0 +1,302 @@
+&lt;%- include('../layout.ejs', { 
+    title: title,
+    content: `
+    &lt;div class="container-fluid"&gt;
+        &lt;div class="d-flex justify-content-between align-items-center mb-4"&gt;
+            &lt;div&gt;
+                &lt;nav aria-label="breadcrumb"&gt;
+                    &lt;ol class="breadcrumb"&gt;
+                        &lt;li class="breadcrumb-item"&gt;&lt;a href="/templates"&gt;Templates&lt;/a&gt;&lt;/li&gt;
+                        &lt;li class="breadcrumb-item active"&gt;${isEdit ? 'Edit' : 'Create'}&lt;/li&gt;
+                    &lt;/ol&gt;
+                &lt;/nav&gt;
+                &lt;h2 class="mb-0"&gt;&lt;i class="bi bi-file-text me-2"&gt;&lt;/i&gt;${title}&lt;/h2&gt;
+            &lt;/div&gt;
+            &lt;div&gt;
+                &lt;a href="/templates" class="btn btn-outline-secondary me-2"&gt;
+                    &lt;i class="bi bi-arrow-left me-1"&gt;&lt;/i&gt; Back to Templates
+                &lt;/a&gt;
+                ${isEdit ? \`
+                    &lt;a href="/templates/\${template.id}" class="btn btn-outline-info"&gt;
+                        &lt;i class="bi bi-eye me-1"&gt;&lt;/i&gt; View Details
+                    &lt;/a&gt;
+                \` : ''}
+            &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class="row"&gt;
+            &lt;div class="col-lg-8"&gt;
+                &lt;!-- Main Template Form --&gt;
+                &lt;div class="card"&gt;
+                    &lt;div class="card-header"&gt;
+                        &lt;h5 class="mb-0"&gt;&lt;i class="bi bi-pencil me-2"&gt;&lt;/i&gt;Template Details&lt;/h5&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-body"&gt;
+                        &lt;form id="templateForm"&gt;
+                            ${isEdit ? \`&lt;input type="hidden" name="template_id" value="\${template.id}"&gt;\` : ''}
+                            
+                            &lt;!-- Basic Information --&gt;
+                            &lt;div class="row mb-3"&gt;
+                                &lt;div class="col-md-8"&gt;
+                                    &lt;label for="name" class="form-label"&gt;Template Name &lt;span class="text-danger"&gt;*&lt;/span&gt;&lt;/label&gt;
+                                    &lt;input type="text" class="form-control" id="name" name="name" 
+                                           value="${isEdit && template ? template.name : ''}" 
+                                           placeholder="e.g., Senior CTO Evaluation Template" required&gt;
+                                    &lt;div class="form-text"&gt;A descriptive name for this scoring template&lt;/div&gt;
+                                &lt;/div&gt;
+                                &lt;div class="col-md-4"&gt;
+                                    &lt;label for="category" class="form-label"&gt;Category &lt;span class="text-danger"&gt;*&lt;/span&gt;&lt;/label&gt;
+                                    &lt;select class="form-select" id="category" name="category" required&gt;
+                                        &lt;option value=""&gt;Select Category&lt;/option&gt;
+                                        &lt;option value="CTO" ${isEdit && template && template.category === 'CTO' ? 'selected' : ''}&gt;CTO (Chief Technology Officer)&lt;/option&gt;
+                                        &lt;option value="CIO" ${isEdit && template && template.category === 'CIO' ? 'selected' : ''}&gt;CIO (Chief Information Officer)&lt;/option&gt;
+                                        &lt;option value="CISO" ${isEdit && template && template.category === 'CISO' ? 'selected' : ''}&gt;CISO (Chief Information Security Officer)&lt;/option&gt;
+                                        &lt;option value="VP_ENGINEERING" ${isEdit && template && template.category === 'VP_ENGINEERING' ? 'selected' : ''}&gt;VP Engineering&lt;/option&gt;
+                                        &lt;option value="DIRECTOR" ${isEdit && template && template.category === 'DIRECTOR' ? 'selected' : ''}&gt;Director&lt;/option&gt;
+                                        &lt;option value="CUSTOM" ${isEdit && template && template.category === 'CUSTOM' ? 'selected' : ''}&gt;Custom&lt;/option&gt;
+                                    &lt;/select&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+
+                            &lt;div class="mb-3"&gt;
+                                &lt;label for="description" class="form-label"&gt;Description&lt;/label&gt;
+                                &lt;textarea class="form-control" id="description" name="description" rows="3" 
+                                          placeholder="Brief description of what this template evaluates..."&gt;${isEdit && template ? template.description || '' : ''}&lt;/textarea&gt;
+                                &lt;div class="form-text"&gt;Optional description to help identify the purpose of this template&lt;/div&gt;
+                            &lt;/div&gt;
+
+                            &lt;!-- Prompt Content --&gt;
+                            &lt;div class="mb-3"&gt;
+                                &lt;label for="prompt_text" class="form-label"&gt;
+                                    Prompt Template &lt;span class="text-danger"&gt;*&lt;/span&gt;
+                                    &lt;button type="button" class="btn btn-link btn-sm p-0 ms-1" data-bs-toggle="modal" data-bs-target="#promptHelpModal"&gt;
+                                        &lt;i class="bi bi-question-circle"&gt;&lt;/i&gt;
+                                    &lt;/button&gt;
+                                &lt;/label&gt;
+                                &lt;textarea class="form-control font-monospace" id="prompt_text" name="prompt_text" 
+                                          rows="15" required style="resize: vertical; min-height: 300px;"
+                                          placeholder="Enter your AI prompt template here...
+
+Example:
+You are an expert executive recruiter evaluating a candidate for a CTO position. 
+
+Based on the following LinkedIn profile data, provide a comprehensive evaluation:
+
+{{profile_data}}
+
+Please evaluate the candidate on these criteria:
+1. Technical Leadership (1-10)
+2. Strategic Vision (1-10)  
+3. Team Management (1-10)
+4. Industry Experience (1-10)
+5. Overall Fit (1-10)
+
+Provide your analysis in JSON format with scores and detailed reasoning for each criterion."&gt;${isEdit && template ? template.prompt_text || '' : ''}&lt;/textarea&gt;
+                                &lt;div class="form-text"&gt;
+                                    Use &lt;code&gt;{{profile_data}}&lt;/code&gt; to insert the LinkedIn profile data. 
+                                    &lt;span id="charCount" class="text-muted"&gt;&lt;/span&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+
+                            &lt;!-- Model Configuration --&gt;
+                            &lt;div class="row mb-3"&gt;
+                                &lt;div class="col-md-6"&gt;
+                                    &lt;label for="model" class="form-label"&gt;AI Model&lt;/label&gt;
+                                    &lt;select class="form-select" id="model" name="model"&gt;
+                                        &lt;option value="gpt-4o" ${isEdit && template && template.model === 'gpt-4o' ? 'selected' : 'selected'}&gt;GPT-4o (Recommended)&lt;/option&gt;
+                                        &lt;option value="gpt-4o-mini" ${isEdit && template && template.model === 'gpt-4o-mini' ? 'selected' : ''}&gt;GPT-4o Mini (Faster)&lt;/option&gt;
+                                        &lt;option value="gpt-4" ${isEdit && template && template.model === 'gpt-4' ? 'selected' : ''}&gt;GPT-4 (Legacy)&lt;/option&gt;
+                                    &lt;/select&gt;
+                                &lt;/div&gt;
+                                &lt;div class="col-md-6"&gt;
+                                    &lt;label for="version" class="form-label"&gt;Version&lt;/label&gt;
+                                    &lt;input type="text" class="form-control" id="version" name="version" 
+                                           value="${isEdit && template ? template.version || '1.0' : '1.0'}" 
+                                           placeholder="1.0"&gt;
+                                    &lt;div class="form-text"&gt;Version number for tracking changes&lt;/div&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+
+                            &lt;!-- Status --&gt;
+                            &lt;div class="mb-4"&gt;
+                                &lt;div class="form-check"&gt;
+                                    &lt;input class="form-check-input" type="checkbox" id="is_active" name="is_active" 
+                                           ${!isEdit || (template && template.is_active) ? 'checked' : ''}&gt;
+                                    &lt;label class="form-check-label" for="is_active"&gt;
+                                        Template is active and available for use
+                                    &lt;/label&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+
+                            &lt;!-- Form Actions --&gt;
+                            &lt;div class="d-flex justify-content-between"&gt;
+                                &lt;div&gt;
+                                    ${isEdit ? \`
+                                        &lt;button type="button" class="btn btn-outline-info me-2" onclick="testTemplate()"&gt;
+                                            &lt;i class="bi bi-play-circle me-1"&gt;&lt;/i&gt; Test Template
+                                        &lt;/button&gt;
+                                        &lt;button type="button" class="btn btn-outline-secondary" onclick="previewChanges()"&gt;
+                                            &lt;i class="bi bi-eye me-1"&gt;&lt;/i&gt; Preview Changes
+                                        &lt;/button&gt;
+                                    \` : \`
+                                        &lt;button type="button" class="btn btn-outline-info" onclick="previewTemplate()"&gt;
+                                            &lt;i class="bi bi-eye me-1"&gt;&lt;/i&gt; Preview Template
+                                        &lt;/button&gt;
+                                    \`}
+                                &lt;/div&gt;
+                                &lt;div&gt;
+                                    &lt;button type="button" class="btn btn-outline-secondary me-2" onclick="resetForm()"&gt;
+                                        Reset
+                                    &lt;/button&gt;
+                                    &lt;button type="button" class="btn btn-outline-primary me-2" onclick="saveAsDraft()"&gt;
+                                        &lt;i class="bi bi-file-earmark me-1"&gt;&lt;/i&gt; Save Draft
+                                    &lt;/button&gt;
+                                    &lt;button type="submit" class="btn btn-primary" id="submitBtn"&gt;
+                                        &lt;i class="bi bi-check-circle me-1"&gt;&lt;/i&gt; ${isEdit ? 'Update Template' : 'Create Template'}
+                                    &lt;/button&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+                        &lt;/form&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;div class="col-lg-4"&gt;
+                &lt;!-- Template Guidelines --&gt;
+                &lt;div class="card mb-3"&gt;
+                    &lt;div class="card-header"&gt;
+                        &lt;h6 class="mb-0"&gt;&lt;i class="bi bi-lightbulb me-2"&gt;&lt;/i&gt;Template Guidelines&lt;/h6&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-body"&gt;
+                        &lt;div class="mb-3"&gt;
+                            &lt;h6&gt;&lt;i class="bi bi-check-circle text-success me-1"&gt;&lt;/i&gt; Best Practices&lt;/h6&gt;
+                            &lt;ul class="small"&gt;
+                                &lt;li&gt;Use clear, specific evaluation criteria&lt;/li&gt;
+                                &lt;li&gt;Request structured output (JSON format)&lt;/li&gt;
+                                &lt;li&gt;Include scoring ranges (1-10 scales)&lt;/li&gt;
+                                &lt;li&gt;Ask for detailed reasoning&lt;/li&gt;
+                                &lt;li&gt;Use &lt;code&gt;{{profile_data}}&lt;/code&gt; placeholder&lt;/li&gt;
+                            &lt;/ul&gt;
+                        &lt;/div&gt;
+                        &lt;div class="mb-3"&gt;
+                            &lt;h6&gt;&lt;i class="bi bi-x-circle text-danger me-1"&gt;&lt;/i&gt; Common Pitfalls&lt;/h6&gt;
+                            &lt;ul class="small"&gt;
+                                &lt;li&gt;Vague evaluation instructions&lt;/li&gt;
+                                &lt;li&gt;Missing profile data placeholder&lt;/li&gt;
+                                &lt;li&gt;Overly complex or lengthy prompts&lt;/li&gt;
+                                &lt;li&gt;No clear output format specified&lt;/li&gt;
+                            &lt;/ul&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                &lt;!-- Template Variables --&gt;
+                &lt;div class="card mb-3"&gt;
+                    &lt;div class="card-header"&gt;
+                        &lt;h6 class="mb-0"&gt;&lt;i class="bi bi-code me-2"&gt;&lt;/i&gt;Available Variables&lt;/h6&gt;
+                    &lt;/div&gt;
+                    &lt;div class="card-body"&gt;
+                        &lt;div class="mb-2"&gt;
+                            &lt;code&gt;{{profile_data}}&lt;/code&gt;
+                            &lt;div class="small text-muted"&gt;Complete LinkedIn profile information&lt;/div&gt;
+                        &lt;/div&gt;
+                        &lt;div class="mb-2"&gt;
+                            &lt;code&gt;{{profile_name}}&lt;/code&gt;
+                            &lt;div class="small text-muted"&gt;Candidate's full name&lt;/div&gt;
+                        &lt;/div&gt;
+                        &lt;div class="mb-2"&gt;
+                            &lt;code&gt;{{current_title}}&lt;/code&gt;
+                            &lt;div class="small text-muted"&gt;Current job title&lt;/div&gt;
+                        &lt;/div&gt;
+                        &lt;div class="mb-2"&gt;
+                            &lt;code&gt;{{current_company}}&lt;/code&gt;
+                            &lt;div class="small text-muted"&gt;Current company name&lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+
+                ${isEdit && template ? \`
+                    &lt;!-- Template Info --&gt;
+                    &lt;div class="card"&gt;
+                        &lt;div class="card-header"&gt;
+                            &lt;h6 class="mb-0"&gt;&lt;i class="bi bi-info-circle me-2"&gt;&lt;/i&gt;Template Info&lt;/h6&gt;
+                        &lt;/div&gt;
+                        &lt;div class="card-body"&gt;
+                            &lt;div class="mb-2"&gt;
+                                &lt;strong&gt;ID:&lt;/strong&gt; \${template.id}
+                            &lt;/div&gt;
+                            &lt;div class="mb-2"&gt;
+                                &lt;strong&gt;Created:&lt;/strong&gt; \${new Date(template.created_at).toLocaleString()}
+                            &lt;/div&gt;
+                            \${template.updated_at ? \`
+                                &lt;div class="mb-2"&gt;
+                                    &lt;strong&gt;Updated:&lt;/strong&gt; \${new Date(template.updated_at).toLocaleString()}
+                                &lt;/div&gt;
+                            \` : ''}
+                            &lt;div class="mb-2"&gt;
+                                &lt;strong&gt;Status:&lt;/strong&gt; 
+                                &lt;span class="badge \${template.is_active ? 'bg-success' : 'bg-secondary'}"&gt;
+                                    \${template.is_active ? 'Active' : 'Inactive'}
+                                &lt;/span&gt;
+                            &lt;/div&gt;
+                        &lt;/div&gt;
+                    &lt;/div&gt;
+                \` : ''}
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Prompt Help Modal --&gt;
+    &lt;div class="modal fade" id="promptHelpModal" tabindex="-1"&gt;
+        &lt;div class="modal-dialog modal-lg"&gt;
+            &lt;div class="modal-content"&gt;
+                &lt;div class="modal-header"&gt;
+                    &lt;h5 class="modal-title"&gt;&lt;i class="bi bi-question-circle me-2"&gt;&lt;/i&gt;Prompt Template Help&lt;/h5&gt;
+                    &lt;button type="button" class="btn-close" data-bs-dismiss="modal"&gt;&lt;/button&gt;
+                &lt;/div&gt;
+                &lt;div class="modal-body"&gt;
+                    &lt;h6&gt;Template Structure&lt;/h6&gt;
+                    &lt;p&gt;A good prompt template should include:&lt;/p&gt;
+                    &lt;ol&gt;
+                        &lt;li&gt;&lt;strong&gt;Role Definition:&lt;/strong&gt; Tell the AI what role it should take&lt;/li&gt;
+                        &lt;li&gt;&lt;strong&gt;Data Input:&lt;/strong&gt; Use &lt;code&gt;{{profile_data}}&lt;/code&gt; to inject the LinkedIn profile&lt;/li&gt;
+                        &lt;li&gt;&lt;strong&gt;Evaluation Criteria:&lt;/strong&gt; Specific areas to assess&lt;/li&gt;
+                        &lt;li&gt;&lt;strong&gt;Output Format:&lt;/strong&gt; Request structured JSON response&lt;/li&gt;
+                    &lt;/ol&gt;
+                    
+                    &lt;h6&gt;Example CTO Template&lt;/h6&gt;
+                    &lt;pre class="bg-light p-3"&gt;&lt;code&gt;You are an expert executive recruiter evaluating a candidate for a CTO position at a high-growth technology company.
+
+Based on the following LinkedIn profile data:
+
+{{profile_data}}
+
+Please evaluate this candidate on the following criteria (scale 1-10):
+1. Technical Leadership: Ability to guide technical strategy and teams
+2. Strategic Vision: Understanding of technology trends and business impact
+3. Team Management: Experience building and leading engineering organizations
+4. Industry Experience: Relevant experience in the industry/domain
+5. Cultural Fit: Alignment with startup/growth company culture
+
+Provide your response in JSON format:
+{
+  "technical_leadership": {"score": X, "reasoning": "..."},
+  "strategic_vision": {"score": X, "reasoning": "..."},
+  "team_management": {"score": X, "reasoning": "..."},
+  "industry_experience": {"score": X, "reasoning": "..."},
+  "cultural_fit": {"score": X, "reasoning": "..."},
+  "overall_score": X,
+  "summary": "Overall assessment and recommendation"
+}&lt;/code&gt;&lt;/pre&gt;
+                &lt;/div&gt;
+                &lt;div class="modal-footer"&gt;
+                    &lt;button type="button" class="btn btn-secondary" data-bs-dismiss="modal"&gt;Close&lt;/button&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Template Form JavaScript --&gt;
+    &lt;script src="/js/templates-form.js"&gt;&lt;/script&gt;
+    ` 
+}) %&gt;
