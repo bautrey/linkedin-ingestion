@@ -4,25 +4,77 @@ const logger = require('../utils/logger');
 
 const router = express.Router();
 
-// GET /scoring - Show scoring dashboard
+// GET /scoring - Show scoring dashboard or profile scoring interface
 router.get('/', async (req, res) => {
     try {
-        // Get recent scoring jobs and statistics
-        const [jobsResponse, statsResponse] = await Promise.all([
-            apiClient.get('/jobs', { params: { limit: 20, type: 'scoring' } }).catch(() => ({ data: [] })),
-            apiClient.get('/jobs/stats').catch(() => ({ data: {} }))
-        ]);
+        const { profile_id, profile_ids } = req.query;
         
-        res.render('scoring/dashboard', {
-            title: 'Scoring Dashboard',
-            jobs: jobsResponse.data.jobs || [],
-            stats: statsResponse.data || {}
-        });
+        // If profile_id or profile_ids are provided, show the scoring interface
+        if (profile_id || profile_ids) {
+            let profilesData = [];
+            let templatesData = [];
+            
+            try {
+                // Fetch templates for scoring selection
+                const templatesResponse = await apiClient.get('/templates');
+                templatesData = templatesResponse.data || [];
+                
+                if (profile_id) {
+                    // Single profile scoring
+                    const profileResponse = await apiClient.get(`/profiles/${profile_id}`);
+                    profilesData = [profileResponse.data];
+                } else if (profile_ids) {
+                    // Bulk profile scoring
+                    const idsArray = profile_ids.split(',');
+                    const profilePromises = idsArray.map(id => 
+                        apiClient.get(`/profiles/${id}`).catch(error => {
+                            logger.warn(`Failed to fetch profile ${id}:`, error.message);
+                            return null;
+                        })
+                    );
+                    const profileResponses = await Promise.all(profilePromises);
+                    profilesData = profileResponses.filter(Boolean).map(response => response.data);
+                }
+                
+                const title = profilesData.length === 1 
+                    ? `Score Profile: ${profilesData[0].full_name || profilesData[0].name}` 
+                    : `Score ${profilesData.length} Profiles`;
+                
+                res.render('scoring/score-profiles', {
+                    title,
+                    profiles: profilesData,
+                    templates: templatesData,
+                    isBulk: profilesData.length > 1,
+                    currentPage: 'scoring'
+                });
+                
+            } catch (error) {
+                logger.error('Error loading profiles for scoring:', error);
+                res.status(500).render('error', {
+                    title: 'Error',
+                    message: 'Failed to load profiles for scoring',
+                    error: process.env.NODE_ENV === 'development' ? error : {}
+                });
+            }
+        } else {
+            // Show scoring dashboard
+            const [jobsResponse, statsResponse] = await Promise.all([
+                apiClient.get('/jobs', { params: { limit: 20, type: 'scoring' } }).catch(() => ({ data: [] })),
+                apiClient.get('/jobs/stats').catch(() => ({ data: {} }))
+            ]);
+            
+            res.render('scoring/dashboard', {
+                title: 'Scoring Dashboard',
+                jobs: jobsResponse.data.jobs || [],
+                stats: statsResponse.data || {},
+                currentPage: 'scoring'
+            });
+        }
     } catch (error) {
-        logger.error('Error loading scoring dashboard:', error);
+        logger.error('Error loading scoring interface:', error);
         res.status(500).render('error', {
             title: 'Error',
-            message: 'Failed to load scoring dashboard',
+            message: 'Failed to load scoring interface',
             error: process.env.NODE_ENV === 'development' ? error : {}
         });
     }

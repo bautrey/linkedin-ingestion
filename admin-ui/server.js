@@ -53,6 +53,9 @@ app.use((req, res, next) => {
 app.use('/', require('./routes/index'));
 app.use('/profiles', require('./routes/profiles'));
 app.use('/companies', require('./routes/companies'));
+app.use('/scoring', require('./routes/scoring'));
+app.use('/templates', require('./routes/templates'));
+app.use('/ingestion', require('./routes/ingestion'));
 app.use('/api', require('./routes/api'));
 
 // Health check endpoint

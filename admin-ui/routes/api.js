@@ -193,6 +193,76 @@ router.post('/ingestion', async (req, res) => {
     }
 });
 
+// GET /api/profiles/export - Export profiles to CSV
+router.get('/profiles/export', async (req, res) => {
+    try {
+        const { profile_ids, format = 'csv' } = req.query;
+        
+        if (!profile_ids) {
+            return res.status(400).json({
+                success: false,
+                message: 'profile_ids parameter is required'
+            });
+        }
+        
+        const idsArray = profile_ids.split(',');
+        
+        // Fetch all profiles by IDs
+        const profilePromises = idsArray.map(id => apiClient.get(`/profiles/${id}`));
+        const profileResponses = await Promise.all(profilePromises);
+        const profiles = profileResponses.map(response => response.data);
+        
+        if (format === 'csv') {
+            // Generate CSV content
+            const csvHeader = [
+                'Name',
+                'Position', 
+                'Company',
+                'Location',
+                'LinkedIn URL',
+                'Score',
+                'Created Date',
+                'Email',
+                'Phone'
+            ].join(',');
+            
+            const csvRows = profiles.map(profile => [
+                `"${(profile.full_name || profile.name || '').replace(/"/g, '""')}"`,
+                `"${(profile.position || '').replace(/"/g, '""')}"`,
+                `"${(profile.current_company?.name || '').replace(/"/g, '""')}"`,
+                `"${[profile.city, profile.country_code].filter(Boolean).join(', ').replace(/"/g, '""')}"`,
+                `"${(profile.url || profile.linkedin_url || '').replace(/"/g, '""')}"`,
+                profile.score || '',
+                profile.created_at ? new Date(profile.created_at).toLocaleDateString() : '',
+                `"${(profile.email || '').replace(/"/g, '""')}"`,
+                `"${(profile.phone || '').replace(/"/g, '""')}"`
+            ].join(','));
+            
+            const csvContent = [csvHeader, ...csvRows].join('\n');
+            
+            const timestamp = new Date().toISOString().split('T')[0];
+            const filename = `linkedin-profiles-${timestamp}.csv`;
+            
+            res.setHeader('Content-Type', 'text/csv');
+            res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+            res.send(csvContent);
+        } else {
+            // Return JSON format
+            res.json({
+                success: true,
+                data: profiles
+            });
+        }
+    } catch (error) {
+        logger.error('Error exporting profiles:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to export profiles',
+            error: error.message
+        });
+    }
+});
+
 // GET /api/system/stats - Get system statistics
 router.get('/system/stats', async (req, res) => {
     try {

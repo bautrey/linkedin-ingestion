@@ -195,57 +195,89 @@ function scoreProfile(profileId) {
 }
 
 function deleteProfile(profileId, profileName) {
-    // Set up the confirmation modal
-    const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+    console.log('deleteProfile called with:', { profileId, profileName });
+    
+    // Find the modal and elements
+    const modalElement = document.getElementById('deleteConfirmModal');
     const profileNameElement = document.getElementById('deleteProfileName');
     const confirmButton = document.getElementById('confirmDeleteBtn');
+    
+    if (!modalElement || !profileNameElement || !confirmButton) {
+        console.error('Modal elements not found');
+        showNotification('Modal not available', 'danger');
+        return;
+    }
     
     // Update modal content
     profileNameElement.textContent = profileName || 'Unknown Profile';
     
-    // Remove any existing click handlers
-    const newConfirmButton = confirmButton.cloneNode(true);
-    confirmButton.parentNode.replaceChild(newConfirmButton, confirmButton);
+    // Remove all existing event listeners from the confirm button to prevent stacking
+    const cleanConfirmButton = confirmButton.cloneNode(true);
+    confirmButton.parentNode.replaceChild(cleanConfirmButton, confirmButton);
     
-    // Add click handler for confirmation
-    newConfirmButton.addEventListener('click', function() {
-        // Close modal first
-        modal.hide();
+    // Create a one-time event handler function
+    const handleConfirmDelete = function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        console.log('Delete confirmed for profile:', profileId);
+        
+        // Remove this event listener immediately to prevent multiple calls
+        event.target.removeEventListener('click', handleConfirmDelete);
+        
+        // Close modal immediately
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) {
+            modal.hide();
+        }
         
         // Show loading overlay
         showLoadingOverlay();
         
+        // Make the delete request
         fetch(`/profiles/${profileId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Delete response status:', response.status);
+            return response.json();
+        })
         .then(data => {
+            console.log('Delete response data:', data);
             hideLoadingOverlay();
+            
             if (data.success) {
                 showNotification('Profile deleted successfully', 'success');
                 // Remove the row from the table
                 const row = document.querySelector(`tr[data-profile-id="${profileId}"]`);
                 if (row) {
                     row.remove();
+                    console.log('Row removed from table');
                 }
                 // Update counts
                 updateProfileCounts();
             } else {
-                showNotification('Failed to delete profile: ' + data.message, 'danger');
+                showNotification('Failed to delete profile: ' + (data.message || 'Unknown error'), 'danger');
             }
         })
         .catch(error => {
-            hideLoadingOverlay();
             console.error('Error deleting profile:', error);
+            hideLoadingOverlay();
             showNotification('An error occurred while deleting the profile', 'danger');
         });
-    });
+    };
     
-    // Show the modal
+    // Add the event listener once
+    cleanConfirmButton.addEventListener('click', handleConfirmDelete, { once: true });
+    
+    // Show the modal using Bootstrap
+    const modal = new bootstrap.Modal(modalElement);
     modal.show();
+    
+    console.log('Modal shown for delete confirmation');
 }
 
 // Bulk Actions
