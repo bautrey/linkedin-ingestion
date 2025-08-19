@@ -39,6 +39,7 @@ from app.models.canonical.profile import RoleType
 from app.models.scoring import ScoringRequest, ScoringResponse, JobRetryRequest
 from app.controllers.scoring_controllers import ProfileScoringController, ScoringJobController
 from app.services.template_service import TemplateService
+from app.services.template_versioning_service import TemplateVersioningService
 from app.models.template_models import (
     PromptTemplate,
     CreateTemplateRequest,
@@ -47,7 +48,6 @@ from app.models.template_models import (
     TemplateListResponse,
     TemplateListSummaryResponse,
     DeleteTemplateResponse,
-    TemplateErrorResponse,
     EnhancedScoringRequest,
     ScoringJobResponse
 )
@@ -963,6 +963,10 @@ def get_scoring_job_controller():
 def get_template_service():
     return TemplateService(supabase_client=get_db_client())
 
+# Initialize Template Versioning Service
+def get_template_versioning_service():
+    return TemplateVersioningService(supabase_client=get_db_client())
+
 
 # V1.85 LLM Profile Scoring Endpoints
 @app.post(
@@ -1567,6 +1571,345 @@ async def get_default_template_for_profile(
             details={
                 "profile_id": profile_id,
                 "operation": "get_default_template",
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=500, detail=error_response.model_dump())
+
+
+# ============================================================================
+# V1.9 TEMPLATE VERSIONING API ENDPOINTS
+# ============================================================================
+
+@app.get(
+    "/api/v1/templates/{template_id}/versions",
+    response_model=List[PromptTemplate],
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Template not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def get_template_versions(
+    template_id: str,
+    api_key: str = Depends(verify_api_key)
+):
+    """Get version history for a template"""
+    try:
+        versioning_service = get_template_versioning_service()
+        versions = await versioning_service.get_version_history(template_id)
+        
+        if not versions:
+            error_response = ErrorResponse(
+                error_code="TEMPLATE_NOT_FOUND",
+                message=f"Template with ID {template_id} not found",
+                details={
+                    "template_id": template_id,
+                    "operation": "get_template_versions"
+                }
+            )
+            raise HTTPException(status_code=404, detail=error_response.model_dump())
+        
+        logger.info(
+            f"Retrieved version history for template",
+            extra={
+                "template_id": template_id,
+                "version_count": len(versions)
+            }
+        )
+        
+        return versions
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions (like 404)
+        raise
+    except Exception as e:
+        logger.error(
+            f"Failed to get template versions {template_id}: {str(e)}",
+            extra={
+                "template_id": template_id,
+                "exception_type": type(e).__name__
+            }
+        )
+        error_response = ErrorResponse(
+            error_code="TEMPLATE_VERSIONS_FAILED",
+            message=f"Failed to retrieve template versions: {str(e)}",
+            details={
+                "template_id": template_id,
+                "operation": "get_template_versions",
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=500, detail=error_response.model_dump())
+
+
+@app.post(
+    "/api/v1/templates/{template_id}/versions",
+    response_model=PromptTemplate,
+    status_code=201,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Template not found"},
+        422: {"model": ValidationErrorResponse, "description": "Validation error"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def create_template_version(
+    template_id: str,
+    request: UpdateTemplateRequest,
+    api_key: str = Depends(verify_api_key)
+):
+    """Create a new version of an existing template"""
+    try:
+        versioning_service = get_template_versioning_service()
+        new_version = await versioning_service.create_new_version(template_id, request)
+        
+        if not new_version:
+            error_response = ErrorResponse(
+                error_code="TEMPLATE_NOT_FOUND",
+                message=f"Template with ID {template_id} not found",
+                details={
+                    "template_id": template_id,
+                    "operation": "create_template_version"
+                }
+            )
+            raise HTTPException(status_code=404, detail=error_response.model_dump())
+        
+        logger.info(
+            f"New template version created successfully",
+            extra={
+                "template_id": template_id,
+                "new_version": new_version.version,
+                "template_name": new_version.name
+            }
+        )
+        
+        return new_version
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions (like 404)
+        raise
+    except Exception as e:
+        logger.error(
+            f"Failed to create new version for template {template_id}: {str(e)}",
+            extra={
+                "template_id": template_id,
+                "exception_type": type(e).__name__
+            }
+        )
+        error_response = ErrorResponse(
+            error_code="TEMPLATE_VERSION_CREATION_FAILED",
+            message=f"Failed to create template version: {str(e)}",
+            details={
+                "template_id": template_id,
+                "operation": "create_template_version",
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=500, detail=error_response.model_dump())
+
+
+@app.get(
+    "/api/v1/templates/{template_id}/versions/{version}/diff/{compare_version}",
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Template or version not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def compare_template_versions(
+    template_id: str,
+    version: int,
+    compare_version: int,
+    api_key: str = Depends(verify_api_key)
+):
+    """Compare two versions of a template"""
+    try:
+        versioning_service = get_template_versioning_service()
+        diff_result = await versioning_service.compare_versions(
+            template_id, version, compare_version
+        )
+        
+        if not diff_result:
+            error_response = ErrorResponse(
+                error_code="VERSION_NOT_FOUND",
+                message=f"One or both versions not found for template {template_id}",
+                details={
+                    "template_id": template_id,
+                    "version": version,
+                    "compare_version": compare_version,
+                    "operation": "compare_template_versions"
+                }
+            )
+            raise HTTPException(status_code=404, detail=error_response.model_dump())
+        
+        logger.info(
+            f"Template versions compared successfully",
+            extra={
+                "template_id": template_id,
+                "version": version,
+                "compare_version": compare_version
+            }
+        )
+        
+        return diff_result
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions (like 404)
+        raise
+    except Exception as e:
+        logger.error(
+            f"Failed to compare template versions {template_id} v{version} vs v{compare_version}: {str(e)}",
+            extra={
+                "template_id": template_id,
+                "version": version,
+                "compare_version": compare_version,
+                "exception_type": type(e).__name__
+            }
+        )
+        error_response = ErrorResponse(
+            error_code="TEMPLATE_COMPARISON_FAILED",
+            message=f"Failed to compare template versions: {str(e)}",
+            details={
+                "template_id": template_id,
+                "version": version,
+                "compare_version": compare_version,
+                "operation": "compare_template_versions",
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=500, detail=error_response.model_dump())
+
+
+@app.post(
+    "/api/v1/templates/{template_id}/versions/{version}/restore",
+    response_model=PromptTemplate,
+    status_code=200,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Template or version not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def restore_template_version(
+    template_id: str,
+    version: int,
+    api_key: str = Depends(verify_api_key)
+):
+    """Restore a previous version of a template as the current active version"""
+    try:
+        versioning_service = get_template_versioning_service()
+        restored_template = await versioning_service.restore_version(template_id, version)
+        
+        if not restored_template:
+            error_response = ErrorResponse(
+                error_code="VERSION_NOT_FOUND",
+                message=f"Version {version} not found for template {template_id}",
+                details={
+                    "template_id": template_id,
+                    "version": version,
+                    "operation": "restore_template_version"
+                }
+            )
+            raise HTTPException(status_code=404, detail=error_response.model_dump())
+        
+        logger.info(
+            f"Template version restored successfully",
+            extra={
+                "template_id": template_id,
+                "restored_from_version": version,
+                "new_version": restored_template.version
+            }
+        )
+        
+        return restored_template
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions (like 404)
+        raise
+    except Exception as e:
+        logger.error(
+            f"Failed to restore template version {template_id} v{version}: {str(e)}",
+            extra={
+                "template_id": template_id,
+                "version": version,
+                "exception_type": type(e).__name__
+            }
+        )
+        error_response = ErrorResponse(
+            error_code="TEMPLATE_RESTORE_FAILED",
+            message=f"Failed to restore template version: {str(e)}",
+            details={
+                "template_id": template_id,
+                "version": version,
+                "operation": "restore_template_version",
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=500, detail=error_response.model_dump())
+
+
+@app.post(
+    "/api/v1/templates/{template_id}/versions/{version}/activate",
+    response_model=PromptTemplate,
+    status_code=200,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Template or version not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def set_active_template_version(
+    template_id: str,
+    version: int,
+    api_key: str = Depends(verify_api_key)
+):
+    """Set a specific version as the active version for a template"""
+    try:
+        versioning_service = get_template_versioning_service()
+        active_template = await versioning_service.set_active_version(template_id, version)
+        
+        if not active_template:
+            error_response = ErrorResponse(
+                error_code="VERSION_NOT_FOUND",
+                message=f"Version {version} not found for template {template_id}",
+                details={
+                    "template_id": template_id,
+                    "version": version,
+                    "operation": "set_active_template_version"
+                }
+            )
+            raise HTTPException(status_code=404, detail=error_response.model_dump())
+        
+        logger.info(
+            f"Template active version set successfully",
+            extra={
+                "template_id": template_id,
+                "active_version": version
+            }
+        )
+        
+        return active_template
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions (like 404)
+        raise
+    except Exception as e:
+        logger.error(
+            f"Failed to set active version for template {template_id} v{version}: {str(e)}",
+            extra={
+                "template_id": template_id,
+                "version": version,
+                "exception_type": type(e).__name__
+            }
+        )
+        error_response = ErrorResponse(
+            error_code="TEMPLATE_ACTIVATE_FAILED",
+            message=f"Failed to set active template version: {str(e)}",
+            details={
+                "template_id": template_id,
+                "version": version,
+                "operation": "set_active_template_version",
                 "exception_type": type(e).__name__
             }
         )

@@ -1,0 +1,355 @@
+<%- include('../layout.ejs', { 
+    title: title,
+    content: `
+    <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/templates">Templates</a></li>
+                        <li class="breadcrumb-item"><a href="/templates/${template.id}">${template.name}</a></li>
+                        <li class="breadcrumb-item active">Version History</li>
+                    </ol>
+                </nav>
+                <h2 class="mb-0"><i class="bi bi-clock-history me-2"></i>Version History</h2>
+                <p class="text-muted mb-0">${template.name} - ${versions.length} versions</p>
+            </div>
+            <div>
+                <a href="/templates/${template.id}" class="btn btn-outline-secondary me-2">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Template
+                </a>
+                <button class="btn btn-primary" onclick="createNewVersion('${template.id}')">
+                    <i class="bi bi-plus-circle me-1"></i> Create New Version
+                </button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Version Timeline -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-list-ol me-2"></i>Version Timeline</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="timeline">
+                            ${versions.sort((a, b) => b.version - a.version).map((version, index) => \`
+                                <div class="timeline-item \${version.version === template.version ? 'current-version' : ''}">
+                                    <div class="timeline-marker \${version.version === template.version ? 'bg-primary' : 'bg-secondary'}">
+                                        <i class="bi \${version.version === template.version ? 'bi-star-fill' : 'bi-circle-fill'}"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <div>
+                                                <h6 class="mb-1">
+                                                    Version \${version.version}
+                                                    \${version.version === template.version ? '<span class="badge bg-primary ms-2">Current</span>' : ''}
+                                                    \${version.is_active ? '<span class="badge bg-success ms-1">Active</span>' : '<span class="badge bg-secondary ms-1">Inactive</span>'}
+                                                </h6>
+                                                <p class="text-muted mb-2">\${version.description || 'No description provided'}</p>
+                                                <small class="text-muted">
+                                                    <i class="bi bi-calendar me-1"></i>\${new Date(version.created_at).toLocaleString()}
+                                                    \${version.created_by ? \`<i class="bi bi-person ms-2 me-1"></i>\${version.created_by}\` : ''}
+                                                </small>
+                                            </div>
+                                            <div class="btn-group" role="group">
+                                                <button class="btn btn-outline-info btn-sm" onclick="viewVersion('\${template.id}', \${version.version})" title="View Details">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                                \${index < versions.length - 1 ? \`
+                                                    <button class="btn btn-outline-warning btn-sm" onclick="compareVersions('\${template.id}', \${version.version}, \${versions[index + 1].version})" title="Compare to Previous">
+                                                        <i class="bi bi-arrow-left-right"></i>
+                                                    </button>
+                                                \` : ''}
+                                                \${version.version !== template.version ? \`
+                                                    <button class="btn btn-outline-success btn-sm" onclick="restoreVersion('\${template.id}', \${version.version}, '\${template.name}')" title="Restore This Version">
+                                                        <i class="bi bi-arrow-clockwise"></i>
+                                                    </button>
+                                                    <button class="btn btn-outline-primary btn-sm" onclick="activateVersion('\${template.id}', \${version.version}, '\${template.name}')" title="Set as Active">
+                                                        <i class="bi bi-check-circle"></i>
+                                                    </button>
+                                                \` : ''}
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Version Preview -->
+                                        <div class="version-preview" id="version-\${version.version}">
+                                            <div class="accordion accordion-flush">
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header">
+                                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#preview-\${version.version}">
+                                                            <i class="bi bi-code me-2"></i>Preview Prompt Text
+                                                        </button>
+                                                    </h2>
+                                                    <div id="preview-\${version.version}" class="accordion-collapse collapse">
+                                                        <div class="accordion-body">
+                                                            <pre class="bg-light p-3 rounded" style="max-height: 200px; overflow-y: auto; font-size: 0.875rem;"><code>\${version.prompt_text || 'No prompt text available'}</code></pre>
+                                                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                                                <small class="text-muted">\${version.prompt_text ? version.prompt_text.length : 0} characters</small>
+                                                                <button class="btn btn-outline-secondary btn-sm" onclick="copyVersionPrompt(\${version.version})">
+                                                                    <i class="bi bi-clipboard me-1"></i>Copy
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            \`).join('')}
+                        </div>
+                        
+                        ${versions.length === 0 ? `
+                            <div class="text-center py-5">
+                                <i class="bi bi-clock-history text-muted" style="font-size: 3rem;"></i>
+                                <h5 class="text-muted mt-3">No Version History</h5>
+                                <p class="text-muted">This template doesn't have any version history yet.</p>
+                                <button class="btn btn-primary" onclick="createNewVersion('${template.id}')">
+                                    <i class="bi bi-plus-circle me-1"></i>Create First Version
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <!-- Version Actions -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="bi bi-tools me-2"></i>Version Management</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-primary" onclick="createNewVersion('${template.id}')">
+                                <i class="bi bi-plus-circle me-1"></i>Create New Version
+                            </button>
+                            <button class="btn btn-outline-info" onclick="bulkCompare('${template.id}')">
+                                <i class="bi bi-arrows-angle-expand me-1"></i>Bulk Compare
+                            </button>
+                            <button class="btn btn-outline-warning" onclick="exportVersionHistory('${template.id}')">
+                                <i class="bi bi-download me-1"></i>Export History
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Version Statistics -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="bi bi-graph-up me-2"></i>Version Statistics</h6>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row mb-0">
+                            <dt class="col-6">Total Versions:</dt>
+                            <dd class="col-6">${versions.length}</dd>
+                            
+                            <dt class="col-6">Current Version:</dt>
+                            <dd class="col-6">v${template.version}</dd>
+                            
+                            <dt class="col-6">Active Versions:</dt>
+                            <dd class="col-6">${versions.filter(v => v.is_active).length}</dd>
+                            
+                            <dt class="col-6">Latest Update:</dt>
+                            <dd class="col-6">
+                                ${versions.length > 0 ? new Date(Math.max(...versions.map(v => new Date(v.created_at)))).toLocaleDateString() : 'N/A'}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+
+                <!-- Quick Compare -->
+                <div class="card">
+                    <div class="card-header">
+                        <h6 class="mb-0"><i class="bi bi-arrow-left-right me-2"></i>Quick Compare</h6>
+                    </div>
+                    <div class="card-body">
+                        <form id="quickCompareForm" onsubmit="performQuickCompare(event)">
+                            <div class="mb-3">
+                                <label class="form-label">From Version:</label>
+                                <select class="form-select" id="compareFromVersion" required>
+                                    <option value="">Select version...</option>
+                                    ${versions.sort((a, b) => b.version - a.version).map(v => 
+                                        \`<option value="\${v.version}">v\${v.version} \${v.version === template.version ? '(Current)' : ''}</option>\`
+                                    ).join('')}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">To Version:</label>
+                                <select class="form-select" id="compareToVersion" required>
+                                    <option value="">Select version...</option>
+                                    ${versions.sort((a, b) => b.version - a.version).map(v => 
+                                        \`<option value="\${v.version}">v\${v.version} \${v.version === template.version ? '(Current)' : ''}</option>\`
+                                    ).join('')}
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-arrow-left-right me-1"></i>Compare Versions
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Version Management Scripts -->
+    <script>
+    // Add version management JavaScript here
+    function createNewVersion(templateId) {
+        // Redirect to template edit page with version creation context
+        window.location.href = \`/templates/\${templateId}/edit?create_version=true\`;
+    }
+
+    function viewVersion(templateId, version) {
+        // Show version details in modal or new page
+        console.log('Viewing version', version, 'of template', templateId);
+        // Implementation depends on your modal system
+    }
+
+    function compareVersions(templateId, versionA, versionB) {
+        window.location.href = \`/templates/\${templateId}/versions/\${versionA}/compare/\${versionB}\`;
+    }
+
+    function restoreVersion(templateId, version, templateName) {
+        if (confirm(\`Are you sure you want to restore "\${templateName}" to version \${version}? This will create a new current version with the restored content.\`)) {
+            fetch(\`/api/v1/templates/\${templateId}/versions/\${version}/restore\`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': localStorage.getItem('apiKey')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error.message || 'Failed to restore version');
+                }
+                showToast('Version restored successfully', 'success');
+                setTimeout(() => window.location.reload(), 1500);
+            })
+            .catch(error => {
+                console.error('Error restoring version:', error);
+                showToast('Failed to restore version: ' + error.message, 'error');
+            });
+        }
+    }
+
+    function activateVersion(templateId, version, templateName) {
+        if (confirm(\`Set version \${version} of "\${templateName}" as the active version?\`)) {
+            fetch(\`/api/v1/templates/\${templateId}/versions/\${version}/activate\`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': localStorage.getItem('apiKey')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    throw new Error(data.error.message || 'Failed to activate version');
+                }
+                showToast('Version activated successfully', 'success');
+                setTimeout(() => window.location.reload(), 1500);
+            })
+            .catch(error => {
+                console.error('Error activating version:', error);
+                showToast('Failed to activate version: ' + error.message, 'error');
+            });
+        }
+    }
+
+    function performQuickCompare(event) {
+        event.preventDefault();
+        const fromVersion = document.getElementById('compareFromVersion').value;
+        const toVersion = document.getElementById('compareToVersion').value;
+        
+        if (fromVersion === toVersion) {
+            showToast('Please select different versions to compare', 'warning');
+            return;
+        }
+        
+        compareVersions('${template.id}', fromVersion, toVersion);
+    }
+
+    function copyVersionPrompt(version) {
+        const promptElement = document.querySelector(\`#version-\${version} pre code\`);
+        if (promptElement) {
+            navigator.clipboard.writeText(promptElement.textContent).then(() => {
+                showToast('Prompt text copied to clipboard', 'success');
+            }).catch(() => {
+                showToast('Failed to copy to clipboard', 'error');
+            });
+        }
+    }
+
+    function bulkCompare(templateId) {
+        // Future enhancement for comparing multiple versions
+        showToast('Bulk compare feature coming soon!', 'info');
+    }
+
+    function exportVersionHistory(templateId) {
+        // Future enhancement for exporting version history
+        showToast('Export feature coming soon!', 'info');
+    }
+
+    // Toast notification function
+    function showToast(message, type = 'info') {
+        // Implementation depends on your toast system
+        console.log(\`[\${type.toUpperCase()}] \${message}\`);
+        // You could use Bootstrap Toast, or any other notification system
+    }
+    </script>
+
+    <!-- Version Timeline Styles -->
+    <style>
+    .timeline {
+        position: relative;
+        padding-left: 30px;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-left: 2px solid #dee2e6;
+    }
+    
+    .timeline-item.current-version {
+        border-left-color: #0d6efd;
+    }
+    
+    .timeline-item:last-child {
+        border-left: none;
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        left: -10px;
+        top: 0;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 10px;
+    }
+    
+    .timeline-content {
+        margin-left: 30px;
+    }
+    
+    .version-preview .accordion-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .version-preview .accordion-body {
+        padding: 0.75rem;
+    }
+    </style>
+    `
+}) %>

@@ -78,4 +78,61 @@ router.get('/:id/edit', async (req, res) => {
     }
 });
 
+// GET /templates/:id/versions - View template version history
+router.get('/:id/versions', async (req, res) => {
+    try {
+        const [templateResponse, versionsResponse] = await Promise.all([
+            apiClient.get(`/templates/${req.params.id}`),
+            apiClient.get(`/templates/${req.params.id}/versions`)
+        ]);
+        
+        res.render('templates/versions', {
+            title: `Version History: ${templateResponse.data.name}`,
+            template: templateResponse.data,
+            versions: versionsResponse.data || []
+        });
+    } catch (error) {
+        logger.error(`Error fetching template versions ${req.params.id}:`, error);
+        if (error.response && error.response.status === 404) {
+            res.status(404).render('error', {
+                title: 'Template Not Found',
+                message: 'The requested template could not be found'
+            });
+        } else {
+            res.status(500).render('error', {
+                title: 'Error',
+                message: 'Failed to load template versions',
+                error: process.env.NODE_ENV === 'development' ? error : {}
+            });
+        }
+    }
+});
+
+// GET /templates/:id/versions/:version/compare/:compareVersion - Compare template versions
+router.get('/:id/versions/:version/compare/:compareVersion', async (req, res) => {
+    try {
+        const { id, version, compareVersion } = req.params;
+        
+        const [templateResponse, diffResponse] = await Promise.all([
+            apiClient.get(`/templates/${id}`),
+            apiClient.get(`/templates/${id}/versions/${version}/diff/${compareVersion}`)
+        ]);
+        
+        res.render('templates/compare', {
+            title: `Compare Versions: ${templateResponse.data.name}`,
+            template: templateResponse.data,
+            version: parseInt(version),
+            compareVersion: parseInt(compareVersion),
+            diff: diffResponse.data
+        });
+    } catch (error) {
+        logger.error(`Error comparing template versions ${req.params.id}:`, error);
+        res.status(500).render('error', {
+            title: 'Error',
+            message: 'Failed to compare template versions',
+            error: process.env.NODE_ENV === 'development' ? error : {}
+        });
+    }
+});
+
 module.exports = router;

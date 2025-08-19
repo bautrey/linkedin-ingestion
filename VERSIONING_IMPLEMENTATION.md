@@ -75,10 +75,11 @@ version_info: Dict[str, Any]    # Complete version metadata
 1. Load from local `admin-ui/version.json` (build-generated)
 2. Fetch from backend `/api/version` endpoint
 3. Merge and make available to all views via `res.locals.versionInfo`
-4. Auto-refresh every 5 minutes
+4. One-time load at startup (no automatic polling)
 
 **Endpoints**:
 - `GET /version` - Combined version information
+- `POST /version/refresh` - Manual version refresh (optional)
 - `GET /health` - Health check with version
 
 ### 5. Dynamic UI Display
@@ -195,6 +196,9 @@ curl http://localhost:3003/version
 
 # Or via npm in admin-ui directory
 npm run version
+
+# Refresh admin UI version cache (if needed)
+curl -X POST http://localhost:3003/version/refresh
 ```
 
 This implementation provides comprehensive version management across the entire LinkedIn Ingestion system with automatic build integration, dynamic UI updates, and excellent developer/user experience.

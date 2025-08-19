@@ -60,11 +60,8 @@ async function loadVersionInfo() {
     }
 }
 
-// Load version info at startup
+// Load version info at startup only
 loadVersionInfo();
-
-// Refresh version info periodically (every 5 minutes)
-setInterval(loadVersionInfo, 5 * 60 * 1000);
 
 // Middleware to add version info to all requests
 app.use((req, res, next) => {
@@ -147,6 +144,27 @@ app.get('/version', (req, res) => {
         uptime: process.uptime(),
         timestamp: new Date().toISOString()
     });
+});
+
+// Manual version refresh endpoint (optional, only when needed)
+app.post('/version/refresh', async (req, res) => {
+    try {
+        await loadVersionInfo();
+        res.json({
+            status: 'success',
+            message: 'Version info refreshed successfully',
+            ...versionInfo,
+            admin_ui_version: require('./package.json').version,
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        logger.error('Version refresh failed:', error);
+        res.status(500).json({
+            status: 'error',
+            message: 'Failed to refresh version info',
+            error: error.message
+        });
+    }
 });
 
 // WebSocket handling

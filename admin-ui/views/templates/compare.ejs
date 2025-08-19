@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - LinkedIn Ingestion Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/css/app.css" rel="stylesheet">
+    
+    <style>
+        .diff-view {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .diff-content {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+            padding: 1rem;
+            background-color: #f8f9fa;
+        }
+        
+        .diff-line-added {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .diff-line-deleted {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .diff-line-modified {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .diff-line-number {
+            color: #6c757d;
+            background-color: #e9ecef;
+            padding: 0 8px;
+            margin-right: 8px;
+            user-select: none;
+        }
+        
+        .unified-diff .diff-header {
+            background-color: #6c757d;
+            color: white;
+            padding: 4px 8px;
+            font-weight: bold;
+        }
+        
+        .unified-diff .diff-context {
+            color: #495057;
+        }
+        
+        .unified-diff .diff-add {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .unified-diff .diff-remove {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .card-header .btn-group .btn {
+            border-radius: 0.25rem;
+        }
+        
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: ">";
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="sidebar-wrapper px-0">
+                <%- include('../partials/sidebar') %>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="main-content">
+                <%- include('../partials/header', { pageTitle: title }) %>
+                
+                <div class="container-fluid py-4">
+                    <!-- Page Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="/templates">Templates</a></li>
+                                    <li class="breadcrumb-item"><a href="/templates/<%= templateId %>"><%= templateName %></a></li>
+                                    <li class="breadcrumb-item"><a href="/templates/<%= templateId %>/versions">Version History</a></li>
+                                    <li class="breadcrumb-item active">Compare Versions</li>
+                                </ol>
+                            </nav>
+                            <h2 class="mb-0">
+                                <i class="bi bi-arrow-left-right me-2"></i>
+                                Compare Template Versions
+                            </h2>
+                            <% if (typeof version1 !== 'undefined' && typeof version2 !== 'undefined') { %>
+                                <p class="text-muted mb-0">Viewing differences between v<%= version1.version %> and v<%= version2.version %></p>
+                            <% } %>
+                        </div>
+                        <div>
+                            <a href="/templates/<%= templateId %>/versions" class="btn btn-outline-secondary me-2">
+                                <i class="bi bi-arrow-left me-1"></i> Back to Version History
+                            </a>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-primary" onclick="switchVersions()">
+                                    <i class="bi bi-arrow-repeat me-1"></i> Switch Versions
+                                </button>
+                                <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown">
+                                    <i class="bi bi-gear me-1"></i> Options
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" onclick="showUnifiedDiff()">
+                                        <i class="bi bi-layout-text-window me-1"></i> Unified View
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="#" onclick="showSplitDiff()">
+                                        <i class="bi bi-layout-split me-1"></i> Split View
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#" onclick="exportDiff()">
+                                        <i class="bi bi-download me-1"></i> Export Diff
+                                    </a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Version Navigation -->
+                    <% if (typeof version1 !== 'undefined' && typeof version2 !== 'undefined') { %>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="mb-0">
+                                                <i class="bi bi-clock-history me-1"></i>
+                                                Version <%= version1.version %>
+                                                <% if (version1.is_current) { %>
+                                                    <span class="badge bg-light text-primary ms-2">Current</span>
+                                                <% } %>
+                                            </h5>
+                                        </div>
+                                        <div class="btn-group btn-group-sm">
+                                            <% if (typeof prevVersion1 !== 'undefined' && prevVersion1) { %>
+                                                <a href="/templates/<%= templateId %>/compare?v1=<%= prevVersion1 %>&v2=<%= version2.version %>" class="btn btn-outline-light" title="Previous Version">
+                                                    <i class="bi bi-chevron-left"></i>
+                                                </a>
+                                            <% } %>
+                                            <% if (typeof nextVersion1 !== 'undefined' && nextVersion1) { %>
+                                                <a href="/templates/<%= templateId %>/compare?v1=<%= nextVersion1 %>&v2=<%= version2.version %>" class="btn btn-outline-light" title="Next Version">
+                                                    <i class="bi bi-chevron-right"></i>
+                                                </a>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <dl class="row mb-0 small">
+                                        <dt class="col-sm-4">Created:</dt>
+                                        <dd class="col-sm-8"><%= new Date(version1.created_at).toLocaleString() %></dd>
+                                        <dt class="col-sm-4">Author:</dt>
+                                        <dd class="col-sm-8"><%= version1.created_by || 'System' %></dd>
+                                        <% if (version1.change_summary) { %>
+                                            <dt class="col-sm-4">Changes:</dt>
+                                            <dd class="col-sm-8"><%= version1.change_summary %></dd>
+                                        <% } %>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card border-success">
+                                <div class="card-header bg-success text-white">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="mb-0">
+                                                <i class="bi bi-clock-history me-1"></i>
+                                                Version <%= version2.version %>
+                                                <% if (version2.is_current) { %>
+                                                    <span class="badge bg-light text-success ms-2">Current</span>
+                                                <% } %>
+                                            </h5>
+                                        </div>
+                                        <div class="btn-group btn-group-sm">
+                                            <% if (typeof prevVersion2 !== 'undefined' && prevVersion2) { %>
+                                                <a href="/templates/<%= templateId %>/compare?v1=<%= version1.version %>&v2=<%= prevVersion2 %>" class="btn btn-outline-light" title="Previous Version">
+                                                    <i class="bi bi-chevron-left"></i>
+                                                </a>
+                                            <% } %>
+                                            <% if (typeof nextVersion2 !== 'undefined' && nextVersion2) { %>
+                                                <a href="/templates/<%= templateId %>/compare?v1=<%= version1.version %>&v2=<%= nextVersion2 %>" class="btn btn-outline-light" title="Next Version">
+                                                    <i class="bi bi-chevron-right"></i>
+                                                </a>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <dl class="row mb-0 small">
+                                        <dt class="col-sm-4">Created:</dt>
+                                        <dd class="col-sm-8"><%= new Date(version2.created_at).toLocaleString() %></dd>
+                                        <dt class="col-sm-4">Author:</dt>
+                                        <dd class="col-sm-8"><%= version2.created_by || 'System' %></dd>
+                                        <% if (version2.change_summary) { %>
+                                            <dt class="col-sm-4">Changes:</dt>
+                                            <dd class="col-sm-8"><%= version2.change_summary %></dd>
+                                        <% } %>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+
+                    <!-- Diff Summary -->
+                    <% if (typeof diffStats !== 'undefined') { %>
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="bi bi-bar-chart me-2"></i>
+                                Comparison Summary
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <h4 class="text-danger"><%= diffStats.deletions || 0 %></h4>
+                                        <p class="text-muted mb-0">
+                                            <i class="bi bi-dash-circle text-danger me-1"></i>
+                                            Deletions
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <h4 class="text-success"><%= diffStats.additions || 0 %></h4>
+                                        <p class="text-muted mb-0">
+                                            <i class="bi bi-plus-circle text-success me-1"></i>
+                                            Additions
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <h4 class="text-info"><%= diffStats.changes || 0 %></h4>
+                                        <p class="text-muted mb-0">
+                                            <i class="bi bi-pencil-square text-info me-1"></i>
+                                            Modifications
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="text-center">
+                                        <h4 class="text-primary"><%= diffStats.total || 0 %></h4>
+                                        <p class="text-muted mb-0">
+                                            <i class="bi bi-file-text text-primary me-1"></i>
+                                            Total Changes
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
+
+                    <!-- Error Handling -->
+                    <% if (typeof error !== 'undefined' && error) { %>
+                        <div class="alert alert-danger" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <strong>Error comparing versions:</strong> <%= error %>
+                        </div>
+                    <% } %>
+
+                    <!-- Template Comparison -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-code me-2"></i>
+                                    Template Content Comparison
+                                </h5>
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <button type="button" class="btn btn-outline-secondary active" id="splitViewBtn" onclick="showSplitView()">
+                                        <i class="bi bi-layout-split me-1"></i> Split
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" id="unifiedViewBtn" onclick="showUnifiedView()">
+                                        <i class="bi bi-layout-text-window me-1"></i> Unified
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body p-0">
+                            <!-- Split View (Default) -->
+                            <div id="splitView" class="diff-view">
+                                <div class="row g-0">
+                                    <div class="col-6 border-end">
+                                        <div class="diff-header bg-light p-2 border-bottom">
+                                            <small class="text-muted">
+                                                <i class="bi bi-clock-history me-1"></i>
+                                                <% if (typeof version1 !== 'undefined') { %>
+                                                    Version <%= version1.version %> (<%= new Date(version1.created_at).toLocaleDateString() %>)
+                                                <% } else { %>
+                                                    Previous Version
+                                                <% } %>
+                                            </small>
+                                        </div>
+                                        <div class="diff-content">
+                                            <pre class="mb-0" style="white-space: pre-wrap; line-height: 1.4;"><code id="version1Content"><%= typeof version1 !== 'undefined' && version1.prompt_text ? version1.prompt_text : 'Content not available' %></code></pre>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="diff-header bg-light p-2 border-bottom">
+                                            <small class="text-muted">
+                                                <i class="bi bi-clock-history me-1"></i>
+                                                <% if (typeof version2 !== 'undefined') { %>
+                                                    Version <%= version2.version %> (<%= new Date(version2.created_at).toLocaleDateString() %>)
+                                                <% } else { %>
+                                                    Current Version
+                                                <% } %>
+                                            </small>
+                                        </div>
+                                        <div class="diff-content">
+                                            <pre class="mb-0" style="white-space: pre-wrap; line-height: 1.4;"><code id="version2Content"><%= typeof version2 !== 'undefined' && version2.prompt_text ? version2.prompt_text : 'Content not available' %></code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Unified View (Hidden by default) -->
+                            <div id="unifiedView" class="diff-view" style="display: none;">
+                                <div class="unified-diff p-3">
+                                    <pre style="white-space: pre-wrap; line-height: 1.4;"><code id="unifiedDiffContent"><%= typeof unifiedDiff !== 'undefined' ? unifiedDiff : 'Generating unified diff...' %></code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <% if (typeof version1 !== 'undefined') { %>
+                                        <button class="btn btn-outline-primary me-2" onclick="applyVersion('<%= version1.version %>')">
+                                            <i class="bi bi-arrow-clockwise me-1"></i>
+                                            Revert to v<%= version1.version %>
+                                        </button>
+                                    <% } %>
+                                    <% if (typeof version2 !== 'undefined') { %>
+                                        <button class="btn btn-outline-primary" onclick="applyVersion('<%= version2.version %>')">
+                                            <i class="bi bi-arrow-clockwise me-1"></i>
+                                            Apply v<%= version2.version %>
+                                        </button>
+                                    <% } %>
+                                </div>
+                                <div>
+                                    <button class="btn btn-outline-secondary me-2" onclick="createMergeVersion()">
+                                        <i class="bi bi-git-merge me-1"></i>
+                                        Create Merge Version
+                                    </button>
+                                    <button class="btn btn-outline-info" onclick="downloadComparison()">
+                                        <i class="bi bi-download me-1"></i>
+                                        Download Comparison
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Template Compare JavaScript -->
+    <script src="/js/templates-compare.js"></script>
+    
+    <script>
+        // Basic comparison functionality
+        function showSplitView() {
+            document.getElementById('splitView').style.display = 'block';
+            document.getElementById('unifiedView').style.display = 'none';
+            document.getElementById('splitViewBtn').classList.add('active');
+            document.getElementById('unifiedViewBtn').classList.remove('active');
+        }
+        
+        function showUnifiedView() {
+            document.getElementById('splitView').style.display = 'none';
+            document.getElementById('unifiedView').style.display = 'block';
+            document.getElementById('splitViewBtn').classList.remove('active');
+            document.getElementById('unifiedViewBtn').classList.add('active');
+        }
+        
+        function switchVersions() {
+            // Placeholder - would switch version parameters in URL
+            console.log('Switch versions functionality');
+        }
+        
+        function exportDiff() {
+            // Placeholder - would export diff data
+            console.log('Export diff functionality');
+        }
+        
+        function applyVersion(version) {
+            // Placeholder - would apply selected version
+            console.log('Apply version:', version);
+        }
+        
+        function createMergeVersion() {
+            // Placeholder - would create merged version
+            console.log('Create merge version functionality');
+        }
+        
+        function downloadComparison() {
+            // Placeholder - would download comparison report
+            console.log('Download comparison functionality');
+        }
+    </script>
+</body>
+</html>

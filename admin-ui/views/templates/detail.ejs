@@ -1,206 +1,223 @@
-&lt;%- include('../layout.ejs', { 
-    title: title,
-    content: `
-    &lt;div class="container-fluid"&gt;
-        &lt;div class="d-flex justify-content-between align-items-center mb-4"&gt;
-            &lt;div&gt;
-                &lt;nav aria-label="breadcrumb"&gt;
-                    &lt;ol class="breadcrumb"&gt;
-                        &lt;li class="breadcrumb-item"&gt;&lt;a href="/templates"&gt;Templates&lt;/a&gt;&lt;/li&gt;
-                        &lt;li class="breadcrumb-item active"&gt;${template.name}&lt;/li&gt;
-                    &lt;/ol&gt;
-                &lt;/nav&gt;
-                &lt;h2 class="mb-0"&gt;&lt;i class="bi bi-file-text me-2"&gt;&lt;/i&gt;${template.name}&lt;/h2&gt;
-                &lt;p class="text-muted mb-0"&gt;${template.description || 'No description provided'}&lt;/p&gt;
-            &lt;/div&gt;
-            &lt;div&gt;
-                &lt;a href="/templates" class="btn btn-outline-secondary me-2"&gt;
-                    &lt;i class="bi bi-arrow-left me-1"&gt;&lt;/i&gt; Back to Templates
-                &lt;/a&gt;
-                &lt;a href="/templates/${template.id}/edit" class="btn btn-outline-primary me-2"&gt;
-                    &lt;i class="bi bi-pencil me-1"&gt;&lt;/i&gt; Edit Template
-                &lt;/a&gt;
-                &lt;button class="btn btn-success" onclick="useTemplate('${template.id}', '${template.name}')"&gt;
-                    &lt;i class="bi bi-play-circle me-1"&gt;&lt;/i&gt; Use for Scoring
-                &lt;/button&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - LinkedIn Ingestion Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="/css/app.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="sidebar-wrapper px-0">
+                <%- include('../partials/sidebar') %>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="main-content">
+                <%- include('../partials/header', { pageTitle: title }) %>
+                
+                <div class="container-fluid py-4">
+                    <!-- Page Header with Actions -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb">
+                                    <li class="breadcrumb-item"><a href="/templates">Templates</a></li>
+                                    <li class="breadcrumb-item active"><%= template.name %></li>
+                                </ol>
+                            </nav>
+                            <h2 class="mb-0"><i class="bi bi-file-text me-2"></i><%= template.name %></h2>
+                            <p class="text-muted mb-0"><%= template.description || 'No description provided' %></p>
+                        </div>
+                        <div>
+                            <a href="/templates" class="btn btn-outline-secondary me-2">
+                                <i class="bi bi-arrow-left me-1"></i> Back to Templates
+                            </a>
+                            <a href="/templates/<%= template.id %>/versions" class="btn btn-outline-info me-2">
+                                <i class="bi bi-clock-history me-1"></i> Version History
+                            </a>
+                            <a href="/templates/<%= template.id %>/edit" class="btn btn-outline-primary me-2">
+                                <i class="bi bi-pencil me-1"></i> Edit Template
+                            </a>
+                            <button class="btn btn-success" onclick="useTemplate('<%= template.id %>', '<%= template.name %>')">
+                                <i class="bi bi-play-circle me-1"></i> Use for Scoring
+                            </button>
+                        </div>
+                    </div>
 
-        &lt;div class="row"&gt;
-            &lt;div class="col-lg-8"&gt;
-                &lt;!-- Template Content --&gt;
-                &lt;div class="card mb-4"&gt;
-                    &lt;div class="card-header"&gt;
-                        &lt;h5 class="mb-0"&gt;&lt;i class="bi bi-code me-2"&gt;&lt;/i&gt;Prompt Template&lt;/h5&gt;
-                    &lt;/div&gt;
-                    &lt;div class="card-body"&gt;
-                        &lt;pre class="bg-light p-3 rounded" style="white-space: pre-wrap; max-height: 500px; overflow-y: auto;"&gt;&lt;code id="promptText"&gt;${template.prompt_text}&lt;/code&gt;&lt;/pre&gt;
-                        &lt;div class="d-flex justify-content-between align-items-center mt-3"&gt;
-                            &lt;div&gt;
-                                &lt;span class="text-muted"&gt;${template.prompt_text ? template.prompt_text.length : 0} characters&lt;/span&gt;
-                            &lt;/div&gt;
-                            &lt;div&gt;
-                                &lt;button class="btn btn-outline-secondary btn-sm me-2" onclick="copyPrompt()"&gt;
-                                    &lt;i class="bi bi-clipboard me-1"&gt;&lt;/i&gt; Copy
-                                &lt;/button&gt;
-                                &lt;button class="btn btn-outline-info btn-sm" onclick="testTemplate('${template.id}')"&gt;
-                                    &lt;i class="bi bi-play-circle me-1"&gt;&lt;/i&gt; Test
-                                &lt;/button&gt;
-                            &lt;/div&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <!-- Template Content -->
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="bi bi-code me-2"></i>Prompt Template</h5>
+                                </div>
+                                <div class="card-body">
+                                    <pre class="bg-light p-3 rounded" style="white-space: pre-wrap; max-height: 500px; overflow-y: auto;"><code id="promptText"><%= template.prompt_text %></code></pre>
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <div>
+                                            <span class="text-muted"><%= template.prompt_text ? template.prompt_text.length : 0 %> characters</span>
+                                        </div>
+                                        <div>
+                                            <button class="btn btn-outline-secondary btn-sm me-2" onclick="copyPrompt()">
+                                                <i class="bi bi-clipboard me-1"></i> Copy
+                                            </button>
+                                            <button class="btn btn-outline-info btn-sm" onclick="testTemplate('<%= template.id %>')">
+                                                <i class="bi bi-play-circle me-1"></i> Test
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                &lt;!-- Usage Statistics --&gt;
-                &lt;div class="card"&gt;
-                    &lt;div class="card-header"&gt;
-                        &lt;h5 class="mb-0"&gt;&lt;i class="bi bi-graph-up me-2"&gt;&lt;/i&gt;Usage Statistics&lt;/h5&gt;
-                    &lt;/div&gt;
-                    &lt;div class="card-body"&gt;
-                        &lt;div class="row"&gt;
-                            &lt;div class="col-md-3"&gt;
-                                &lt;div class="text-center"&gt;
-                                    &lt;h4 class="text-primary"&gt;${template.usage_count || 0}&lt;/h4&gt;
-                                    &lt;p class="text-muted mb-0"&gt;Total Uses&lt;/p&gt;
-                                &lt;/div&gt;
-                            &lt;/div&gt;
-                            &lt;div class="col-md-3"&gt;
-                                &lt;div class="text-center"&gt;
-                                    &lt;h4 class="text-success"&gt;${template.success_count || 0}&lt;/h4&gt;
-                                    &lt;p class="text-muted mb-0"&gt;Successful Runs&lt;/p&gt;
-                                &lt;/div&gt;
-                            &lt;/div&gt;
-                            &lt;div class="col-md-3"&gt;
-                                &lt;div class="text-center"&gt;
-                                    &lt;h4 class="text-info"&gt;${template.avg_score || 'N/A'}&lt;/h4&gt;
-                                    &lt;p class="text-muted mb-0"&gt;Avg Score&lt;/p&gt;
-                                &lt;/div&gt;
-                            &lt;/div&gt;
-                            &lt;div class="col-md-3"&gt;
-                                &lt;div class="text-center"&gt;
-                                    &lt;h4 class="text-warning"&gt;${template.last_used ? new Date(template.last_used).toLocaleDateString() : 'Never'}&lt;/h4&gt;
-                                    &lt;p class="text-muted mb-0"&gt;Last Used&lt;/p&gt;
-                                &lt;/div&gt;
-                            &lt;/div&gt;
-                        &lt;/div&gt;
-                        
-                        &lt;hr&gt;
-                        
-                        &lt;div class="text-center"&gt;
-                            &lt;button class="btn btn-outline-primary btn-sm me-2" onclick="viewUsageHistory('${template.id}')"&gt;
-                                &lt;i class="bi bi-clock-history me-1"&gt;&lt;/i&gt; Usage History
-                            &lt;/button&gt;
-                            &lt;button class="btn btn-outline-info btn-sm" onclick="viewPerformanceMetrics('${template.id}')"&gt;
-                                &lt;i class="bi bi-bar-chart me-1"&gt;&lt;/i&gt; Performance Metrics
-                            &lt;/button&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
+                            <!-- Usage Statistics -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="bi bi-graph-up me-2"></i>Usage Statistics</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="text-center">
+                                                <h4 class="text-primary"><%= template.usage_count || 0 %></h4>
+                                                <p class="text-muted mb-0">Total Uses</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="text-center">
+                                                <h4 class="text-success"><%= template.success_count || 0 %></h4>
+                                                <p class="text-muted mb-0">Successful Runs</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="text-center">
+                                                <h4 class="text-info"><%= template.avg_score || 'N/A' %></h4>
+                                                <p class="text-muted mb-0">Avg Score</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="text-center">
+                                                <h4 class="text-warning"><%= template.last_used ? new Date(template.last_used).toLocaleDateString() : 'Never' %></h4>
+                                                <p class="text-muted mb-0">Last Used</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-            &lt;div class="col-lg-4"&gt;
-                &lt;!-- Template Information --&gt;
-                &lt;div class="card mb-3"&gt;
-                    &lt;div class="card-header"&gt;
-                        &lt;h6 class="mb-0"&gt;&lt;i class="bi bi-info-circle me-2"&gt;&lt;/i&gt;Template Information&lt;/h6&gt;
-                    &lt;/div&gt;
-                    &lt;div class="card-body"&gt;
-                        &lt;dl class="row mb-0"&gt;
-                            &lt;dt class="col-sm-4"&gt;ID:&lt;/dt&gt;
-                            &lt;dd class="col-sm-8"&gt;&lt;code&gt;${template.id}&lt;/code&gt;&lt;/dd&gt;
-                            
-                            &lt;dt class="col-sm-4"&gt;Category:&lt;/dt&gt;
-                            &lt;dd class="col-sm-8"&gt;&lt;span class="badge bg-primary"&gt;${template.category}&lt;/span&gt;&lt;/dd&gt;
-                            
-                            &lt;dt class="col-sm-4"&gt;Version:&lt;/dt&gt;
-                            &lt;dd class="col-sm-8"&gt;${template.version || '1.0'}&lt;/dd&gt;
-                            
-                            &lt;dt class="col-sm-4"&gt;Model:&lt;/dt&gt;
-                            &lt;dd class="col-sm-8"&gt;${template.model || 'gpt-4o'}&lt;/dd&gt;
-                            
-                            &lt;dt class="col-sm-4"&gt;Status:&lt;/dt&gt;
-                            &lt;dd class="col-sm-8"&gt;
-                                &lt;span class="badge ${template.is_active ? 'bg-success' : 'bg-secondary'}"&gt;
-                                    ${template.is_active ? 'Active' : 'Inactive'}
-                                &lt;/span&gt;
-                            &lt;/dd&gt;
-                            
-                            &lt;dt class="col-sm-4"&gt;Created:&lt;/dt&gt;
-                            &lt;dd class="col-sm-8"&gt;${new Date(template.created_at).toLocaleString()}&lt;/dd&gt;
-                            
-                            ${template.updated_at ? \`
-                                &lt;dt class="col-sm-4"&gt;Updated:&lt;/dt&gt;
-                                &lt;dd class="col-sm-8"&gt;\${new Date(template.updated_at).toLocaleString()}&lt;/dd&gt;
-                            \` : ''}
-                        &lt;/dl&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
+                        <div class="col-lg-4">
+                            <!-- Template Information -->
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Template Information</h6>
+                                </div>
+                                <div class="card-body">
+                                    <dl class="row mb-0">
+                                        <dt class="col-sm-4">ID:</dt>
+                                        <dd class="col-sm-8"><code><%= template.id %></code></dd>
+                                        
+                                        <dt class="col-sm-4">Category:</dt>
+                                        <dd class="col-sm-8"><span class="badge bg-primary"><%= template.category %></span></dd>
+                                        
+                                        <dt class="col-sm-4">Version:</dt>
+                                        <dd class="col-sm-8">
+                                            <span class="badge bg-success">v<%= template.version || '1.0' %></span>
+                                            <a href="/templates/<%= template.id %>/versions" class="btn btn-outline-info btn-sm ms-2">
+                                                <i class="bi bi-clock-history"></i> History
+                                            </a>
+                                        </dd>
+                                        
+                                        <dt class="col-sm-4">Model:</dt>
+                                        <dd class="col-sm-8"><%= template.model || 'gpt-4o' %></dd>
+                                        
+                                        <dt class="col-sm-4">Status:</dt>
+                                        <dd class="col-sm-8">
+                                            <% if (template.is_active) { %>
+                                                <span class="badge bg-success">Active</span>
+                                            <% } else { %>
+                                                <span class="badge bg-secondary">Inactive</span>
+                                            <% } %>
+                                        </dd>
+                                        
+                                        <dt class="col-sm-4">Created:</dt>
+                                        <dd class="col-sm-8"><%= new Date(template.created_at).toLocaleString() %></dd>
+                                        
+                                        <% if (template.updated_at) { %>
+                                            <dt class="col-sm-4">Updated:</dt>
+                                            <dd class="col-sm-8"><%= new Date(template.updated_at).toLocaleString() %></dd>
+                                        <% } %>
+                                    </dl>
+                                </div>
+                            </div>
 
-                &lt;!-- Quick Actions --&gt;
-                &lt;div class="card mb-3"&gt;
-                    &lt;div class="card-header"&gt;
-                        &lt;h6 class="mb-0"&gt;&lt;i class="bi bi-lightning me-2"&gt;&lt;/i&gt;Quick Actions&lt;/h6&gt;
-                    &lt;/div&gt;
-                    &lt;div class="card-body"&gt;
-                        &lt;div class="d-grid gap-2"&gt;
-                            &lt;button class="btn btn-outline-success" onclick="useTemplate('${template.id}', '${template.name}')"&gt;
-                                &lt;i class="bi bi-play-circle me-1"&gt;&lt;/i&gt; Use for Scoring
-                            &lt;/button&gt;
-                            &lt;button class="btn btn-outline-primary" onclick="duplicateTemplate('${template.id}')"&gt;
-                                &lt;i class="bi bi-files me-1"&gt;&lt;/i&gt; Duplicate Template
-                            &lt;/button&gt;
-                            &lt;button class="btn btn-outline-info" onclick="exportTemplate('${template.id}')"&gt;
-                                &lt;i class="bi bi-download me-1"&gt;&lt;/i&gt; Export Template
-                            &lt;/button&gt;
-                            &lt;hr class="my-2"&gt;
-                            ${template.is_active ? \`
-                                &lt;button class="btn btn-outline-warning" onclick="deactivateTemplate('\${template.id}', '\${template.name}')"&gt;
-                                    &lt;i class="bi bi-pause-circle me-1"&gt;&lt;/i&gt; Deactivate
-                                &lt;/button&gt;
-                            \` : \`
-                                &lt;button class="btn btn-outline-success" onclick="activateTemplate('\${template.id}', '\${template.name}')"&gt;
-                                    &lt;i class="bi bi-play-circle me-1"&gt;&lt;/i&gt; Activate
-                                &lt;/button&gt;
-                            \`}
-                            &lt;button class="btn btn-outline-danger" onclick="deleteTemplate('${template.id}', '${template.name}')"&gt;
-                                &lt;i class="bi bi-trash me-1"&gt;&lt;/i&gt; Delete Template
-                            &lt;/button&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
+                            <!-- Version Management -->
+                            <div class="card mb-3">
+                                <div class="card-header">
+                                    <h6 class="mb-0"><i class="bi bi-branches me-2"></i>Version Management</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-grid gap-2">
+                                        <a href="/templates/<%= template.id %>/versions" class="btn btn-outline-info">
+                                            <i class="bi bi-clock-history me-1"></i> View Version History
+                                        </a>
+                                        <button class="btn btn-outline-success" onclick="createNewVersion('<%= template.id %>')">
+                                            <i class="bi bi-plus-circle me-1"></i> Create New Version
+                                        </button>
+                                        <button class="btn btn-outline-warning" onclick="saveAsNewVersion('<%= template.id %>')">
+                                            <i class="bi bi-files me-1"></i> Save as New Version
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
 
-                &lt;!-- Template Variables --&gt;
-                &lt;div class="card"&gt;
-                    &lt;div class="card-header"&gt;
-                        &lt;h6 class="mb-0"&gt;&lt;i class="bi bi-code me-2"&gt;&lt;/i&gt;Template Variables Used&lt;/h6&gt;
-                    &lt;/div&gt;
-                    &lt;div class="card-body"&gt;
-                        &lt;div id="variablesUsed"&gt;
-                            ${template.prompt_text && template.prompt_text.includes('{{profile_data}}') ? 
-                                '&lt;div class="mb-2"&gt;&lt;i class="bi bi-check-circle text-success me-1"&gt;&lt;/i&gt;&lt;code&gt;{{profile_data}}&lt;/code&gt;&lt;/div&gt;' : 
-                                '&lt;div class="mb-2"&gt;&lt;i class="bi bi-x-circle text-danger me-1"&gt;&lt;/i&gt;&lt;code&gt;{{profile_data}}&lt;/code&gt; (missing)&lt;/div&gt;'
-                            }
-                            ${template.prompt_text && template.prompt_text.includes('{{profile_name}}') ? 
-                                '&lt;div class="mb-2"&gt;&lt;i class="bi bi-check-circle text-success me-1"&gt;&lt;/i&gt;&lt;code&gt;{{profile_name}}&lt;/code&gt;&lt;/div&gt;' : ''
-                            }
-                            ${template.prompt_text && template.prompt_text.includes('{{current_title}}') ? 
-                                '&lt;div class="mb-2"&gt;&lt;i class="bi bi-check-circle text-success me-1"&gt;&lt;/i&gt;&lt;code&gt;{{current_title}}&lt;/code&gt;&lt;/div&gt;' : ''
-                            }
-                            ${template.prompt_text && template.prompt_text.includes('{{current_company}}') ? 
-                                '&lt;div class="mb-2"&gt;&lt;i class="bi bi-check-circle text-success me-1"&gt;&lt;/i&gt;&lt;code&gt;{{current_company}}&lt;/code&gt;&lt;/div&gt;' : ''
-                            }
-                        &lt;/div&gt;
-                        
-                        ${!template.prompt_text || !template.prompt_text.includes('{{profile_data}}') ? 
-                            '&lt;div class="alert alert-warning mt-2"&gt;&lt;i class="bi bi-exclamation-triangle me-1"&gt;&lt;/i&gt;&lt;small&gt;Template missing required &lt;code&gt;{{profile_data}}&lt;/code&gt; variable&lt;/small&gt;&lt;/div&gt;' : ''
-                        }
-                    &lt;/div&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
+                            <!-- Quick Actions -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0"><i class="bi bi-lightning me-2"></i>Quick Actions</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-grid gap-2">
+                                        <button class="btn btn-outline-success" onclick="useTemplate('<%= template.id %>', '<%= template.name %>')">
+                                            <i class="bi bi-play-circle me-1"></i> Use for Scoring
+                                        </button>
+                                        <button class="btn btn-outline-primary" onclick="duplicateTemplate('<%= template.id %>')">
+                                            <i class="bi bi-files me-1"></i> Duplicate Template
+                                        </button>
+                                        <button class="btn btn-outline-info" onclick="exportTemplate('<%= template.id %>')">
+                                            <i class="bi bi-download me-1"></i> Export Template
+                                        </button>
+                                        <hr class="my-2">
+                                        <% if (template.is_active) { %>
+                                            <button class="btn btn-outline-warning" onclick="deactivateTemplate('<%= template.id %>', '<%= template.name %>')">
+                                                <i class="bi bi-pause-circle me-1"></i> Deactivate
+                                            </button>
+                                        <% } else { %>
+                                            <button class="btn btn-outline-success" onclick="activateTemplate('<%= template.id %>', '<%= template.name %>')">
+                                                <i class="bi bi-play-circle me-1"></i> Activate
+                                            </button>
+                                        <% } %>
+                                        <button class="btn btn-outline-danger" onclick="deleteTemplate('<%= template.id %>', '<%= template.name %>')">
+                                            <i class="bi bi-trash me-1"></i> Delete Template
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    &lt;!-- Template Detail JavaScript --&gt;
-    &lt;script src="/js/templates-detail.js"&gt;&lt;/script&gt;
-    ` 
-}) %&gt;
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Template Management JavaScript -->
+    <script src="/js/templates-detail.js"></script>
+</body>
+</html>
