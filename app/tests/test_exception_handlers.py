@@ -3,7 +3,7 @@ Tests for custom exception handlers
 """
 
 import pytest
-from fastapi.testclient import TestClient
+from app.testing.compatibility import TestClient
 from unittest.mock import patch, MagicMock
 import json
 

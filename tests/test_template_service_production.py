@@ -6,6 +6,7 @@ all CRUD operations work correctly in the real environment.
 """
 
 import pytest
+import pytest_asyncio
 import asyncio
 import os
 from typing import Optional
@@ -23,13 +24,12 @@ from app.database.supabase_client import SupabaseClient
 class TestTemplateServiceProduction:
     """Production validation tests for TemplateService"""
 
-    @pytest.fixture
+    @pytest_asyncio.fixture
     async def supabase_client(self):
         """Real Supabase client for production testing"""
         client = SupabaseClient()
         await client._ensure_client()
-        yield client
-        # Cleanup happens in individual tests
+        return client
 
     @pytest.fixture
     def template_service(self, supabase_client):

@@ -7,7 +7,7 @@ for duplicate handling, force_create, and include_companies options
 
 import pytest
 from unittest.mock import AsyncMock, MagicMock
-from fastapi.testclient import TestClient
+from app.testing.compatibility import TestClient
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
@@ -15,6 +15,7 @@ from main import app, ProfileController, ProfileCreateRequest
 from app.database.supabase_client import SupabaseClient
 from app.cassidy.workflows import LinkedInWorkflow
 from app.cassidy.models import ProfileIngestionRequest
+from app.models.canonical.profile import RoleType
 from app.core.config import settings
 
 
@@ -23,21 +24,27 @@ class TestProfileCreateRequest:
 
     def test_default_values(self):
         """Test default values for new fields"""
-        request = ProfileCreateRequest(linkedin_url="https://linkedin.com/in/test")
+        request = ProfileCreateRequest(
+            linkedin_url="https://linkedin.com/in/test",
+            suggested_role=RoleType.CTO
+        )
         
         assert request.include_companies is True
         assert request.name is None
+        assert request.suggested_role == RoleType.CTO
 
     def test_custom_values(self):
         """Test custom values for new fields"""
         request = ProfileCreateRequest(
             linkedin_url="https://linkedin.com/in/test",
             name="Test User",
-            include_companies=False
+            include_companies=False,
+            suggested_role=RoleType.CISO
         )
         
         assert request.include_companies is False
         assert request.name == "Test User"
+        assert request.suggested_role == RoleType.CISO
 
 
 class TestSmartProfileManagement:
@@ -78,7 +85,8 @@ class TestSmartProfileManagement:
         # Test request
         request = ProfileCreateRequest(
             linkedin_url="https://linkedin.com/in/test",
-            include_companies=True
+            include_companies=True,
+            suggested_role=RoleType.CTO
         )
         
         # Execute
@@ -132,7 +140,8 @@ class TestSmartProfileManagement:
         # Test request
         request = ProfileCreateRequest(
             linkedin_url="https://linkedin.com/in/test",
-            include_companies=False  # Test custom value
+            include_companies=False,  # Test custom value
+            suggested_role=RoleType.CIO
         )
         
         # Execute
@@ -178,7 +187,8 @@ class TestSmartProfileManagement:
         # Test with include_companies=False
         request = ProfileCreateRequest(
             linkedin_url="https://linkedin.com/in/test",
-            include_companies=False
+            include_companies=False,
+            suggested_role=RoleType.CISO
         )
         
         # Execute

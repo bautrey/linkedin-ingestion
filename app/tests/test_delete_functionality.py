@@ -7,7 +7,7 @@ Tests both SupabaseClient.delete_profile() and DELETE /api/v1/profiles/{id} endp
 import pytest
 import asyncio
 from unittest.mock import AsyncMock, MagicMock
-from fastapi.testclient import TestClient
+from app.testing.compatibility import TestClient
 from app.database.supabase_client import SupabaseClient
 from main import app
 from app.core.config import settings

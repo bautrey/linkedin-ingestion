@@ -216,3 +216,46 @@ INFO:     127.0.0.1:51811 - "GET /api/v1/templates HTTP/1.1" 200 OK
 2025-08-19 09:00:29 [info     ] Listing templates              category=None include_inactive=False limit=None
 2025-08-19 09:00:29 [info     ] Templates retrieved successfully category=None count=3 include_inactive=False
 INFO:     127.0.0.1:52362 - "GET /api/v1/templates HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50375 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:50376 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:50377 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+2025-08-19 11:26:41 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 11:26:42 [info     ] Profile search completed       count=29
+INFO:     127.0.0.1:50377 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+2025-08-19 11:26:49 [info     ] Deleting profile by ID         profile_id=2e07a919-19e0-44a6-8e48-48edf85e7153
+2025-08-19 11:26:49 [info     ] Profile deleted                deleted_count=1 profile_id=2e07a919-19e0-44a6-8e48-48edf85e7153
+INFO:     127.0.0.1:50416 - "DELETE /api/v1/profiles/2e07a919-19e0-44a6-8e48-48edf85e7153 HTTP/1.1" 204 No Content
+2025-08-19 11:27:28 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-19 11:27:28 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     127.0.0.1:50552 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+2025-08-19 11:27:52 [info     ] Listing templates              category=None include_inactive=False limit=None
+2025-08-19 11:27:52 [info     ] Templates retrieved successfully category=None count=3 include_inactive=False
+INFO:     127.0.0.1:50636 - "GET /api/v1/templates HTTP/1.1" 200 OK
+2025-08-19 11:28:08 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 11:28:08 [info     ] Profile search completed       count=28
+INFO:     127.0.0.1:50682 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+2025-08-19 11:28:27 [info     ] Retrieving profile by ID       profile_id=2472c1d5-69b3-4591-90e1-9175eaf1bef9
+2025-08-19 11:28:28 [info     ] Profile found by ID            profile_id=2472c1d5-69b3-4591-90e1-9175eaf1bef9
+INFO:     127.0.0.1:50751 - "GET /api/v1/profiles/2472c1d5-69b3-4591-90e1-9175eaf1bef9 HTTP/1.1" 200 OK
+2025-08-19 11:28:42 [info     ] Listing templates              category=None include_inactive=False limit=None
+2025-08-19 11:28:42 [info     ] Templates retrieved successfully category=None count=3 include_inactive=False
+INFO:     127.0.0.1:50793 - "GET /api/v1/templates HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51248 - "GET /api/v1/companies?page=1&limit=50 HTTP/1.1" 404 Not Found
+2025-08-19 11:31:39 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 11:31:39 [info     ] Profile search completed       count=28
+INFO:     127.0.0.1:51431 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+2025-08-19 12:33:24 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 12:33:25 [info     ] Profile search completed       count=28
+INFO:     127.0.0.1:64164 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+2025-08-19 12:33:27 [info     ] Listing templates              category=None include_inactive=False limit=None
+2025-08-19 12:33:27 [info     ] Templates retrieved successfully category=None count=3 include_inactive=False
+INFO:     127.0.0.1:64164 - "GET /api/v1/templates HTTP/1.1" 200 OK
+2025-08-19 12:33:35 [info     ] Retrieving template by ID      template_id=3540af7c-29cb-4e4c-b04f-a64881f9975d
+2025-08-19 12:33:35 [info     ] Template retrieved successfully template_id=3540af7c-29cb-4e4c-b04f-a64881f9975d template_name=Enhanced CIO Evaluation Template
+INFO:     127.0.0.1:64216 - "GET /api/v1/templates/3540af7c-29cb-4e4c-b04f-a64881f9975d HTTP/1.1" 200 OK
+2025-08-19 12:33:41 [info     ] Retrieving template by ID      template_id=271a1e68-b51c-489c-9f2f-c544de517520
+2025-08-19 12:33:42 [info     ] Template retrieved successfully template_id=271a1e68-b51c-489c-9f2f-c544de517520 template_name=Enhanced CTO Evaluation Template
+INFO:     127.0.0.1:64257 - "GET /api/v1/templates/271a1e68-b51c-489c-9f2f-c544de517520 HTTP/1.1" 200 OK
+2025-08-19 12:33:50 [info     ] Listing templates              category=None include_inactive=False limit=None
+2025-08-19 12:33:50 [info     ] Templates retrieved successfully category=None count=3 include_inactive=False
+INFO:     127.0.0.1:64293 - "GET /api/v1/templates HTTP/1.1" 200 OK

@@ -16,8 +16,8 @@ import uuid
 import json
 from datetime import datetime, timezone, timedelta
 from unittest.mock import AsyncMock, MagicMock, patch
-from fastapi.testclient import TestClient
 from httpx import AsyncClient
+from app.testing.compatibility import TestClient
 
 from main import app
 from app.models.scoring import JobStatus, ScoringRequest, ScoringResponse

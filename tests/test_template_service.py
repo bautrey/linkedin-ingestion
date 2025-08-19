@@ -86,14 +86,12 @@ class TestTemplateService:
     ):
         """Test successful template retrieval by ID"""
         # Setup mock
-        mock_table = AsyncMock()
+        mock_table = Mock()
         mock_supabase_client.client.table.return_value = mock_table
-        mock_table.select.return_value = mock_table
-        mock_table.eq.return_value = mock_table
         
         mock_result = Mock()
         mock_result.data = [sample_template_data]
-        mock_table.execute.return_value = mock_result
+        mock_table.select.return_value.eq.return_value.execute = AsyncMock(return_value=mock_result)
 
         # Execute
         template_id = sample_template_data["id"]
@@ -102,7 +100,7 @@ class TestTemplateService:
         # Verify
         assert result is not None
         assert isinstance(result, PromptTemplate)
-        assert result.id == template_id
+        assert str(result.id) == template_id
         assert result.name == sample_template_data["name"]
         assert result.category == sample_template_data["category"]
         assert result.version == sample_template_data["version"]
@@ -110,8 +108,7 @@ class TestTemplateService:
         # Verify Supabase calls
         mock_supabase_client.client.table.assert_called_once_with("prompt_templates")
         mock_table.select.assert_called_once_with("*")
-        mock_table.eq.assert_called_once_with("id", template_id)
-        mock_table.execute.assert_called_once()
+        mock_table.select.return_value.eq.assert_called_once_with("id", template_id)
 
     @pytest.mark.asyncio
     async def test_get_template_by_id_not_found(
@@ -121,14 +118,12 @@ class TestTemplateService:
     ):
         """Test template not found scenario"""
         # Setup mock
-        mock_table = AsyncMock()
+        mock_table = Mock()
         mock_supabase_client.client.table.return_value = mock_table
-        mock_table.select.return_value = mock_table
-        mock_table.eq.return_value = mock_table
         
         mock_result = Mock()
         mock_result.data = []
-        mock_table.execute.return_value = mock_result
+        mock_table.select.return_value.eq.return_value.execute = AsyncMock(return_value=mock_result)
 
         # Execute
         result = await template_service.get_template_by_id("nonexistent-id")
@@ -145,16 +140,18 @@ class TestTemplateService:
     ):
         """Test successful template listing"""
         # Setup mock
-        mock_table = AsyncMock()
+        mock_table = Mock()
         mock_supabase_client.client.table.return_value = mock_table
-        mock_table.select.return_value = mock_table
-        mock_table.eq.return_value = mock_table
-        mock_table.limit.return_value = mock_table
-        mock_table.order.return_value = mock_table
         
         mock_result = Mock()
         mock_result.data = [sample_template_data]
-        mock_table.execute.return_value = mock_result
+        # Mock the chained query: select().eq().eq().limit().order().execute()
+        mock_query = Mock()
+        mock_table.select.return_value = mock_query
+        mock_query.eq.return_value = mock_query
+        mock_query.limit.return_value = mock_query
+        mock_query.order.return_value = mock_query
+        mock_query.execute = AsyncMock(return_value=mock_result)
 
         # Execute
         result = await template_service.list_templates(
@@ -169,10 +166,10 @@ class TestTemplateService:
         assert result[0].category == "CTO"
         
         # Verify Supabase calls
-        mock_table.eq.assert_any_call("category", "CTO")
-        mock_table.eq.assert_any_call("is_active", True)
-        mock_table.limit.assert_called_once_with(10)
-        mock_table.order.assert_called_once_with("created_at", desc=True)
+        mock_query.eq.assert_any_call("category", "CTO")
+        mock_query.eq.assert_any_call("is_active", True)
+        mock_query.limit.assert_called_once_with(10)
+        mock_query.order.assert_called_once_with("created_at", desc=True)
 
     @pytest.mark.asyncio
     async def test_list_templates_no_filters(
@@ -183,15 +180,17 @@ class TestTemplateService:
     ):
         """Test template listing without filters"""
         # Setup mock
-        mock_table = AsyncMock()
+        mock_table = Mock()
         mock_supabase_client.client.table.return_value = mock_table
-        mock_table.select.return_value = mock_table
-        mock_table.eq.return_value = mock_table
-        mock_table.order.return_value = mock_table
         
         mock_result = Mock()
         mock_result.data = [sample_template_data]
-        mock_table.execute.return_value = mock_result
+        # Mock the chained query: select().eq().order().execute()
+        mock_query = Mock()
+        mock_table.select.return_value = mock_query
+        mock_query.eq.return_value = mock_query
+        mock_query.order.return_value = mock_query
+        mock_query.execute = AsyncMock(return_value=mock_result)
 
         # Execute
         result = await template_service.list_templates()
@@ -199,7 +198,7 @@ class TestTemplateService:
         # Verify
         assert len(result) == 1
         # Should only filter by is_active=True by default
-        mock_table.eq.assert_called_once_with("is_active", True)
+        mock_query.eq.assert_called_once_with("is_active", True)
 
     @pytest.mark.asyncio
     async def test_list_template_summaries_success(
@@ -210,17 +209,19 @@ class TestTemplateService:
     ):
         """Test successful template summaries listing"""
         # Setup mock
-        mock_table = AsyncMock()
+        mock_table = Mock()
         mock_supabase_client.client.table.return_value = mock_table
-        mock_table.select.return_value = mock_table
-        mock_table.eq.return_value = mock_table
-        mock_table.order.return_value = mock_table
         
         # Remove prompt_text from summary data
         summary_data = {k: v for k, v in sample_template_data.items() if k != "prompt_text"}
         mock_result = Mock()
         mock_result.data = [summary_data]
-        mock_table.execute.return_value = mock_result
+        # Mock the chained query: select().eq().order().execute()
+        mock_query = Mock()
+        mock_table.select.return_value = mock_query
+        mock_query.eq.return_value = mock_query
+        mock_query.order.return_value = mock_query
+        mock_query.execute = AsyncMock(return_value=mock_result)
 
         # Execute
         result = await template_service.list_template_summaries(category="CTO")
@@ -244,13 +245,12 @@ class TestTemplateService:
     ):
         """Test successful template creation"""
         # Setup mock
-        mock_table = AsyncMock()
+        mock_table = Mock()
         mock_supabase_client.client.table.return_value = mock_table
-        mock_table.insert.return_value = mock_table
         
         mock_result = Mock()
         mock_result.data = [sample_template_data]
-        mock_table.execute.return_value = mock_result
+        mock_table.insert.return_value.execute = AsyncMock(return_value=mock_result)
 
         # Execute
         result = await template_service.create_template(sample_create_request)
@@ -280,13 +280,12 @@ class TestTemplateService:
     ):
         """Test template creation failure"""
         # Setup mock to return no data
-        mock_table = AsyncMock()
+        mock_table = Mock()
         mock_supabase_client.client.table.return_value = mock_table
-        mock_table.insert.return_value = mock_table
         
         mock_result = Mock()
         mock_result.data = []  # No data returned
-        mock_table.execute.return_value = mock_result
+        mock_table.insert.return_value.execute = AsyncMock(return_value=mock_result)
 
         # Execute and verify exception
         with pytest.raises(ValueError, match="Template creation failed"):
@@ -302,10 +301,8 @@ class TestTemplateService:
     ):
         """Test successful template update"""
         # Setup mock
-        mock_table = AsyncMock()
+        mock_table = Mock()
         mock_supabase_client.client.table.return_value = mock_table
-        mock_table.update.return_value = mock_table
-        mock_table.eq.return_value = mock_table
         
         # Update sample data with new values
         updated_data = sample_template_data.copy()
@@ -317,7 +314,7 @@ class TestTemplateService:
         
         mock_result = Mock()
         mock_result.data = [updated_data]
-        mock_table.execute.return_value = mock_result
+        mock_table.update.return_value.eq.return_value.execute = AsyncMock(return_value=mock_result)
 
         # Execute
         template_id = sample_template_data["id"]
@@ -335,7 +332,7 @@ class TestTemplateService:
         assert update_data["name"] == sample_update_request.name
         assert update_data["description"] == sample_update_request.description
         assert "updated_at" in update_data
-        mock_table.eq.assert_called_once_with("id", template_id)
+        mock_table.update.return_value.eq.assert_called_once_with("id", template_id)
 
     @pytest.mark.asyncio
     async def test_update_template_not_found(
@@ -346,14 +343,12 @@ class TestTemplateService:
     ):
         """Test template update when template not found"""
         # Setup mock to return no data
-        mock_table = AsyncMock()
+        mock_table = Mock()
         mock_supabase_client.client.table.return_value = mock_table
-        mock_table.update.return_value = mock_table
-        mock_table.eq.return_value = mock_table
         
         mock_result = Mock()
         mock_result.data = []
-        mock_table.execute.return_value = mock_result
+        mock_table.update.return_value.eq.return_value.execute = AsyncMock(return_value=mock_result)
 
         # Execute
         result = await template_service.update_template("nonexistent-id", sample_update_request)
@@ -370,14 +365,12 @@ class TestTemplateService:
     ):
         """Test partial template update (only some fields)"""
         # Setup mock
-        mock_table = AsyncMock()
+        mock_table = Mock()
         mock_supabase_client.client.table.return_value = mock_table
-        mock_table.update.return_value = mock_table
-        mock_table.eq.return_value = mock_table
         
         mock_result = Mock()
         mock_result.data = [sample_template_data]
-        mock_table.execute.return_value = mock_result
+        mock_table.update.return_value.eq.return_value.execute = AsyncMock(return_value=mock_result)
 
         # Create partial update request
         partial_request = UpdateTemplateRequest(name="New Name Only")
@@ -404,14 +397,12 @@ class TestTemplateService:
     ):
         """Test successful template soft deletion"""
         # Setup mock
-        mock_table = AsyncMock()
+        mock_table = Mock()
         mock_supabase_client.client.table.return_value = mock_table
-        mock_table.update.return_value = mock_table
-        mock_table.eq.return_value = mock_table
         
         mock_result = Mock()
         mock_result.data = [sample_template_data]
-        mock_table.execute.return_value = mock_result
+        mock_table.update.return_value.eq.return_value.execute = AsyncMock(return_value=mock_result)
 
         # Execute
         template_id = sample_template_data["id"]
@@ -424,7 +415,7 @@ class TestTemplateService:
         update_data = mock_table.update.call_args[0][0]
         assert update_data["is_active"] is False
         assert "updated_at" in update_data
-        mock_table.eq.assert_called_once_with("id", template_id)
+        mock_table.update.return_value.eq.assert_called_once_with("id", template_id)
 
     @pytest.mark.asyncio
     async def test_delete_template_not_found(
@@ -434,14 +425,12 @@ class TestTemplateService:
     ):
         """Test template deletion when template not found"""
         # Setup mock to return no data
-        mock_table = AsyncMock()
+        mock_table = Mock()
         mock_supabase_client.client.table.return_value = mock_table
-        mock_table.update.return_value = mock_table
-        mock_table.eq.return_value = mock_table
         
         mock_result = Mock()
         mock_result.data = []
-        mock_table.execute.return_value = mock_result
+        mock_table.update.return_value.eq.return_value.execute = AsyncMock(return_value=mock_result)
 
         # Execute
         result = await template_service.delete_template("nonexistent-id")
@@ -458,15 +447,17 @@ class TestTemplateService:
     ):
         """Test getting templates by category (convenience method)"""
         # Setup mock
-        mock_table = AsyncMock()
+        mock_table = Mock()
         mock_supabase_client.client.table.return_value = mock_table
-        mock_table.select.return_value = mock_table
-        mock_table.eq.return_value = mock_table
-        mock_table.order.return_value = mock_table
         
         mock_result = Mock()
         mock_result.data = [sample_template_data]
-        mock_table.execute.return_value = mock_result
+        # Mock the chained query: select().eq().order().execute() 
+        mock_query = Mock()
+        mock_table.select.return_value = mock_query
+        mock_query.eq.return_value = mock_query
+        mock_query.order.return_value = mock_query
+        mock_query.execute = AsyncMock(return_value=mock_result)
 
         # Execute
         result = await template_service.get_templates_by_category("CTO")
@@ -476,8 +467,8 @@ class TestTemplateService:
         assert result[0].category == "CTO"
         
         # Verify it calls list_templates with category filter
-        mock_table.eq.assert_any_call("category", "CTO")
-        mock_table.eq.assert_any_call("is_active", True)
+        mock_query.eq.assert_any_call("category", "CTO")
+        mock_query.eq.assert_any_call("is_active", True)
 
     @pytest.mark.asyncio
     async def test_convert_db_to_model_datetime_conversion(
@@ -506,11 +497,9 @@ class TestTemplateService:
     ):
         """Test error handling when Supabase operations fail"""
         # Setup mock to raise exception
-        mock_table = AsyncMock()
+        mock_table = Mock()
         mock_supabase_client.client.table.return_value = mock_table
-        mock_table.select.return_value = mock_table
-        mock_table.eq.return_value = mock_table
-        mock_table.execute.side_effect = Exception("Database connection failed")
+        mock_table.select.return_value.eq.return_value.execute = AsyncMock(side_effect=Exception("Database connection failed"))
 
         # Execute and verify exception is propagated
         with pytest.raises(Exception, match="Database connection failed"):
@@ -519,7 +508,7 @@ class TestTemplateService:
     def test_convert_db_to_model_with_minimal_data(self, template_service: TemplateService):
         """Test model conversion with minimal required fields"""
         minimal_data = {
-            "id": "test-id",
+            "id": "550e8400-e29b-41d4-a716-446655440000",  # Use valid UUID format
             "name": "Test Template", 
             "category": "CTO",
             "prompt_text": "Test prompt",
@@ -531,7 +520,7 @@ class TestTemplateService:
 
         result = template_service._convert_db_to_model(minimal_data)
 
-        assert result.id == "test-id"
+        assert str(result.id) == "550e8400-e29b-41d4-a716-446655440000"
         assert result.name == "Test Template"
         assert result.description is None  # Optional field
         assert result.metadata == {}  # Default empty dict

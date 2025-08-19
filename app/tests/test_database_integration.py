@@ -15,6 +15,7 @@ from datetime import datetime
 
 # Import models and services
 from app.cassidy.models import LinkedInProfile, CompanyProfile
+from app.models.canonical.profile import CanonicalProfile, RoleType
 from app.database import SupabaseClient, EmbeddingService
 from app.core.config import settings
 
@@ -254,9 +255,9 @@ class TestSupabaseClient:
             "experiences": [],
             "educations": [],
             "languages": ["English"],
-            "timestamp": "2024-07-24T11:46:51Z"
+            "suggested_role": RoleType.CTO  # Add suggested_role for CanonicalProfile
         }
-        profile = LinkedInProfile(**mock_data)
+        profile = CanonicalProfile(**mock_data)
         embedding = [0.1] * settings.VECTOR_DIMENSION  # Mock embedding
         
         record_id = await mock_supabase_client.store_profile(profile, embedding)
@@ -321,13 +322,13 @@ class TestSupabaseClient:
             "experiences": [],
             "educations": [],
             "languages": ["English"],
-            "timestamp": "2024-07-24T11:46:51Z"
+            "suggested_role": RoleType.CIO  # Add suggested_role for CanonicalProfile
         }
-        profile = LinkedInProfile(**mock_data)
+        profile = CanonicalProfile(**mock_data)
         await mock_supabase_client.store_profile(profile)
         
         # Then try to retrieve it
-        retrieved = await mock_supabase_client.get_profile_by_linkedin_id(profile.id)
+        retrieved = await mock_supabase_client.get_profile_by_linkedin_id(profile.profile_id)
         
         # Note: With our mock, this might return None since we don't have full persistence
         # In real implementation, this would return the stored profile

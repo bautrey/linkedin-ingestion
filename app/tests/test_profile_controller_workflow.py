@@ -14,6 +14,7 @@ from main import ProfileController, ProfileCreateRequest, normalize_linkedin_url
 from app.cassidy.models import ProfileIngestionRequest
 from app.cassidy.workflows import EnrichedProfile
 from app.cassidy.models import LinkedInProfile
+from app.models.canonical.profile import RoleType
 
 
 class TestProfileControllerWorkflowIntegration:
@@ -91,7 +92,10 @@ class TestProfileControllerWorkflowIntegration:
         """Test that create_profile() uses LinkedInWorkflow.process_profile() instead of direct Cassidy client"""
         
         # Setup - Use valid URL format that passes Pydantic validation
-        request = ProfileCreateRequest(linkedin_url="https://linkedin.com/in/testuser")
+        request = ProfileCreateRequest(
+            linkedin_url="https://linkedin.com/in/testuser",
+            suggested_role=RoleType.CTO
+        )
         mock_db_client.get_profile_by_url.return_value = None  # No existing profile
         mock_linkedin_workflow.process_profile.return_value = ("request123", sample_enriched_profile)
         mock_db_client.store_profile.return_value = "stored_id_123"
@@ -150,7 +154,10 @@ class TestProfileControllerWorkflowIntegration:
             mock_linkedin_workflow.reset_mock()
             
             # Setup
-            request = ProfileCreateRequest(linkedin_url=test_url)
+            request = ProfileCreateRequest(
+                linkedin_url=test_url,
+                suggested_role=RoleType.CIO
+            )
             mock_db_client.get_profile_by_url.return_value = None
             mock_linkedin_workflow.process_profile.return_value = ("request123", sample_enriched_profile)
             mock_db_client.store_profile.return_value = "stored_id"
@@ -173,7 +180,10 @@ class TestProfileControllerWorkflowIntegration:
         """Test that duplicate detection works with URL normalization and updates existing profile"""
         
         # Setup - existing profile with normalized URL
-        request = ProfileCreateRequest(linkedin_url="https://linkedin.com/in/testuser")  # Valid URL format
+        request = ProfileCreateRequest(
+            linkedin_url="https://linkedin.com/in/testuser",
+            suggested_role=RoleType.CISO
+        )  # Valid URL format
         existing_profile = {"id": "existing123", "url": "https://www.linkedin.com/in/testuser/"}
         mock_db_client.get_profile_by_url.return_value = existing_profile
         
@@ -233,7 +243,10 @@ class TestProfileControllerWorkflowIntegration:
         """Test that workflow is called with include_companies=True by default"""
         
         # Setup
-        request = ProfileCreateRequest(linkedin_url="https://linkedin.com/in/testuser")
+        request = ProfileCreateRequest(
+            linkedin_url="https://linkedin.com/in/testuser",
+            suggested_role=RoleType.CTO
+        )
         mock_db_client.get_profile_by_url.return_value = None
         mock_linkedin_workflow.process_profile.return_value = ("request123", sample_enriched_profile)
         mock_db_client.store_profile.return_value = "stored_id"

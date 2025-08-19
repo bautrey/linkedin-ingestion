@@ -7,7 +7,7 @@ Tests the FastAPI endpoints for template CRUD operations with proper mocking
 import pytest
 import asyncio
 from unittest.mock import AsyncMock, MagicMock, patch
-from fastapi.testclient import TestClient
+from app.testing.compatibility import TestClient
 from datetime import datetime, timezone
 from uuid import UUID
 import json
