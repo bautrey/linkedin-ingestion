@@ -259,3 +259,93 @@ INFO:     127.0.0.1:64257 - "GET /api/v1/templates/271a1e68-b51c-489c-9f2f-c544d
 2025-08-19 12:33:50 [info     ] Listing templates              category=None include_inactive=False limit=None
 2025-08-19 12:33:50 [info     ] Templates retrieved successfully category=None count=3 include_inactive=False
 INFO:     127.0.0.1:64293 - "GET /api/v1/templates HTTP/1.1" 200 OK
+2025-08-19 14:43:30 [info     ] Listing templates              category=None include_inactive=False limit=None
+2025-08-19 14:43:31 [info     ] Templates retrieved successfully category=None count=3 include_inactive=False
+INFO:     127.0.0.1:58042 - "GET /api/v1/templates HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56137 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56140 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56141 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56141 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56140 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56137 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56137 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56141 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56140 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56141 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56140 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56137 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56140 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56137 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56141 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56141 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56137 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56140 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56140 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56137 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56141 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57432 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57433 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57434 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57434 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57433 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57432 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57433 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57434 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57441 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+2025-08-19 16:09:27 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 16:09:27 [info     ] Profile search completed       count=29
+INFO:     127.0.0.1:57432 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57432 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57441 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57433 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+2025-08-19 16:09:27 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 16:09:28 [info     ] Profile search completed       count=29
+INFO:     127.0.0.1:57441 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57441 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57433 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57432 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57432 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57433 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57441 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57441 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57432 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57433 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+2025-08-19 16:09:31 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 16:09:31 [info     ] Profile search completed       count=29
+INFO:     127.0.0.1:57432 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57432 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57433 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57441 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57568 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57569 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57570 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57570 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57569 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57568 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+2025-08-19 16:09:47 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+INFO:     127.0.0.1:57569 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57570 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57583 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+2025-08-19 16:09:48 [info     ] Profile search completed       count=29
+INFO:     127.0.0.1:57568 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57568 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57583 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57569 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+2025-08-19 16:09:48 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 16:09:48 [info     ] Profile search completed       count=29
+INFO:     127.0.0.1:57569 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57569 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57583 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57568 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57568 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57583 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57569 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57569 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57583 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57568 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
+2025-08-19 16:09:51 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-19 16:09:51 [info     ] Profile search completed       count=29
+INFO:     127.0.0.1:57568 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57568 - "GET /api/v1/api/v1/profiles?limit=20&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57583 - "GET /api/v1/api/v1/companies?limit=10&skip=0 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57569 - "GET /api/v1/api/v1/health HTTP/1.1" 404 Not Found
