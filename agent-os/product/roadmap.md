@@ -1,8 +1,8 @@
 # Product Roadmap
 
-> Last Updated: 2025-08-12
-> Version: 2.2.0
-> Status: 🚧 V1.85 IN PROGRESS - 60% complete, Tasks 1-3 finished, ready for async processing
+> Last Updated: 2025-08-20
+> Version: 2.1.0
+> Status: 🚧 V2.1 IN PROGRESS - Database schema complete, working on company models and services
 
 ## Current Status (July 2025)
 
@@ -28,7 +28,7 @@
 - **Spec**: @agent-os/specs/2025-07-30-v1.6-canonical-profile-models/ (✅ COMPLETE)
 - **Deliverables**: CanonicalProfile and CanonicalCompany models, zero deprecation warnings
 
-**🚧 CURRENT DEVELOPMENT SEQUENCE: AI-Powered Profile Intelligence**
+**🚧 CURRENT DEVELOPMENT SEQUENCE: AI-Powered Profile Intelligence & Company Integration**
 - **v1.7**: ✅ Cassidy-to-Canonical Adapter - Decouple from external API format (COMPLETE)
 - **v1.8**: 🗑️ REMOVED - Keyword-based scoring system (replaced by V1.85 LLM approach)
 - **v1.85/v1.88**: ✅ LLM-Based Profile Scoring - AI-driven executive role assessment with OpenAI (FULLY COMPLETE)
@@ -39,7 +39,16 @@
   - ✅ **Task 5**: Integration Testing & Production Deployment (100% complete)
   - ✅ **Task 6**: Template Management Integration (100% complete)
   - ✅ **Task 7**: Admin UI Integration (100% complete)
-- **v1.9**: 🚧 Enhanced Admin UI - Task 3.1 COMPLETE, ready for Task 3.2+ (Template Versioning)
+- **v1.9**: ⏸️ Enhanced Admin UI - Template management complete, versioning system complete, profile management complete (PAUSED for company integration priority)
+- **v2.1**: 🚧 Company Model Backend Integration - Models, services, and database complete, working on ingestion
+  - ✅ **Task 1**: Company Model Implementation (100% complete - Pydantic models and repository ready)
+  - ✅ **Task 2**: Database Schema Implementation (100% complete - companies table enhanced)
+  - ✅ **Task 3**: Company Service Layer (100% complete - business logic with 18 tests)
+  - 🚧 **Task 4**: Profile Ingestion Enhancement (IN PROGRESS)
+  - ⏳ **Task 5**: API Endpoint Implementation (PENDING)
+  - ⏳ **Task 6**: Production Integration & Testing (PENDING)
+- **v2.2**: ⏳ Admin UI Company Integration - Display company data in admin interface (PLANNED)
+- **v2.3**: ⏳ Enhanced Scoring with Company Context - Update scoring templates to use company data (PLANNED)
 
 **📋 PHASE PROGRESS:**
 - [x] Issue identification and analysis (Gregory Pascuzzi profile case)

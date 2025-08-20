@@ -565,3 +565,127 @@ class CompanyRepository:
         except Exception as e:
             logger.error(f"Fallback startup query failed: {str(e)}")
             return []
+    
+    def link_to_profile(self, profile_id: str, company_id: str, work_experience: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Link a profile to a company with work experience details.
+        
+        Args:
+            profile_id: UUID of the profile
+            company_id: UUID of the company
+            work_experience: Dict containing work experience details
+            
+        Returns:
+            Dict containing the relationship record
+        """
+        try:
+            # Create the relationship record
+            relationship_data = {
+                "profile_id": profile_id,
+                "company_id": company_id,
+                "position_title": work_experience.get("position_title"),
+                "start_date": work_experience.get("start_date"),
+                "end_date": work_experience.get("end_date"),
+                "is_current": work_experience.get("is_current", False),
+                "description": work_experience.get("description"),
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+            
+            # Remove None values
+            relationship_data = {k: v for k, v in relationship_data.items() if v is not None}
+            
+            # Insert the relationship
+            result = self.client.table("profile_companies").insert(relationship_data).execute()
+            
+            if result.data:
+                logger.info(f"Linked profile {profile_id} to company {company_id}")
+                return result.data[0]
+            else:
+                raise Exception(f"Failed to create profile-company relationship: {result}")
+                
+        except Exception as e:
+            logger.error(f"Failed to link profile {profile_id} to company {company_id}: {str(e)}")
+            raise
+    
+    def unlink_from_profile(self, profile_id: str, company_id: str) -> bool:
+        """
+        Unlink a profile from a company.
+        
+        Args:
+            profile_id: UUID of the profile
+            company_id: UUID of the company
+            
+        Returns:
+            True if unlinking was successful, False otherwise
+        """
+        try:
+            result = self.client.table("profile_companies").delete().eq(
+                "profile_id", profile_id
+            ).eq(
+                "company_id", company_id
+            ).execute()
+            
+            if result.data:
+                logger.info(f"Unlinked profile {profile_id} from company {company_id}")
+                return True
+            else:
+                logger.warning(f"No relationship found between profile {profile_id} and company {company_id}")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Failed to unlink profile {profile_id} from company {company_id}: {str(e)}")
+            return False
+    
+    def get_companies_for_profile(self, profile_id: str) -> List[CanonicalCompany]:
+        """
+        Get all companies associated with a profile.
+        
+        Args:
+            profile_id: UUID of the profile
+            
+        Returns:
+            List of CanonicalCompany instances
+        """
+        try:
+            # Join profile_companies and companies tables
+            result = self.client.table("profile_companies").select(
+                "companies(*)"
+            ).eq(
+                "profile_id", profile_id
+            ).execute()
+            
+            companies = []
+            for row in result.data:
+                if row.get("companies"):
+                    company = self._db_to_model_format(row["companies"])
+                    companies.append(company)
+            
+            return companies
+            
+        except Exception as e:
+            logger.error(f"Failed to get companies for profile {profile_id}: {str(e)}")
+            return []
+    
+    def get_profiles_for_company(self, company_id: str) -> List[Dict[str, Any]]:
+        """
+        Get all profiles associated with a company.
+        
+        Args:
+            company_id: UUID of the company
+            
+        Returns:
+            List of profile data with work experience details
+        """
+        try:
+            # Join profile_companies and profiles tables
+            result = self.client.table("profile_companies").select(
+                "*, profiles(id, full_name, linkedin_url)"
+            ).eq(
+                "company_id", company_id
+            ).execute()
+            
+            return result.data
+            
+        except Exception as e:
+            logger.error(f"Failed to get profiles for company {company_id}: {str(e)}")
+            return []

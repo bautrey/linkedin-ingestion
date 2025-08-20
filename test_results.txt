@@ -1,0 +1,24 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.13.3, pytest-8.4.1, pluggy-1.6.0 -- /Users/burke/projects/linkedin-ingestion/venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/burke/projects/linkedin-ingestion
+configfile: pytest.ini
+plugins: respx-0.22.0, asyncio-1.1.0, mock-3.14.1, anyio-3.7.1
+asyncio: mode=Mode.STRICT, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 13 items
+
+tests/test_enhanced_profile_ingestion.py::TestEnhancedProfileIngestion::test_extract_company_data_from_profile PASSED [  7%]
+tests/test_enhanced_profile_ingestion.py::TestEnhancedProfileIngestion::test_extract_company_data_deduplication PASSED [ 15%]
+tests/test_enhanced_profile_ingestion.py::TestEnhancedProfileIngestion::test_ingest_profile_with_companies_success PASSED [ 23%]
+tests/test_enhanced_profile_ingestion.py::TestEnhancedProfileIngestion::test_ingest_profile_with_companies_no_company_service PASSED [ 30%]
+tests/test_enhanced_profile_ingestion.py::TestEnhancedProfileIngestion::test_ingest_profile_with_companies_service_error PASSED [ 38%]
+tests/test_enhanced_profile_ingestion.py::TestEnhancedProfileIngestion::test_ingest_profile_with_companies_no_embeddings PASSED [ 46%]
+tests/test_enhanced_profile_ingestion.py::TestEnhancedProfileIngestion::test_ingest_profile_with_companies_no_storage PASSED [ 53%]
+tests/test_enhanced_profile_ingestion.py::TestEnhancedProfileIngestion::test_batch_ingest_profiles_with_companies PASSED [ 61%]
+tests/test_enhanced_profile_ingestion.py::TestEnhancedProfileIngestion::test_batch_ingest_with_failures PASSED [ 69%]
+tests/test_enhanced_profile_ingestion.py::TestEnhancedProfileIngestion::test_extract_company_data_missing_linkedin_url PASSED [ 76%]
+tests/test_enhanced_profile_ingestion.py::TestEnhancedProfileIngestion::test_extract_company_data_validation_errors PASSED [ 84%]
+tests/test_enhanced_profile_ingestion.py::TestEnhancedProfileIngestion::test_ingest_profile_with_companies_cassidy_error PASSED [ 92%]
+tests/test_enhanced_profile_ingestion.py::TestEnhancedProfileIngestion::test_ingest_profile_with_companies_storage_error PASSED [100%]
+
+============================== 13 passed in 0.49s ==============================

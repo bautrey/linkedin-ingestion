@@ -422,6 +422,10 @@ class ProfileResponse(BaseModel):
     suggested_role: Optional[RoleType] = None
     created_at: str
     timestamp: Optional[str] = None
+    
+    # Enhanced pipeline response fields (only present when using enhanced ingestion)
+    companies_processed: Optional[List[Dict[str, Any]]] = None
+    pipeline_metadata: Optional[Dict[str, Any]] = None
 
 class ProfileListResponse(BaseModel):
     data: List[ProfileResponse]
@@ -435,6 +439,10 @@ class ProfileController:
         self.db_client = db_client
         self.cassidy_client = cassidy_client
         self.linkedin_workflow = linkedin_workflow
+        
+        # Initialize enhanced LinkedIn pipeline for company processing
+        from app.services.linkedin_pipeline import LinkedInDataPipeline
+        self.enhanced_pipeline = LinkedInDataPipeline()
     
     def _convert_db_profile_to_response(self, db_profile: Dict[str, Any]) -> ProfileResponse:
         """Convert database profile to ProfileResponse model"""
@@ -550,6 +558,58 @@ class ProfileController:
         # Retrieve the stored profile to return consistent data
         stored_profile = await self.db_client.get_profile_by_id(record_id)
         return self._convert_db_profile_to_response(stored_profile)
+    
+    async def create_profile_enhanced(self, request: ProfileCreateRequest) -> ProfileResponse:
+        """Create a new profile using enhanced pipeline with company processing"""
+        # Normalize LinkedIn URL to consistent format
+        linkedin_url = normalize_linkedin_url(str(request.linkedin_url))
+        
+        # Check for existing profile with normalized URL
+        existing = await self.db_client.get_profile_by_url(linkedin_url)
+        
+        if existing:
+            # Smart update behavior: delete existing profile and create fresh one
+            await self.db_client.delete_profile(existing["id"])
+        
+        # Use enhanced pipeline for profile ingestion with company processing
+        pipeline_result = await self.enhanced_pipeline.ingest_profile_with_companies(
+            linkedin_url=linkedin_url,
+            store_in_db=True,
+            generate_embeddings=True
+        )
+        
+        if pipeline_result["status"] != "completed":
+            error_response = ErrorResponse(
+                error_code="PROFILE_INGESTION_FAILED",
+                message="Enhanced profile ingestion failed",
+                details={
+                    "linkedin_url": linkedin_url,
+                    "pipeline_result": pipeline_result
+                }
+            )
+            raise HTTPException(status_code=500, detail=error_response.model_dump())
+        
+        # Get the stored profile ID from pipeline result
+        profile_id = pipeline_result["storage_ids"]["profile"]
+        
+        # Update the stored profile with the suggested role
+        # Note: This would need a method to update profile role in the database
+        # For now, we'll retrieve and return the profile as-is
+        stored_profile = await self.db_client.get_profile_by_id(profile_id)
+        
+        # Convert to response format and add company information from pipeline result
+        response = self._convert_db_profile_to_response(stored_profile)
+        
+        # Add enhanced metadata from pipeline result
+        response.companies_processed = pipeline_result.get("companies", [])
+        response.pipeline_metadata = {
+            "pipeline_id": pipeline_result["pipeline_id"],
+            "companies_found": len(pipeline_result.get("companies", [])),
+            "has_embeddings": "profile" in pipeline_result.get("embeddings", {}),
+            "processing_time": pipeline_result.get("completed_at", pipeline_result.get("started_at"))
+        }
+        
+        return response
 
 
 @app.get("/")
@@ -897,6 +957,26 @@ async def create_profile(
     return await controller.create_profile(request)
 
 
+@app.post(
+    "/api/v1/profiles/enhanced", 
+    response_model=ProfileResponse, 
+    status_code=201,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        409: {"model": ErrorResponse, "description": "Profile already exists - Conflict"},
+        422: {"model": ValidationErrorResponse, "description": "Validation error"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def create_profile_enhanced(
+    request: ProfileCreateRequest,
+    api_key: str = Depends(verify_api_key)
+):
+    """Create a new profile using enhanced pipeline with company processing"""
+    controller = get_profile_controller()
+    return await controller.create_profile_enhanced(request)
+
+
 @app.delete(
     "/api/v1/profiles/{profile_id}", 
     status_code=204,
@@ -951,10 +1031,472 @@ async def delete_profile(
             detail=error_response.model_dump()
         )
 
-# Simple companies endpoint for dashboard
+# =============================================================================
+# COMPANY API MODELS AND ENDPOINTS
+# =============================================================================
+
+# Company API Request/Response Models
+class CompanyCreateRequest(BaseModel):
+    company_name: str = Field(..., description="Company name (required)")
+    linkedin_url: Optional[HttpUrl] = Field(None, description="LinkedIn company page URL")
+    description: Optional[str] = Field(None, description="Company description")
+    website: Optional[HttpUrl] = Field(None, description="Company website")
+    employee_count: Optional[int] = Field(None, ge=0, description="Number of employees")
+    year_founded: Optional[int] = Field(None, ge=1600, le=2030, description="Year founded")
+    industries: List[str] = Field(default_factory=list, description="List of industries")
+    hq_city: Optional[str] = Field(None, description="Headquarters city")
+    hq_region: Optional[str] = Field(None, description="Headquarters region/state")
+    hq_country: Optional[str] = Field(None, description="Headquarters country")
+    tagline: Optional[str] = Field(None, description="Company tagline")
+    specialties: Optional[str] = Field(None, description="Comma-separated specialties")
+
+class CompanyUpdateRequest(BaseModel):
+    company_name: Optional[str] = Field(None, description="Company name")
+    linkedin_url: Optional[HttpUrl] = Field(None, description="LinkedIn company page URL")
+    description: Optional[str] = Field(None, description="Company description")
+    website: Optional[HttpUrl] = Field(None, description="Company website")
+    employee_count: Optional[int] = Field(None, ge=0, description="Number of employees")
+    year_founded: Optional[int] = Field(None, ge=1600, le=2030, description="Year founded")
+    industries: Optional[List[str]] = Field(None, description="List of industries")
+    hq_city: Optional[str] = Field(None, description="Headquarters city")
+    hq_region: Optional[str] = Field(None, description="Headquarters region/state")
+    hq_country: Optional[str] = Field(None, description="Headquarters country")
+    tagline: Optional[str] = Field(None, description="Company tagline")
+    specialties: Optional[str] = Field(None, description="Comma-separated specialties")
+
+class CompanyResponse(BaseModel):
+    id: str
+    company_id: Optional[str] = None
+    company_name: str
+    linkedin_url: Optional[str] = None
+    description: Optional[str] = None
+    website: Optional[str] = None
+    domain: Optional[str] = None
+    employee_count: Optional[int] = None
+    employee_range: Optional[str] = None
+    year_founded: Optional[int] = None
+    company_age: Optional[int] = None
+    size_category: str
+    industries: List[str] = []
+    tagline: Optional[str] = None
+    specialties: Optional[str] = None
+    follower_count: Optional[int] = None
+    hq_city: Optional[str] = None
+    hq_region: Optional[str] = None
+    hq_country: Optional[str] = None
+    hq_full_address: Optional[str] = None
+    logo_url: Optional[str] = None
+    funding_info: Optional[Dict[str, Any]] = None
+    locations: List[Dict[str, Any]] = []
+    affiliated_companies: List[Dict[str, Any]] = []
+    is_startup: bool = False
+    created_at: str
+    updated_at: Optional[str] = None
+
 class CompanyListResponse(BaseModel):
-    data: List[Dict[str, Any]]
+    data: List[CompanyResponse]
     pagination: PaginationMetadata
+
+class CompanySummaryResponse(BaseModel):
+    id: str
+    company_name: str
+    domain: Optional[str] = None
+    employee_count: Optional[int] = None
+    size_category: str
+    industries: List[str] = []
+    hq_city: Optional[str] = None
+    hq_country: Optional[str] = None
+    is_startup: bool = False
+
+# Profile-Company Relationship Models
+class ProfileCompanyLinkRequest(BaseModel):
+    position_title: str = Field(..., description="Job title/position")
+    start_date: Optional[str] = Field(None, description="Start date (YYYY-MM-DD)")
+    end_date: Optional[str] = Field(None, description="End date (YYYY-MM-DD)")
+    is_current: bool = Field(False, description="Is this a current position")
+    description: Optional[str] = Field(None, description="Job description")
+
+class ProfileCompanyRelationship(BaseModel):
+    id: str
+    profile_id: str
+    company_id: str
+    position_title: str
+    start_date: Optional[str] = None
+    end_date: Optional[str] = None
+    is_current: bool = False
+    description: Optional[str] = None
+    created_at: str
+
+# Company Controller
+class CompanyController:
+    """Controller for company-related REST operations"""
+    
+    def __init__(self, db_client):
+        self.db_client = db_client
+        
+        # Initialize company service and repository
+        from app.repositories.company_repository import CompanyRepository
+        from app.services.company_service import CompanyService
+        
+        self.company_repo = CompanyRepository(db_client.client)
+        self.company_service = CompanyService(self.company_repo)
+    
+    def _convert_canonical_to_response(self, company) -> CompanyResponse:
+        """Convert CanonicalCompany to CompanyResponse model"""
+        from app.models.canonical.company import CanonicalCompany
+        
+        if isinstance(company, dict):
+            # Handle database row format
+            return CompanyResponse(
+                id=company.get("id", ""),
+                company_id=company.get("linkedin_company_id"),
+                company_name=company.get("company_name", ""),
+                linkedin_url=company.get("linkedin_url"),
+                description=company.get("description"),
+                website=company.get("website"),
+                domain=company.get("domain"),
+                employee_count=company.get("employee_count"),
+                employee_range=company.get("employee_range"),
+                year_founded=company.get("year_founded"),
+                company_age=None,  # Will be computed
+                size_category=self._get_size_category(company.get("employee_count")),
+                industries=company.get("industries", []),
+                tagline=company.get("tagline"),
+                specialties=company.get("specialties"),
+                follower_count=company.get("follower_count"),
+                hq_city=company.get("hq_city"),
+                hq_region=company.get("hq_region"),
+                hq_country=company.get("hq_country"),
+                hq_full_address=company.get("hq_full_address"),
+                logo_url=company.get("logo_url"),
+                funding_info=company.get("funding_info"),
+                locations=company.get("locations", []),
+                affiliated_companies=company.get("affiliated_companies", []),
+                is_startup=False,  # Will be computed
+                created_at=company.get("created_at", company.get("timestamp", "")),
+                updated_at=company.get("updated_at")
+            )
+        else:
+            # Handle CanonicalCompany instance
+            return CompanyResponse(
+                id=getattr(company, 'id', ''),  # Database ID not in model
+                company_id=company.company_id,
+                company_name=company.company_name,
+                linkedin_url=str(company.linkedin_url) if company.linkedin_url else None,
+                description=company.description,
+                website=str(company.website) if company.website else None,
+                domain=company.domain,
+                employee_count=company.employee_count,
+                employee_range=company.employee_range,
+                year_founded=company.year_founded,
+                company_age=company.company_age,
+                size_category=company.size_category,
+                industries=company.industries,
+                tagline=company.tagline,
+                specialties=company.specialties,
+                follower_count=company.follower_count,
+                hq_city=company.hq_city,
+                hq_region=company.hq_region,
+                hq_country=company.hq_country,
+                hq_full_address=company.hq_full_address,
+                logo_url=str(company.logo_url) if company.logo_url else None,
+                funding_info=company.funding_info.model_dump() if company.funding_info else None,
+                locations=[loc.model_dump() for loc in company.locations] if company.locations else [],
+                affiliated_companies=[ac.model_dump() for ac in company.affiliated_companies] if company.affiliated_companies else [],
+                is_startup=company.is_startup(),
+                created_at=company.timestamp.isoformat() if company.timestamp else "",
+                updated_at=None  # Not tracked in canonical model
+            )
+    
+    def _get_size_category(self, employee_count: Optional[int]) -> str:
+        """Calculate size category from employee count"""
+        if employee_count is None:
+            return "Unknown"
+        elif employee_count < 10:
+            return "Startup"
+        elif employee_count < 50:
+            return "Small"
+        elif employee_count < 200:
+            return "Medium"
+        elif employee_count < 1000:
+            return "Large"
+        else:
+            return "Enterprise"
+    
+    async def list_companies(
+        self,
+        name: Optional[str] = None,
+        domain: Optional[str] = None,
+        industry: Optional[str] = None,
+        city: Optional[str] = None,
+        country: Optional[str] = None,
+        size_category: Optional[str] = None,
+        is_startup: Optional[bool] = None,
+        limit: int = 50,
+        offset: int = 0
+    ) -> CompanyListResponse:
+        """List companies with filtering and pagination"""
+        try:
+            companies = []
+            
+            # Apply filters based on parameters
+            if name:
+                companies = self.company_repo.search_by_name(name, limit)
+            elif domain:
+                companies = self.company_repo.search_by_domain(domain, exact_match=False)
+            elif industry:
+                companies = self.company_repo.get_companies_by_industry(industry, limit)
+            elif city or country:
+                companies = self.company_repo.get_companies_by_location(city, country, limit)
+            elif is_startup:
+                startup_companies = self.company_repo.get_startup_companies(limit)
+                # Convert dict results to response format
+                company_responses = []
+                for company_dict in startup_companies:
+                    company_responses.append(self._convert_canonical_to_response(company_dict))
+                return CompanyListResponse(
+                    data=company_responses,
+                    pagination=PaginationMetadata(
+                        limit=limit,
+                        offset=offset,
+                        total=len(company_responses),
+                        has_more=len(company_responses) >= limit
+                    )
+                )
+            elif size_category:
+                size_companies = self.company_repo.get_companies_by_size_category(size_category, limit)
+                # Convert dict results to response format
+                company_responses = []
+                for company_dict in size_companies:
+                    company_responses.append(self._convert_canonical_to_response(company_dict))
+                return CompanyListResponse(
+                    data=company_responses,
+                    pagination=PaginationMetadata(
+                        limit=limit,
+                        offset=offset,
+                        total=len(company_responses),
+                        has_more=len(company_responses) >= limit
+                    )
+                )
+            else:
+                # Get all companies (limited implementation for now)
+                # In a real implementation, you'd want a proper paginated query
+                companies = self.company_repo.search_by_name("", limit) # Get recent companies
+            
+            # Convert to response format
+            company_responses = [self._convert_canonical_to_response(company) for company in companies]
+            
+            return CompanyListResponse(
+                data=company_responses,
+                pagination=PaginationMetadata(
+                    limit=limit,
+                    offset=offset,
+                    total=len(company_responses),
+                    has_more=len(company_responses) >= limit
+                )
+            )
+            
+        except Exception as e:
+            logger.error(f"Failed to list companies: {str(e)}")
+            return CompanyListResponse(
+                data=[],
+                pagination=PaginationMetadata(
+                    limit=limit,
+                    offset=offset,
+                    total=0,
+                    has_more=False
+                )
+            )
+    
+    async def get_company(self, company_id: str) -> CompanyResponse:
+        """Get individual company by ID"""
+        company = self.company_repo.get_by_id(company_id)
+        if not company:
+            error_response = ErrorResponse(
+                error_code="COMPANY_NOT_FOUND",
+                message=f"Company with ID {company_id} not found",
+                details={
+                    "company_id": company_id,
+                    "operation": "get_company"
+                }
+            )
+            raise HTTPException(status_code=404, detail=error_response.model_dump())
+        
+        return self._convert_canonical_to_response(company)
+    
+    async def create_company(self, request: CompanyCreateRequest) -> CompanyResponse:
+        """Create a new company"""
+        try:
+            # Convert request to CanonicalCompany
+            from app.models.canonical.company import CanonicalCompany
+            
+            company_data = {
+                "company_name": request.company_name,
+                "linkedin_url": request.linkedin_url,
+                "description": request.description,
+                "website": request.website,
+                "employee_count": request.employee_count,
+                "year_founded": request.year_founded,
+                "industries": request.industries,
+                "hq_city": request.hq_city,
+                "hq_region": request.hq_region,
+                "hq_country": request.hq_country,
+                "tagline": request.tagline,
+                "specialties": request.specialties
+            }
+            
+            # Remove None values
+            company_data = {k: v for k, v in company_data.items() if v is not None}
+            
+            # Create CanonicalCompany instance
+            company = CanonicalCompany(**company_data)
+            
+            # Use service to create with deduplication
+            result = self.company_service.create_or_update_company(company)
+            
+            # Get the created company
+            created_company = self.company_repo.get_by_id(result["id"])
+            return self._convert_canonical_to_response(created_company)
+            
+        except Exception as e:
+            logger.error(f"Failed to create company: {str(e)}")
+            error_response = ErrorResponse(
+                error_code="COMPANY_CREATION_FAILED",
+                message=f"Failed to create company: {str(e)}",
+                details={
+                    "company_name": request.company_name,
+                    "operation": "create_company",
+                    "exception_type": type(e).__name__
+                }
+            )
+            raise HTTPException(status_code=500, detail=error_response.model_dump())
+    
+    async def update_company(self, company_id: str, request: CompanyUpdateRequest) -> CompanyResponse:
+        """Update an existing company"""
+        try:
+            # Get existing company
+            existing_company = self.company_repo.get_by_id(company_id)
+            if not existing_company:
+                error_response = ErrorResponse(
+                    error_code="COMPANY_NOT_FOUND",
+                    message=f"Company with ID {company_id} not found",
+                    details={
+                        "company_id": company_id,
+                        "operation": "update_company"
+                    }
+                )
+                raise HTTPException(status_code=404, detail=error_response.model_dump())
+            
+            # Update fields that were provided
+            update_data = existing_company.model_dump()
+            request_data = request.model_dump(exclude_none=True)
+            
+            for field, value in request_data.items():
+                update_data[field] = value
+            
+            # Create updated CanonicalCompany
+            from app.models.canonical.company import CanonicalCompany
+            updated_company = CanonicalCompany(**update_data)
+            
+            # Update in database
+            result = self.company_repo.update(company_id, updated_company)
+            
+            # Get the updated company
+            updated_company = self.company_repo.get_by_id(company_id)
+            return self._convert_canonical_to_response(updated_company)
+            
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error(f"Failed to update company {company_id}: {str(e)}")
+            error_response = ErrorResponse(
+                error_code="COMPANY_UPDATE_FAILED",
+                message=f"Failed to update company: {str(e)}",
+                details={
+                    "company_id": company_id,
+                    "operation": "update_company",
+                    "exception_type": type(e).__name__
+                }
+            )
+            raise HTTPException(status_code=500, detail=error_response.model_dump())
+    
+    async def delete_company(self, company_id: str) -> None:
+        """Delete a company"""
+        try:
+            deleted = self.company_repo.delete(company_id)
+            if not deleted:
+                error_response = ErrorResponse(
+                    error_code="COMPANY_NOT_FOUND",
+                    message=f"Company with ID {company_id} not found",
+                    details={
+                        "company_id": company_id,
+                        "operation": "delete_company"
+                    }
+                )
+                raise HTTPException(status_code=404, detail=error_response.model_dump())
+            
+        except HTTPException:
+            raise
+        except Exception as e:
+            logger.error(f"Failed to delete company {company_id}: {str(e)}")
+            error_response = ErrorResponse(
+                error_code="COMPANY_DELETE_FAILED",
+                message=f"Failed to delete company: {str(e)}",
+                details={
+                    "company_id": company_id,
+                    "operation": "delete_company",
+                    "exception_type": type(e).__name__
+                }
+            )
+            raise HTTPException(status_code=500, detail=error_response.model_dump())
+    
+    async def link_profile_to_company(self, profile_id: str, company_id: str, request: ProfileCompanyLinkRequest) -> ProfileCompanyRelationship:
+        """Link a profile to a company with work experience"""
+        try:
+            work_experience = {
+                "position_title": request.position_title,
+                "start_date": request.start_date,
+                "end_date": request.end_date,
+                "is_current": request.is_current,
+                "description": request.description
+            }
+            
+            result = self.company_service.link_profile_to_company(profile_id, company_id, work_experience)
+            
+            return ProfileCompanyRelationship(
+                id=result["id"],
+                profile_id=result["profile_id"],
+                company_id=result["company_id"],
+                position_title=result["position_title"],
+                start_date=result.get("start_date"),
+                end_date=result.get("end_date"),
+                is_current=result.get("is_current", False),
+                description=result.get("description"),
+                created_at=result["created_at"]
+            )
+            
+        except Exception as e:
+            logger.error(f"Failed to link profile {profile_id} to company {company_id}: {str(e)}")
+            error_response = ErrorResponse(
+                error_code="PROFILE_COMPANY_LINK_FAILED",
+                message=f"Failed to link profile to company: {str(e)}",
+                details={
+                    "profile_id": profile_id,
+                    "company_id": company_id,
+                    "operation": "link_profile_to_company",
+                    "exception_type": type(e).__name__
+                }
+            )
+            raise HTTPException(status_code=500, detail=error_response.model_dump())
+
+
+# Initialize CompanyController
+def get_company_controller():
+    return CompanyController(get_db_client())
+
+# ============================================================================
+# COMPANY REST API ENDPOINTS
+# ============================================================================
 
 @app.get(
     "/api/v1/companies", 
@@ -965,21 +1507,252 @@ class CompanyListResponse(BaseModel):
     }
 )
 async def list_companies(
+    name: Optional[str] = Query(None, description="Company name search"),
+    domain: Optional[str] = Query(None, description="Domain search"),
+    industry: Optional[str] = Query(None, description="Industry filter"),
+    city: Optional[str] = Query(None, description="City filter"),
+    country: Optional[str] = Query(None, description="Country filter"),
+    size_category: Optional[str] = Query(None, description="Size category (startup, small, medium, large, enterprise)"),
+    is_startup: Optional[bool] = Query(None, description="Filter for startup companies"),
     limit: int = Query(50, ge=1, le=100, description="Number of companies to return"),
     offset: int = Query(0, ge=0, description="Number of companies to skip"),
     api_key: str = Depends(verify_api_key)
 ):
-    """List companies (placeholder implementation)"""
-    # For now, return empty list since companies feature is not fully implemented
-    return CompanyListResponse(
-        data=[],
-        pagination=PaginationMetadata(
-            limit=limit,
-            offset=offset,
-            total=0,
-            has_more=False
-        )
+    """List companies with optional filtering and pagination"""
+    controller = get_company_controller()
+    return await controller.list_companies(
+        name=name,
+        domain=domain,
+        industry=industry,
+        city=city,
+        country=country,
+        size_category=size_category,
+        is_startup=is_startup,
+        limit=limit,
+        offset=offset
     )
+
+
+@app.get(
+    "/api/v1/companies/{company_id}", 
+    response_model=CompanyResponse,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Company not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def get_company(
+    company_id: str,
+    api_key: str = Depends(verify_api_key)
+):
+    """Get individual company by ID"""
+    controller = get_company_controller()
+    return await controller.get_company(company_id)
+
+
+@app.post(
+    "/api/v1/companies", 
+    response_model=CompanyResponse, 
+    status_code=201,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        422: {"model": ValidationErrorResponse, "description": "Validation error"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def create_company(
+    request: CompanyCreateRequest,
+    api_key: str = Depends(verify_api_key)
+):
+    """Create a new company"""
+    controller = get_company_controller()
+    return await controller.create_company(request)
+
+
+@app.put(
+    "/api/v1/companies/{company_id}", 
+    response_model=CompanyResponse,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Company not found"},
+        422: {"model": ValidationErrorResponse, "description": "Validation error"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def update_company(
+    company_id: str,
+    request: CompanyUpdateRequest,
+    api_key: str = Depends(verify_api_key)
+):
+    """Update an existing company"""
+    controller = get_company_controller()
+    return await controller.update_company(company_id, request)
+
+
+@app.delete(
+    "/api/v1/companies/{company_id}", 
+    status_code=204,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Company not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def delete_company(
+    company_id: str,
+    api_key: str = Depends(verify_api_key)
+):
+    """Delete a company"""
+    controller = get_company_controller()
+    await controller.delete_company(company_id)
+    return None
+
+
+# ============================================================================
+# PROFILE-COMPANY RELATIONSHIP ENDPOINTS
+# ============================================================================
+
+@app.post(
+    "/api/v1/profiles/{profile_id}/companies/{company_id}/link", 
+    response_model=ProfileCompanyRelationship, 
+    status_code=201,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Profile or company not found"},
+        422: {"model": ValidationErrorResponse, "description": "Validation error"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def link_profile_to_company(
+    profile_id: str,
+    company_id: str,
+    request: ProfileCompanyLinkRequest,
+    api_key: str = Depends(verify_api_key)
+):
+    """Link a profile to a company with work experience details"""
+    controller = get_company_controller()
+    return await controller.link_profile_to_company(profile_id, company_id, request)
+
+
+@app.delete(
+    "/api/v1/profiles/{profile_id}/companies/{company_id}/link", 
+    status_code=204,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Profile, company, or relationship not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def unlink_profile_from_company(
+    profile_id: str,
+    company_id: str,
+    api_key: str = Depends(verify_api_key)
+):
+    """Unlink a profile from a company"""
+    try:
+        controller = get_company_controller()
+        controller.company_service.unlink_profile_from_company(profile_id, company_id)
+        return None
+    except Exception as e:
+        logger.error(f"Failed to unlink profile {profile_id} from company {company_id}: {str(e)}")
+        error_response = ErrorResponse(
+            error_code="PROFILE_COMPANY_UNLINK_FAILED",
+            message=f"Failed to unlink profile from company: {str(e)}",
+            details={
+                "profile_id": profile_id,
+                "company_id": company_id,
+                "operation": "unlink_profile_from_company",
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=500, detail=error_response.model_dump())
+
+
+@app.get(
+    "/api/v1/profiles/{profile_id}/companies", 
+    response_model=CompanyListResponse,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Profile not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def get_companies_for_profile(
+    profile_id: str,
+    api_key: str = Depends(verify_api_key)
+):
+    """Get all companies associated with a profile"""
+    try:
+        controller = get_company_controller()
+        companies = controller.company_service.get_companies_for_profile(profile_id)
+        
+        # Convert to response format
+        company_responses = [controller._convert_canonical_to_response(company) for company in companies]
+        
+        return CompanyListResponse(
+            data=company_responses,
+            pagination=PaginationMetadata(
+                limit=len(company_responses),
+                offset=0,
+                total=len(company_responses),
+                has_more=False
+            )
+        )
+        
+    except Exception as e:
+        logger.error(f"Failed to get companies for profile {profile_id}: {str(e)}")
+        error_response = ErrorResponse(
+            error_code="PROFILE_COMPANIES_FAILED",
+            message=f"Failed to get companies for profile: {str(e)}",
+            details={
+                "profile_id": profile_id,
+                "operation": "get_companies_for_profile",
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=500, detail=error_response.model_dump())
+
+
+@app.get(
+    "/api/v1/companies/{company_id}/profiles", 
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        404: {"model": ErrorResponse, "description": "Company not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def get_profiles_for_company(
+    company_id: str,
+    api_key: str = Depends(verify_api_key)
+):
+    """Get all profiles associated with a company"""
+    try:
+        controller = get_company_controller()
+        profiles = controller.company_repo.get_profiles_for_company(company_id)
+        
+        return {
+            "data": profiles,
+            "pagination": {
+                "limit": len(profiles),
+                "offset": 0,
+                "total": len(profiles),
+                "has_more": False
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to get profiles for company {company_id}: {str(e)}")
+        error_response = ErrorResponse(
+            error_code="COMPANY_PROFILES_FAILED",
+            message=f"Failed to get profiles for company: {str(e)}",
+            details={
+                "company_id": company_id,
+                "operation": "get_profiles_for_company",
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=500, detail=error_response.model_dump())
 
 
 # Initialize Scoring Controllers
