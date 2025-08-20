@@ -153,3 +153,113 @@ Test cleanup completed
 
 
 [1A[2K[6/10] [firefox] › tests/scoring-flow.spec.js:111:3 › Profile Scoring Flow › Scoring modal validation
+[1A[2K[chromium] › tests/scoring-flow.spec.js:111:3 › Profile Scoring Flow › Scoring modal validation
+Test cleanup completed
+
+[1A[2K[firefox] › tests/scoring-flow.spec.js:111:3 › Profile Scoring Flow › Scoring modal validation
+Test cleanup completed
+
+[1A[2K[7/10] [chromium] › tests/scoring-flow.spec.js:111:3 › Profile Scoring Flow › Scoring modal validation (retry #1)
+[1A[2K[8/10] [firefox] › tests/scoring-flow.spec.js:111:3 › Profile Scoring Flow › Scoring modal validation (retry #1)
+[1A[2K[chromium] › tests/scoring-flow.spec.js:111:3 › Profile Scoring Flow › Scoring modal validation
+Test cleanup completed
+
+[1A[2K[firefox] › tests/scoring-flow.spec.js:111:3 › Profile Scoring Flow › Scoring modal validation
+Test cleanup completed
+
+[1A[2K  3) [chromium] › tests/scoring-flow.spec.js:111:3 › Profile Scoring Flow › Scoring modal validation 
+
+    [31mTest timeout of 120000ms exceeded.[39m
+
+    Error: page.evaluate: Test timeout of 120000ms exceeded.
+
+      122 |     // Set up dialog handler before clicking
+      123 |     const dialogPromise = page.waitForEvent('dialog');
+    > 124 |     await page.evaluate(() => {
+          |                ^
+      125 |       if (typeof submitScoring === 'function') {
+      126 |         submitScoring();
+      127 |       }
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:124:16
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    [31mTest timeout of 120000ms exceeded.[39m
+
+    Error: browserContext._wrapApiCall: ENOENT: no such file or directory, open '/Users/burke/projects/linkedin-ingestion/admin-ui/test-results/.playwright-artifacts-6/traces/3bf50bdc5769b1ba8d18-2426f1dfd7cf0d1ca92d-retry1.trace'
+
+    Error: tracing.stopChunk: ENOENT: no such file or directory, open '/Users/burke/projects/linkedin-ingestion/admin-ui/test-results/.playwright-artifacts-6/traces/3bf50bdc5769b1ba8d18-2426f1dfd7cf0d1ca92d-retry1.trace'
+
+    Error: page.evaluate: Test ended.
+
+      122 |     // Set up dialog handler before clicking
+      123 |     const dialogPromise = page.waitForEvent('dialog');
+    > 124 |     await page.evaluate(() => {
+          |                ^
+      125 |       if (typeof submitScoring === 'function') {
+      126 |         submitScoring();
+      127 |       }
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:124:16
+
+    Error: ENOENT: no such file or directory, open '/Users/burke/projects/linkedin-ingestion/admin-ui/test-results/.playwright-artifacts-6/86204976cc4756709989196b9eccec60.zip'
+
+    [31mTest timeout of 120000ms exceeded.[39m
+
+
+[1A[2K[9/10] [chromium] › tests/scoring-flow.spec.js:143:3 › Profile Scoring Flow › Scoring history page navigation
+[1A[2K  4) [firefox] › tests/scoring-flow.spec.js:111:3 › Profile Scoring Flow › Scoring modal validation 
+
+    [31mTest timeout of 120000ms exceeded.[39m
+
+    Error: page.evaluate: Test timeout of 120000ms exceeded.
+
+      122 |     // Set up dialog handler before clicking
+      123 |     const dialogPromise = page.waitForEvent('dialog');
+    > 124 |     await page.evaluate(() => {
+          |                ^
+      125 |       if (typeof submitScoring === 'function') {
+      126 |         submitScoring();
+      127 |       }
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:124:16
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    [31mTest timeout of 120000ms exceeded.[39m
+
+    Error: browserContext._wrapApiCall: ENOENT: no such file or directory, open '/Users/burke/projects/linkedin-ingestion/admin-ui/test-results/.playwright-artifacts-7/traces/3bf50bdc5769b1ba8d18-f48e074680c6f9cd550f-retry1.trace'
+
+    Error: tracing.stopChunk: ENOENT: no such file or directory, open '/Users/burke/projects/linkedin-ingestion/admin-ui/test-results/.playwright-artifacts-7/traces/3bf50bdc5769b1ba8d18-f48e074680c6f9cd550f-retry1.trace'
+
+    Error: page.evaluate: Test ended.
+
+      122 |     // Set up dialog handler before clicking
+      123 |     const dialogPromise = page.waitForEvent('dialog');
+    > 124 |     await page.evaluate(() => {
+          |                ^
+      125 |       if (typeof submitScoring === 'function') {
+      126 |         submitScoring();
+      127 |       }
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:124:16
+
+    Error: ENOENT: no such file or directory, open '/Users/burke/projects/linkedin-ingestion/admin-ui/test-results/.playwright-artifacts-7/7631678a275830d6a2a8ed41f1fed4a3.zip'
+
+    [31mTest timeout of 120000ms exceeded.[39m
+
+
+[1A[2K[10/10] [firefox] › tests/scoring-flow.spec.js:143:3 › Profile Scoring Flow › Scoring history page navigation
+[1A[2K[11/10] (retries) [chromium] › tests/scoring-flow.spec.js:166:3 › Profile Scoring Flow › Scoring job detail page functionality
+[1A[2K[12/10] (retries) [chromium] › tests/scoring-flow.spec.js:204:3 › Profile Scoring Flow › Template loading in scoring modal
+[1A[2K[13/10] (retries) [firefox] › tests/scoring-flow.spec.js:166:3 › Profile Scoring Flow › Scoring job detail page functionality
+[1A[2K[14/10] (retries) [firefox] › tests/scoring-flow.spec.js:204:3 › Profile Scoring Flow › Template loading in scoring modal
+[1A[2K[chromium] › tests/scoring-flow.spec.js:204:3 › Profile Scoring Flow › Template loading in scoring modal
+Test cleanup completed
+
+[1A[2K[firefox] › tests/scoring-flow.spec.js:204:3 › Profile Scoring Flow › Template loading in scoring modal
+Test cleanup completed
+
+[1A[2K  4 failed
+    [chromium] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow 
+    [chromium] › tests/scoring-flow.spec.js:111:3 › Profile Scoring Flow › Scoring modal validation 
+    [firefox] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow 
+    [firefox] › tests/scoring-flow.spec.js:111:3 › Profile Scoring Flow › Scoring modal validation ─
+  6 passed (6.9m)

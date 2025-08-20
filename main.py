@@ -1057,34 +1057,8 @@ async def list_scoring_jobs(
     api_key: str = Depends(verify_api_key)
 ):
     """List scoring jobs for dashboard"""
-    try:
-        # For now, return empty list since we need to implement list method in service
-        # This matches the pattern used for companies endpoint
-        return {
-            "jobs": [],
-            "stats": {
-                "total_jobs": 0,
-                "pending_jobs": 0,
-                "completed_jobs": 0,
-                "failed_jobs": 0
-            },
-            "pagination": {
-                "limit": limit,
-                "offset": offset,
-                "total": 0,
-                "has_more": False
-            }
-        }
-    except Exception as e:
-        error_response = ErrorResponse(
-            error_code="JOBS_LIST_ERROR",
-            message=f"Failed to retrieve scoring jobs: {str(e)}",
-            details={
-                "operation": "list_scoring_jobs",
-                "exception_type": type(e).__name__
-            }
-        )
-        raise HTTPException(status_code=500, detail=error_response.model_dump())
+    controller = get_scoring_job_controller()
+    return await controller.list_jobs(limit=limit, offset=offset, status_filter=status)
 
 
 @app.post(

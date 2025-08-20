@@ -1,0 +1,75 @@
+# Page snapshot
+
+```yaml
+- navigation:
+  - text: 
+  - heading "LinkedIn" [level=5]
+  - text: Ingestion Admin
+  - list:
+    - listitem:
+      - link " Dashboard":
+        - /url: /
+    - listitem:
+      - link " Profiles":
+        - /url: /profiles
+    - listitem:
+      - link " Companies":
+        - /url: /companies
+    - listitem:
+      - link " Ingestion":
+        - /url: /ingestion
+    - listitem:
+      - link " Scoring":
+        - /url: /scoring
+    - listitem:
+      - link " Templates":
+        - /url: /templates
+  - separator
+  - text:  v2.1.0-development+ae6d5ec9 
+  - link "ae6d5ec":
+    - /url: https://github.com/bautrey/linkedin-ingestion/commit/ae6d5ec9
+  - text: development  8/19/2025  LinkedIn Ingestion Admin Dashboard
+- navigation:
+  - link " LinkedIn Ingestion Admin":
+    - /url: /
+  - list:
+    - listitem:
+      - link " Dashboard":
+        - /url: /
+    - listitem:
+      - link " Profiles":
+        - /url: /profiles
+    - listitem:
+      - link " Companies":
+        - /url: /companies
+  - list:
+    - listitem: 
+    - listitem:
+      - button " Admin"
+- 'heading "Score Profile: Reid Hoffman" [level=2]'
+- paragraph: Select a template and start scoring this profile
+- link " Back to Profiles":
+  - /url: /profiles
+- heading " Profile to Score" [level=5]
+- img "Reid Hoffman photo"
+- text:  Reid Hoffman Co-Founder, Board Chair at Manas AI
+- heading " Scoring Configuration" [level=5]
+- text: Select Scoring Template
+- radio "Enhanced CIO Evaluation Template CIO evaluation template with weighted scoring criteria CIO"
+- heading "Enhanced CIO Evaluation Template" [level=6]
+- paragraph: CIO evaluation template with weighted scoring criteria
+- text: CIO
+- radio "Enhanced CTO Evaluation Template CTO evaluation template with weighted scoring criteria CTO"
+- heading "Enhanced CTO Evaluation Template" [level=6]
+- paragraph: CTO evaluation template with weighted scoring criteria
+- text: CTO
+- radio "Enhanced CISO Evaluation Template CISO evaluation template with weighted scoring criteria CISO"
+- heading "Enhanced CISO Evaluation Template" [level=6]
+- paragraph: CISO evaluation template with weighted scoring criteria
+- text: CISO
+- radio "Use Custom Prompt"
+- text: Use Custom Prompt
+- button " Start Scoring Profile" [disabled]
+- link " Cancel":
+  - /url: /profiles
+```

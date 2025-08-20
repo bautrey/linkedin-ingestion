@@ -659,3 +659,94 @@ class ScoringJobController(LoggerMixin):
                 error=str(e),
                 error_type=type(e).__name__
             )
+    
+    async def list_jobs(
+        self,
+        limit: int = 50,
+        offset: int = 0,
+        status_filter: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        List scoring jobs with pagination and stats for dashboard
+        
+        Args:
+            limit: Maximum number of jobs to return
+            offset: Number of jobs to skip
+            status_filter: Optional status to filter by
+            
+        Returns:
+            Dict with jobs, stats, and pagination info
+        """
+        self.logger.debug(
+            "Listing scoring jobs",
+            limit=limit,
+            offset=offset,
+            status_filter=status_filter
+        )
+        
+        try:
+            jobs, stats = await self.job_service.list_jobs(
+                limit=limit,
+                offset=offset,
+                status_filter=status_filter
+            )
+            
+            # Convert jobs to simple dict format for JSON response
+            jobs_data = []
+            for job in jobs:
+                job_dict = {
+                    "id": job.id,
+                    "profile_id": job.profile_id,
+                    "status": job.status.value if hasattr(job.status, 'value') else job.status,
+                    "created_at": job.created_at.isoformat() if job.created_at else None,
+                    "updated_at": job.updated_at.isoformat() if job.updated_at else None,
+                    "started_at": job.started_at.isoformat() if job.started_at else None,
+                    "completed_at": job.completed_at.isoformat() if job.completed_at else None,
+                    "model_name": job.model_name,
+                    "retry_count": job.retry_count,
+                    "error_message": job.error_message
+                }
+                
+                # Add parsed score summary if available
+                if job.parsed_score and isinstance(job.parsed_score, dict):
+                    # Try to extract a score value for display
+                    score_value = None
+                    for key in ['total_score', 'score', 'overall_score', 'rating']:
+                        if key in job.parsed_score and isinstance(job.parsed_score[key], (int, float)):
+                            score_value = job.parsed_score[key]
+                            break
+                    job_dict["score"] = score_value
+                
+                jobs_data.append(job_dict)
+            
+            return {
+                "jobs": jobs_data,
+                "stats": stats,
+                "pagination": {
+                    "limit": limit,
+                    "offset": offset,
+                    "total": stats["total_jobs"],
+                    "has_more": len(jobs_data) >= limit
+                }
+            }
+            
+        except Exception as e:
+            self.logger.error(
+                "Failed to list jobs",
+                limit=limit,
+                offset=offset,
+                error=str(e),
+                error_type=type(e).__name__
+            )
+            from app.models.errors import ErrorResponse
+            from fastapi import HTTPException
+            
+            error_response = ErrorResponse(
+                error_code="JOBS_LIST_ERROR",
+                message="Failed to retrieve scoring jobs",
+                details={
+                    "operation": "list_jobs",
+                    "error": str(e)
+                }
+            )
+            raise HTTPException(status_code=500, detail=error_response.model_dump())

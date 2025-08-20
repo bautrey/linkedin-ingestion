@@ -565,3 +565,92 @@ class ScoringJobService(LoggerMixin):
                 error=str(e)
             )
             raise
+    
+    async def list_jobs(
+        self,
+        limit: int = 50,
+        offset: int = 0,
+        status_filter: Optional[str] = None
+    ) -> tuple[List[ScoringJob], Dict[str, int]]:
+        """
+        List scoring jobs with pagination and optional status filtering
+        
+        Args:
+            limit: Maximum number of jobs to return
+            offset: Number of jobs to skip
+            status_filter: Optional status to filter by
+            
+        Returns:
+            Tuple of (jobs_list, stats_dict)
+        """
+        await self._ensure_client()
+        
+        try:
+            table = self.client.table("scoring_jobs")
+            
+            # Build query with optional status filter
+            query = table.select("*")
+            if status_filter:
+                query = query.eq("status", status_filter)
+            
+            # Get jobs with pagination
+            result = await query.order("created_at", desc=True).range(offset, offset + limit - 1).execute()
+            
+            # Get stats (total counts by status)
+            stats_result = await table.select("status").execute()
+            
+            # Process jobs
+            jobs = []
+            if result.data:
+                for job_data in result.data:
+                    # Convert timestamps
+                    for timestamp_field in ['created_at', 'updated_at', 'started_at', 'completed_at']:
+                        if job_data.get(timestamp_field):
+                            try:
+                                job_data[timestamp_field] = datetime.fromisoformat(
+                                    job_data[timestamp_field].replace('Z', '+00:00')
+                                )
+                            except (ValueError, AttributeError):
+                                pass
+                    
+                    jobs.append(ScoringJob(**job_data))
+            
+            # Calculate stats
+            stats = {
+                "total_jobs": 0,
+                "pending_jobs": 0,
+                "processing_jobs": 0,
+                "completed_jobs": 0,
+                "failed_jobs": 0
+            }
+            
+            if stats_result.data:
+                stats["total_jobs"] = len(stats_result.data)
+                for job_data in stats_result.data:
+                    status = job_data.get("status", "pending")
+                    if status == "pending":
+                        stats["pending_jobs"] += 1
+                    elif status == "processing":
+                        stats["processing_jobs"] += 1
+                    elif status == "completed":
+                        stats["completed_jobs"] += 1
+                    elif status == "failed":
+                        stats["failed_jobs"] += 1
+            
+            self.logger.debug(
+                "Listed scoring jobs",
+                job_count=len(jobs),
+                total_jobs=stats["total_jobs"],
+                offset=offset,
+                limit=limit
+            )
+            
+            return jobs, stats
+            
+        except Exception as e:
+            self.logger.error(
+                "Failed to list scoring jobs",
+                error=str(e),
+                error_type=type(e).__name__
+            )
+            raise

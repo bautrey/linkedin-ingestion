@@ -46,30 +46,146 @@
     - listitem: 
     - listitem:
       - button " Admin"
-- link " Back to Scoring":
-  - /url: /scoring
-- heading "Scoring Job Details" [level=2]
-- paragraph: " Job ID: 67db4622-138f-47d4-b230-7f239b59bdc9"
-- button " Retry Job"
-- link " View Profile":
-  - /url: /profiles/5ce5de74-33af-4e55-a9d9-1de8593c5103
-- heading " Job Status" [level=5]
-- strong: "Status:"
-- text:  Failed
-- strong: "Created:"
-- text: 8/20/2025, 7:57:49 AM
-- strong: "Failed:"
-- text: 8/20/2025, 7:57:49 AM
-- heading " Error Details" [level=5]
-- strong: "Error:"
-- text: "[object Object]"
-- heading "Job Metadata" [level=6]
-- text: Job ID 67db4622-138f-47d4-b230-7f239b59bdc9 Profile ID 5ce5de74-33af-4e55-a9d9-1de8593c5103
-- heading "Actions" [level=6]
-- button " Refresh Status"
-- button " Retry Job"
-- link " View Profile":
-  - /url: /profiles/5ce5de74-33af-4e55-a9d9-1de8593c5103
-- link " Back to Scoring":
-  - /url: /scoring
+- link " Back to Profiles":
+  - /url: /profiles
+- heading "Reid Hoffman" [level=2]
+- paragraph: " Added on 8/19/2025 • LinkedIn ID: 1213"
+- button " Score Profile"
+- button " More Actions"
+- text: 
+- link " View LinkedIn":
+  - /url: https://www.linkedin.com/in/reidhoffman/
+- heading "Reid Hoffman" [level=4]
+- paragraph: Co-Founder, Board Chair
+- paragraph:  Manas AI
+- paragraph:  United States
+- heading " About" [level=5]
+- text: My current priority is investing in and building with AI to benefit humanity.<br><br>I am active in all facets of the consumer internet and software industries. My focus spans product development, innovation, business strategy, and finance. My expertise also extends to general management, operations, business development, talent management, and marketing. I have experience with seed-stage to massive scale companies such as PayPal, LinkedIn, Airbnb, OpenAI, Facebook, Mozilla, and Zynga, as well as world-scale companies like Microsoft.<br><br>My specialties include general management, product development, strategy, negotiation, financing, deal structuring, international business, marketing, brand development and management, business development, public relations, press strategy, payments infrastructure, financial services, mergers and acquisitions, startups, software development, operations centers, board management, and investing.
+- heading " Experience" [level=5]
+- img "Manas AI"
+- heading "Co-Founder, Board Chair" [level=6]
+- link "Manas AI":
+  - /url: https://www.linkedin.com/company/106067845
+- text: Manas AI leverages proprietary AI, generative computational chemistry, and best in class biology to cut the timeline and costs of traditional therapeutic discovery and transform the treatment of cancer and rare disease. While we're still in the early stages of contemporary AI development, initiatives like Manas AI show how close we already are to advances that can profoundly change the world. Success in our quest will give thousands of oncologists around the world new therapeutics to combat diseases that have shaped human existence since before recorded history, constraining human possibilities and causing immense suffering and loss. The future of medicine has never held more promise.
+- img "Inflection AI"
+- heading "Co-Founder, Board Member" [level=6]
+- link "Inflection AI":
+  - /url: https://www.linkedin.com/company/79994924
+- text:  Palo Alto, California, United States Inflection AI is a public benefit corporation leveraging our world-class large language model to build the first AI platform focused on the needs of the enterprise. I helped start Inflection AI to further a vision where artificial intelligence empowers individuals and amplifies human capabilities. In March 2024, an expanded team of kind, innovative, and collaborative individuals grew Inflection’s scope to focus on building enterprise AI solutions.
+- img "Greylock"
+- heading "Partner" [level=6]
+- link "Greylock":
+  - /url: https://www.linkedin.com/company/18077
+- text: " Seattle, Washington, United States Greylock partners with entrepreneurs to build market-transforming companies. Notable Greylock portfolio companies include Linkedin, Airbnb, Facebook, Workday, Roblox, Palo Alto Networks, Dropbox, Pure Storage, Instagram and Discord. I represent Greylock on the boards of Aurora, Entrepreneur First, ManasAI, Tome, and Nauto. My primary focus is world-class entrepreneurs with bold new ideas with the possibility of massive scale. I also focus on companies in domains where my product and entrepreneurial experience applies strongly: consumer internet, enterprise 2.0, mobile, social gaming, online marketplaces, payments, SAAS, and social networks."
+- img "Village Global"
+- heading "Chairperson" [level=6]
+- link "Village Global":
+  - /url: https://www.linkedin.com/company/18265228
+- text:  Seattle, Washington, United States · Hybrid Village Global is a network-native VC firm backed by tech industry luminaries. When you join a Village, seed capital is just the beginning. Village helps you go faster with an incredible founder community, expert advice, and game-changing introductions. As the Chairman of Village since 2017, I have supported the community as we’ve built a network of experienced founders and advisors who are democratizing access to startup wisdom.
+- img "Microsoft"
+- heading "Board Member" [level=6]
+- link "Microsoft":
+  - /url: https://www.linkedin.com/company/1035
+- text:  Seattle, Washington, United States Microsoft's mission is to empower every person and every organization on the planet to achieve more. I believe in technology's power to empower people and transform industries. Microsoft exemplifies this mission at a global scale. Joining the board allowed me to contribute to a company that is using AI and cloud computing to amplify human potential and enhance productivity and creativity for billions.
+- img "Aurora"
+- heading "Board Member" [level=6]
+- link "Aurora":
+  - /url: https://www.linkedin.com/company/17973173
+- text:  Palo Alto, California, United States Aurora is a leading autonomous vehicle technology company, focused on self-driving solutions for freight, delivery, and passenger transport. The Aurora Driver platform integrates hardware, software, and data services to enable safe and efficient transportation. Aurora is a bet on the transformative potential of autonomous technology to revolutionize logistics and mobility while addressing pressing challenges like safety and efficiency in transportation.
+- img "NAUTO"
+- heading "Board Member" [level=6]
+- link "NAUTO":
+  - /url: https://www.linkedin.com/company/10023541
+- text:  Palo Alto, CA Nauto develops AI-powered driver and fleet safety systems to reduce collisions and improve driving behavior. By leveraging real-time insights, it enhances operational efficiency for businesses and supports safer roads for all. Backing Nauto is an opportunity to leverage AI to make the roads safer while driving value for thousands of businesses.
+- img "Entrepreneur First"
+- heading "Board Member" [level=6]
+- link "Entrepreneur First":
+  - /url: https://www.linkedin.com/company/2340783
+- text:  London, United Kingdom Entrepreneur First identifies founders with extraordinary futures before anyone else, embedding them in a community of ambitious peers and giving them the tools they need to succeed, fast. We back them before they have a company, a team, even before they have an idea, based purely on talent. Serving on Entrepreneur First’s board has allowed me to play a small role in fostering entrepreneurship by investing in individuals and giving more exceptional leaders access to capital.
+- img "Wolfson College, Oxford"
+- heading "Honorary Fellow" [level=6]
+- link "Wolfson College, Oxford":
+  - /url: https://www.linkedin.com/company/5762424
+- text:  Oxford, United Kingdom I first attended Wolfson College at the University of Oxford as a Marshall Scholar, earning an MSt in Philosophy in 1993. It was a privilege to be awarded an Honorary Fellowship by my alma mater in 2016.
+- img "Cambridge Judge Business School"
+- heading "Dean's Senior Fellow" [level=6]
+- link "Cambridge Judge Business School":
+  - /url: https://www.linkedin.com/company/4521
+- text:  Cambridge, England, United Kingdom · Hybrid
+- img "The London School of Economics and Political Science (LSE)"
+- heading "Visiting Senior Fellow" [level=6]
+- link "The London School of Economics and Political Science (LSE)":
+  - /url: https://www.linkedin.com/company/6544
+- text:  London Area, United Kingdom · Hybrid Appointed as a Visiting Senior Fellow at LSE’s Data Science Institute (DSI). I will interact with LSE students and faculty and participate in events including discussions and workshops during my visits to London. In the role, I will draw on my experience in technological entrepreneurship and the impacts of new technologies on society, the function of education and the university, and geopolitics of technology.
+- img "Columbia University"
+- heading "Distinguished Fellow" [level=6]
+- link "Columbia University":
+  - /url: https://www.linkedin.com/company/2624
+- text:  New York, United States · Hybrid Institute of Global Politics
+- img "Reinvent Capital"
+- heading "Advisory Member" [level=6]
+- link "Reinvent Capital":
+  - /url: https://www.linkedin.com/company/71411641
+- text:  Seattle, Washington, United States Reinvent partners with bold leaders of category-defining companies to help them grow and innovate at scale.
+- img "Coda"
+- heading "Board Member" [level=6]
+- link "Coda":
+  - /url: https://www.linkedin.com/company/18274722
+- text:  Palo Alto, CA Coda is a collaboration platform that combines the power of spreadsheets and databases into a flexible, dynamic workspace. Their technology makes it so everyone can work together, in their own way, off a single source of truth. I was honored to serve on Coda’s board from 2014 until December 2024, when Coda was acquired by Grammarly.
+- img "Blockstream"
+- heading "Board Member" [level=6]
+- link "Blockstream":
+  - /url: https://www.linkedin.com/company/3998145
+- text:  London Area, United Kingdom Blockstream is a leader in Bitcoin and blockchain technology, offering solutions for scaling, security, and decentralized financial systems. Its products include the Liquid Network and Bitcoin mining services. Since 2015, I have been writing about the power of Blockchain technology to redefine finance and ownership online. Serving on Blockstream’s board allowed me to support that vision and a dedicated team of builders.
+- img "Joby Aviation"
+- heading "Board Member" [level=6]
+- link "Joby Aviation":
+  - /url: https://www.linkedin.com/company/6407329
+- text:  Santa Cruz, California, United States Joby Aviation is an electric vertical takeoff and landing (eVTOL) aircraft company aiming to redefine urban transportation. Its aircraft promise zero-emission, quiet, and efficient air travel. Joby is a pioneer in the future of sustainable, urban transportation.
+- img "Convoy Inc"
+- heading "Board Member" [level=6]
+- link "Convoy Inc":
+  - /url: https://www.linkedin.com/company/10254315
+- text:  Greater Seattle Area Convoy is a digital freight network that uses technology to optimize trucking logistics, reducing costs and environmental impact. It connects shippers with carriers through a seamless platform. I served on Convoy’s board until 2023, when the company transitioned to become a part of Flexport.
+- img "Neeva"
+- heading "Board Member" [level=6]
+- link "Neeva":
+  - /url: https://www.linkedin.com/company/37539307
+- text:  Mountain View, California, United States Neeva is search re-imagined. Always ad-free, private, and personal. Co-founded by Sridhar Ramaswamy (ex-SVP of Ads at Google) and Vivek Raghunathan (ex-VP of Monetization at YouTube). I served on Neeva’s board until their acquisition by Snowflake in 2023
+- img "OpenAI"
+- heading "Board Member" [level=6]
+- link "OpenAI":
+  - /url: https://www.linkedin.com/company/11130470
+- text:  San Francisco Bay Area OpenAI is creating Beneficial Artificial Intelligence for society, humanity, and industries. OpenAI's mission is to ensure that artificial general intelligence (AGI) benefits all of humanity. In 2015, I was honored to be the earliest investor in OpenAI, and serving on the company’s board during the launch of Chat GPT – which kickstarted the broad AI revolution. In 2023 I stepped down from the company’s board to avoid conflicts of interest, though I still remain dedicated to OpenAI’s growth, and the larger mission to use AI to benefit humanity.
+- img "Xapo Bank"
+- heading "Board Observer" [level=6]
+- link "Xapo Bank":
+  - /url: https://www.linkedin.com/company/77000399
+- text:  Palo Alto, CA Xapo combines the convenience of an everyday bitcoin wallet with the security of a deep cold storage vault. By bringing together convenience that bitcoin users want everyday with the security they require for saving, Xapo is the most secure, reliable, and easy way to manage and store your bitcoin.
+- heading " Education" [level=5]
+- text: 
+- heading "Università degli Studi di Perugia" [level=6]
+- text: Honorary Doctorate Human Sciences 
+- heading "University of Oulu" [level=6]
+- text: Honorary Doctor Faculty of Information Technology and Electrical Engineering 
+- heading "Babson College" [level=6]
+- text: Honorary Doctor of Laws Entrepreneurship/Entrepreneurial Studies 
+- heading "University of Oxford" [level=6]
+- text: M.St. Philosophy 
+- heading "Stanford University" [level=6]
+- text: B.S. Symbolic Systems 
+- heading "The Putney School" [level=6]
+- text: Diploma Highschool
+- heading "Profile Status" [level=6]
+- text: Profile Score —
+- progressbar
+- text: Last Updated 8/19/2025, 3:36:25 PM Profile ID 5ce5de74-33af-4e55-a9d9-1de8593c5103
+- heading "Quick Actions" [level=6]
+- button " Score Profile"
+- button " Re-sync Data"
+- button " Scoring History"
+- button " Export Profile"
+- heading "Profile Navigation" [level=6]
+- button " Previous Profile"
+- button " Next Profile"
 ```
