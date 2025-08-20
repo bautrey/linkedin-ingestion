@@ -138,6 +138,90 @@ router.delete('/templates/:id', async (req, res) => {
     }
 });
 
+// POST /api/templates/:id/test - Test template with sample data
+router.post('/templates/:id/test', async (req, res) => {
+    try {
+        const templateId = req.params.id;
+        const { use_sample_data } = req.body;
+        
+        // First get the template
+        const templateResponse = await apiClient.get(`/templates/${templateId}`);
+        const template = templateResponse.data;
+        
+        // Sample profile data for testing
+        const sampleData = {
+            full_name: 'John Smith',
+            position: 'Senior Software Engineer',
+            current_company: {
+                name: 'TechCorp Inc.',
+                size: '1000-5000',
+                industry: 'Software Development'
+            },
+            location: 'San Francisco, CA',
+            experience: [
+                {
+                    title: 'Senior Software Engineer',
+                    company: 'TechCorp Inc.',
+                    duration: '2022-Present',
+                    description: 'Lead a team of 5 engineers developing cloud-native applications'
+                },
+                {
+                    title: 'Software Engineer',
+                    company: 'StartupXYZ',
+                    duration: '2019-2022',
+                    description: 'Full-stack development using React and Node.js'
+                }
+            ],
+            education: [
+                {
+                    degree: 'BS Computer Science',
+                    school: 'Stanford University',
+                    year: '2019'
+                }
+            ],
+            skills: ['JavaScript', 'Python', 'React', 'Node.js', 'AWS', 'Docker', 'Kubernetes'],
+            summary: 'Experienced software engineer with expertise in full-stack development and cloud technologies'
+        };
+        
+        // Generate the prompt by replacing placeholders
+        let generatedPrompt = template.prompt_text;
+        generatedPrompt = generatedPrompt.replace('{{profile_data}}', JSON.stringify(sampleData, null, 2));
+        generatedPrompt = generatedPrompt.replace('{{profile_name}}', sampleData.full_name);
+        generatedPrompt = generatedPrompt.replace('{{current_title}}', sampleData.position);
+        generatedPrompt = generatedPrompt.replace('{{current_company}}', sampleData.current_company.name);
+        
+        // For testing purposes, we'll return the generated prompt and sample response
+        // In a real implementation, you'd send this to an AI service
+        const mockAiResponse = {
+            technical_leadership: { score: 7, reasoning: 'Strong technical background with team leadership experience' },
+            strategic_vision: { score: 6, reasoning: 'Good understanding of modern technologies but limited strategic experience shown' },
+            team_management: { score: 8, reasoning: 'Currently leading a team of 5 engineers, demonstrating management capabilities' },
+            industry_experience: { score: 7, reasoning: 'Solid experience in software development with both startup and established company exposure' },
+            cultural_fit: { score: 8, reasoning: 'Background suggests adaptability and growth mindset' },
+            overall_score: 7.2,
+            summary: 'Strong technical candidate with leadership experience. Good fit for senior technical roles requiring team management.'
+        };
+        
+        res.json({
+            success: true,
+            sample_data: sampleData,
+            generated_prompt: generatedPrompt,
+            ai_response: JSON.stringify(mockAiResponse, null, 2),
+            score: mockAiResponse.overall_score,
+            template_id: templateId,
+            timestamp: new Date().toISOString()
+        });
+        
+    } catch (error) {
+        logger.error(`Error testing template ${req.params.id}:`, error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to test template',
+            error: error.message
+        });
+    }
+});
+
 // POST /api/ingestion - Start LinkedIn profile ingestion
 router.post('/ingestion', async (req, res) => {
     try {

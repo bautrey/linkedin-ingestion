@@ -156,15 +156,23 @@
                                                 <input class="form-check-input" type="radio" name="template_id" 
                                                        id="customPrompt" value="">
                                                 <label class="form-check-label" for="customPrompt">
-                                                    Use Custom Prompt
+                                                    <strong>Use Custom Prompt</strong>
+                                                    <br><small class="text-muted">Write your own scoring instructions</small>
                                                 </label>
                                             </div>
-                                            <div class="mt-2" id="customPromptSection" style="display: none;">
+                                            <div class="mt-3" id="customPromptSection" style="display: none;">
+                                                <label class="form-label fw-medium mb-2">Custom Scoring Prompt</label>
                                                 <textarea class="form-control" name="custom_prompt" rows="4" 
-                                                          placeholder="Enter your custom scoring prompt..."></textarea>
-                                                <small class="form-text text-muted">
-                                                    Provide instructions for how the AI should evaluate and score the profile(s).
+                                                          placeholder="Example: Evaluate this profile for senior engineering leadership potential. Rate on a scale of 1-10 considering technical expertise, management experience, and cultural fit. Provide detailed reasoning for each area."></textarea>
+                                                <small class="form-text text-muted mt-1">
+                                                    <i class="bi bi-info-circle"></i>
+                                                    Provide specific instructions for how the AI should evaluate and score the profile(s). Be clear and detailed for best results.
                                                 </small>
+                                                <div class="mt-2">
+                                                    <small class="text-success" id="customPromptValidation" style="display: none;">
+                                                        <i class="bi bi-check-circle"></i> Custom prompt is ready
+                                                    </small>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -222,13 +230,31 @@
             templateRadios.forEach(radio => {
                 radio.addEventListener('change', function() {
                     const isCustom = this.value === '';
+                    console.log('Template radio changed:', this.value, 'isCustom:', isCustom);
                     customPromptSection.style.display = isCustom ? 'block' : 'none';
                     updateStartButton();
                 });
             });
             
             // Handle custom prompt changes
-            document.querySelector('textarea[name="custom_prompt"]').addEventListener('input', updateStartButton);
+            const customPromptTextarea = document.querySelector('textarea[name="custom_prompt"]');
+            const customPromptValidation = document.getElementById('customPromptValidation');
+            
+            customPromptTextarea.addEventListener('input', function() {
+                const promptLength = this.value.trim().length;
+                if (promptLength >= 10) {
+                    customPromptValidation.style.display = 'block';
+                    customPromptValidation.className = 'text-success';
+                    customPromptValidation.innerHTML = '<i class="bi bi-check-circle"></i> Custom prompt is ready (' + promptLength + ' characters)';
+                } else if (promptLength > 0) {
+                    customPromptValidation.style.display = 'block';
+                    customPromptValidation.className = 'text-warning';
+                    customPromptValidation.innerHTML = '<i class="bi bi-exclamation-triangle"></i> Prompt should be more detailed (' + promptLength + ' characters)';
+                } else {
+                    customPromptValidation.style.display = 'none';
+                }
+                updateStartButton();
+            });
             
             function updateStartButton() {
                 const selectedTemplate = document.querySelector('input[name="template_id"]:checked');

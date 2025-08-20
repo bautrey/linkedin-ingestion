@@ -15,6 +15,20 @@ router.get('/', async (req, res) => {
         });
     } catch (error) {
         logger.error('Error fetching templates:', error);
+        
+        // Check if this is a backend database/parsing error
+        if (error.response && error.response.status === 500) {
+            const errorDetail = error.response.data?.detail;
+            if (errorDetail && errorDetail.message && errorDetail.message.includes('Invalid isoformat string')) {
+                res.render('templates/list', {
+                    title: 'Prompt Templates',
+                    templates: [],
+                    error: 'Unable to load templates due to a database issue. Please contact support.'
+                });
+                return;
+            }
+        }
+        
         res.status(500).render('error', {
             title: 'Error',
             message: 'Failed to load templates',

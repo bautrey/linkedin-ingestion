@@ -66,21 +66,69 @@ router.get('/', async (req, res) => {
             }
         } else {
             // Show scoring dashboard
-            // Note: Jobs endpoint doesn't exist yet, so we'll show empty jobs for now
-            const jobs = [];
-            const stats = {
-                total_jobs: 0,
-                pending_jobs: 0,
-                completed_jobs: 0,
-                failed_jobs: 0
-            };
-            
-            res.render('scoring/dashboard', {
-                title: 'Scoring Dashboard',
-                jobs: jobs,
-                stats: stats,
-                currentPage: 'scoring'
-            });
+            try {
+                // Fetch scoring jobs from API
+                const jobsResponse = await apiClient.get('/scoring-jobs');
+                let jobs = jobsResponse.data?.jobs || jobsResponse.data || [];
+                
+                // Enrich jobs with profile names (fetch first 20 jobs to avoid too many API calls)
+                const jobsToEnrich = jobs.slice(0, 20);
+                const enrichedJobs = await Promise.all(
+                    jobsToEnrich.map(async (job) => {
+                        try {
+                            if (job.profile_id) {
+                                const profileResponse = await apiClient.get(`/profiles/${job.profile_id}`);
+                                const profile = profileResponse.data;
+                                job.profile_name = profile?.name || profile?.full_name || 'Unknown Profile';
+                            } else {
+                                job.profile_name = 'No Profile ID';
+                            }
+                        } catch (error) {
+                            logger.debug(`Failed to fetch profile name for job ${job.id}:`, error.message);
+                            job.profile_name = 'Unknown Profile';
+                        }
+                        return job;
+                    })
+                );
+                
+                // Replace the first 20 jobs with enriched versions, keep the rest as-is
+                jobs = [...enrichedJobs, ...jobs.slice(20)];
+                
+                // Calculate stats from jobs data
+                const stats = {
+                    total_jobs: jobs.length,
+                    pending_jobs: jobs.filter(job => job.status === 'pending' || job.status === 'running').length,
+                    completed_jobs: jobs.filter(job => job.status === 'completed').length,
+                    failed_jobs: jobs.filter(job => job.status === 'failed' || job.status === 'error').length
+                };
+                
+                logger.info(`Fetched ${jobs.length} scoring jobs for dashboard (enriched ${enrichedJobs.length} with profile names)`);
+                
+                res.render('scoring/dashboard', {
+                    title: 'Scoring Dashboard',
+                    jobs: jobs,
+                    stats: stats,
+                    currentPage: 'scoring'
+                });
+            } catch (error) {
+                logger.warn('Error fetching scoring jobs for dashboard:', error.message);
+                // Fallback to empty data if API call fails
+                const jobs = [];
+                const stats = {
+                    total_jobs: 0,
+                    pending_jobs: 0,
+                    completed_jobs: 0,
+                    failed_jobs: 0
+                };
+                
+                res.render('scoring/dashboard', {
+                    title: 'Scoring Dashboard',
+                    jobs: jobs,
+                    stats: stats,
+                    currentPage: 'scoring',
+                    warning: 'Unable to load scoring jobs. Please try again later.'
+                });
+            }
         }
     } catch (error) {
         logger.error('Error loading scoring interface:', error);

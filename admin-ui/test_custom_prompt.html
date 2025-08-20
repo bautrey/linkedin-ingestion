@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Custom Prompt Test</title>
+</head>
+<body>
+    <h1>Testing Custom Prompt Selection</h1>
+    <form id="testForm">
+        <div>
+            <input type="radio" name="template_id" id="template1" value="template-1">
+            <label for="template1">Template 1</label>
+        </div>
+        <div>
+            <input type="radio" name="template_id" id="customPrompt" value="">
+            <label for="customPrompt">Use Custom Prompt</label>
+        </div>
+        <div id="customPromptSection" style="display: none;">
+            <textarea name="custom_prompt" rows="4" placeholder="Enter custom prompt..."></textarea>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+
+    <script>
+        const form = document.getElementById('testForm');
+        const templateRadios = document.querySelectorAll('input[name="template_id"]');
+        const customPromptSection = document.getElementById('customPromptSection');
+        
+        templateRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                const isCustom = this.value === '';
+                customPromptSection.style.display = isCustom ? 'block' : 'none';
+                console.log('Radio changed:', this.value, 'isCustom:', isCustom);
+            });
+        });
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const selectedTemplate = document.querySelector('input[name="template_id"]:checked');
+            console.log('Selected template:', selectedTemplate ? selectedTemplate.value : 'none');
+            
+            if (!selectedTemplate) {
+                alert('Please select a template or provide a custom prompt');
+                return;
+            }
+            
+            if (selectedTemplate.value === '') {
+                const customPrompt = document.querySelector('textarea[name="custom_prompt"]').value.trim();
+                console.log('Custom prompt:', customPrompt);
+                if (customPrompt.length === 0) {
+                    alert('Please enter a custom prompt');
+                    return;
+                }
+                alert('Success! Custom prompt: ' + customPrompt);
+            } else {
+                alert('Success! Template: ' + selectedTemplate.value);
+            }
+        });
+    </script>
+</body>
+</html>

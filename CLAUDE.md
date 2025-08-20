@@ -63,3 +63,27 @@ When asked to work on this codebase:
 - ⚠️ **User Correction**: 2025-08-18 - Whether working on backend or frontend, it's one unified project session
 
 *Hibernation process must identify main project root, not current working directory*
+
+## Debugging & Troubleshooting
+
+### Memory Server Usage
+**Essential for debugging and knowledge retention across sessions**
+
+- 🟢 **Status Check**: Memory server shows as "Running" with green indicator in Warp terminal
+- 🔧 **Available Tools**: 
+  - `create_entities`: Store new findings, issues, solutions
+  - `create_relations`: Link related concepts
+  - `add_observations`: Update existing entities with new info
+  - `search_nodes`: Find previously stored information
+  - `read_graph`, `open_nodes`: Explore stored knowledge
+- 📋 **Usage Pattern**: Document key learnings, API patterns, debugging solutions
+- 💡 **Best Practice**: Store troubleshooting patterns to avoid repeating same mistakes
+- ⚡ **Quick Access**: Use `call_mcp_tool` with `name: "search_nodes"` to find past solutions
+
+### Common Issues & Solutions
+**Recently resolved patterns (stored in memory server)**
+
+- **UI showing "No data found"**: Check API connectivity, verify production endpoints, debug with temporary logging
+- **Profile names missing**: Enrich data with additional API calls rather than assuming nested response structure
+- **Environment variables**: Fix typos in .env files (e.g., `FASAPI_BASE_URL` → `FASTAPI_BASE_URL`)
+- **API testing**: Always test against production Railway deployment, not localhost assumptions

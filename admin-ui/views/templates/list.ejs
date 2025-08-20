@@ -95,6 +95,17 @@
                         </div>
                     </div>
 
+                    <!-- Error Message (if any) -->
+                    <% if (typeof error !== 'undefined' && error) { %>
+                        <div class="alert alert-warning" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            <%= error %>
+                            <div class="mt-2">
+                                <small>You can still create new templates using the "New Template" button above.</small>
+                            </div>
+                        </div>
+                    <% } %>
+                    
                     <!-- Templates Table -->
                     <div class="card border-0 shadow-sm">
                         <div class="card-body p-0">

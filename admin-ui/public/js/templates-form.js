@@ -124,9 +124,19 @@ async function handleFormSubmit(event) {
             
             formIsDirty = false;
             
-            // Redirect to template detail page
+            // Redirect - handle different response structures
             setTimeout(() => {
-                window.location.href = `/templates/${result.id}`;
+                let templateId;
+                if (result.id) {
+                    templateId = result.id;
+                } else if (result.data && result.data.id) {
+                    templateId = result.data.id;
+                } else {
+                    // Fallback to templates list if no ID found
+                    window.location.href = '/templates';
+                    return;
+                }
+                window.location.href = `/templates/${templateId}`;
             }, 1000);
             
         } else {
@@ -360,8 +370,60 @@ function showPreviewModal(content) {
 
 // Test template (for edit mode)
 async function testTemplate() {
-    showNotification('Template testing feature coming soon', 'info');
-    // TODO: Implement template testing with sample profile data
+    if (!isEdit) {
+        showNotification('Please save the template first before testing', 'warning');
+        return;
+    }
+    
+    const templateId = document.querySelector('input[name="template_id"]')?.value;
+    if (!templateId) {
+        showNotification('Template ID not found', 'error');
+        return;
+    }
+    
+    try {
+        showNotification('Testing template with sample data...', 'info');
+        
+        // Call the API to test the template with sample profile data
+        const response = await fetch(`/api/templates/${templateId}/test`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                use_sample_data: true
+            })
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            
+            // Show test results in a modal
+            const testResults = `
+                <h5>Template Test Results</h5>
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle"></i> Template test completed successfully
+                </div>
+                <h6>Sample Profile Data Used:</h6>
+                <pre class="bg-light p-3 mb-3" style="font-size: 12px; max-height: 200px; overflow-y: auto;">${JSON.stringify(result.sample_data, null, 2)}</pre>
+                <h6>Generated Prompt:</h6>
+                <pre class="bg-light p-3 mb-3" style="font-size: 12px; max-height: 300px; overflow-y: auto;">${result.generated_prompt || 'No prompt generated'}</pre>
+                <h6>AI Response:</h6>
+                <div class="border p-3" style="max-height: 300px; overflow-y: auto;">${result.ai_response || 'No response generated'}</div>
+                ${result.score ? `<h6 class="mt-3">Score: <span class="badge bg-primary">${result.score}</span></h6>` : ''}
+            `;
+            
+            showPreviewModal(testResults);
+            showNotification('Template test completed successfully', 'success');
+        } else {
+            const error = await response.json();
+            throw new Error(error.message || 'Template test failed');
+        }
+        
+    } catch (error) {
+        console.error('Error testing template:', error);
+        showNotification(`Template test failed: ${error.message}`, 'error');
+    }
 }
 
 // Preview changes (for edit mode)

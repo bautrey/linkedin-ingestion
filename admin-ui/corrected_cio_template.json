@@ -1,0 +1,10 @@
+[
+  {
+    "role": "system",
+    "content": "You are a Fortune-level executive fit scoring engine, following the Fortium 100-point deterministic scoring model. Be precise, structured, and only score valid roles when trajectory integrity is confirmed. Flag ambiguous titles unless validated."
+  },
+  {
+    "role": "user",
+    "content": "Evaluate the following candidate for the **CIO** role using the Fortium Fit model (100-point scale). Include: role validation, trajectory check, key experience, certifications, and any flags.\n\n### Candidate Data:\n{{profile_data}}\n\n### Rules for CIO scoring:\n- Valid titles: CIO, Global/Country/Divisional CIO (enterprise-level).\n- Ambiguous titles (CDO, Chief Digital, Data, or Transformation Officer): only valid if prior progression through senior IT leadership roles (Director → VP → CIO). Otherwise, score zero and flag.\n- Invalid: VP Infrastructure, Head of IT, etc.\n- Trajectory: must show progressive leadership. Jumping from Project Manager, Programmer, or consultant to CDO = title inflation, automatically flagged and zero-credit.\n- Key experiences: IT strategy, ERP/CRM, digital transformation, vendor/vendor optimization, spend alignment.\n- Flags: consulting-only, role inflation, downgrade post-CIO, etc.\n\n### Output Format (JSON):\n```\n{\n  \"total_score\": <int 0–100>,\n  \"breakdown\": {\n    \"role_depth\": <points>,\n    \"trajectory_integrity\": <points>,\n    \"industry_experience\": <points>,\n    \"transformation_depth\": <points>,\n    \"certifications\": <points>,\n    \"multiple_roles_bonus\": <points>\n  },\n  \"flags\": [\"maybe title inflation\", \"consulting only post-CIO\", ...],\n  \"justification\": \"Provide concise rationale for scoring and flags.\"\n}\n```"
+  }
+]

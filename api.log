@@ -3168,3 +3168,19 @@ INFO:     127.0.0.1:52516 - "GET /api/v1/companies?page=1&limit=50 HTTP/1.1" 200
 2025-08-20 11:46:08 [info     ] Templates retrieved successfully category=None count=3 include_inactive=False
 INFO:     127.0.0.1:52574 - "GET /api/v1/templates HTTP/1.1" 200 OK
 INFO:     127.0.0.1:54957 - "GET /api/v1/scoring-jobs?limit=10 HTTP/1.1" 404 Not Found
+2025-08-20 12:07:57 [info     ] Searching profiles             company=None limit=20 name=None offset=0
+INFO:     127.0.0.1:57699 - "GET /api/v1/companies?limit=10&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57700 - "GET /api/v1/health HTTP/1.1" 200 OK
+2025-08-20 12:07:58 [info     ] Profile search completed       count=20
+INFO:     127.0.0.1:57698 - "GET /api/v1/profiles?limit=20&offset=0 HTTP/1.1" 200 OK
+2025-08-20 12:11:08 [info     ] Searching profiles             company=None limit=20 name=None offset=0
+INFO:     127.0.0.1:58405 - "GET /api/v1/companies?limit=10&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58406 - "GET /api/v1/health HTTP/1.1" 200 OK
+2025-08-20 12:11:09 [info     ] Profile search completed       count=20
+INFO:     127.0.0.1:58404 - "GET /api/v1/profiles?limit=20&offset=0 HTTP/1.1" 200 OK
+2025-08-20 12:11:11 [info     ] Searching profiles             company=None limit=20 name=None offset=0
+INFO:     127.0.0.1:58406 - "GET /api/v1/companies?limit=10&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58405 - "GET /api/v1/health HTTP/1.1" 200 OK
+2025-08-20 12:11:11 [info     ] Profile search completed       count=20
+INFO:     127.0.0.1:58404 - "GET /api/v1/profiles?limit=20&offset=0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58964 - "GET /api/v1/companies?page=1&limit=50 HTTP/1.1" 200 OK
