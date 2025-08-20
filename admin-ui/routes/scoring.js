@@ -66,15 +66,19 @@ router.get('/', async (req, res) => {
             }
         } else {
             // Show scoring dashboard
-            const [jobsResponse, statsResponse] = await Promise.all([
-                apiClient.get('/jobs', { params: { limit: 20, type: 'scoring' } }).catch(() => ({ data: [] })),
-                apiClient.get('/jobs/stats').catch(() => ({ data: {} }))
-            ]);
+            // Note: Jobs endpoint doesn't exist yet, so we'll show empty jobs for now
+            const jobs = [];
+            const stats = {
+                total_jobs: 0,
+                pending_jobs: 0,
+                completed_jobs: 0,
+                failed_jobs: 0
+            };
             
             res.render('scoring/dashboard', {
                 title: 'Scoring Dashboard',
-                jobs: jobsResponse.data.jobs || [],
-                stats: statsResponse.data || {},
+                jobs: jobs,
+                stats: stats,
                 currentPage: 'scoring'
             });
         }
@@ -91,18 +95,21 @@ router.get('/', async (req, res) => {
 // GET /scoring/jobs/:id - View scoring job details
 router.get('/jobs/:id', async (req, res) => {
     try {
-        const response = await apiClient.get(`/jobs/${req.params.id}`);
+        // Use the correct API endpoint for scoring jobs
+        const response = await apiClient.get(`/scoring-jobs/${req.params.id}`);
         
         res.render('scoring/job-detail', {
             title: `Scoring Job: ${req.params.id}`,
-            job: response.data
+            job: response.data,
+            currentPage: 'scoring'
         });
     } catch (error) {
         logger.error(`Error fetching scoring job ${req.params.id}:`, error);
         if (error.response && error.response.status === 404) {
             res.status(404).render('error', {
                 title: 'Job Not Found',
-                message: 'The requested scoring job could not be found'
+                message: 'The requested scoring job could not be found',
+                error: {}
             });
         } else {
             res.status(500).render('error', {

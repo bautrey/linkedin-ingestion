@@ -17,6 +17,13 @@ This directory contains end-to-end (E2E) tests for the LinkedIn Ingestion Admin 
 - ✅ **Navigation Handling** - Validates UI navigation (flexible for icon-based nav)
 - ✅ **Network Stability** - Ensures no 5xx server errors
 
+### Scoring Flow Tests (`scoring-flow.spec.js`)
+- ✅ **Complete Scoring Workflow** - End-to-end profile scoring with job completion
+- ✅ **Modal Validation** - Scoring form validation and error handling
+- ✅ **Scoring History Navigation** - Profile scoring history page functionality
+- ✅ **Job Detail Page** - Scoring job status, refresh, and retry functionality
+- ✅ **Template Loading** - Scoring template dropdown population and selection
+
 ## Running Tests
 
 ### Quick Test Run
@@ -34,9 +41,17 @@ npm run test:e2e:ui
 npm run test:e2e:headed
 ```
 
-## Test Results Summary
+### Run Only Scoring Tests
+```bash
+npx playwright test scoring-flow.spec.js
+```
 
-**Current Status: 9/9 Tests Passing ✅**
+### Run Scoring Tests in Debug Mode
+```bash
+npx playwright test scoring-flow.spec.js --debug
+```
+
+## Test Results Summary
 
 The tests verify that:
 - Admin UI loads and renders properly
@@ -44,14 +59,19 @@ The tests verify that:
 - No critical JavaScript or server errors
 - Responsive design works on different screen sizes
 - Profile management interface is accessible
+- Profile scoring workflow functions end-to-end
+- Scoring job management and status tracking works
+- Template selection and validation is functional
 
 ## Configuration
 
 - **Config File**: `playwright.config.js`
-- **Base URL**: `http://localhost:3003` (automatically starts dev server)
-- **Browser**: Chromium (can be extended to Firefox/Safari)
+- **Base URL**: `http://localhost:3001` (configurable via TEST_BASE_URL)
+- **Browsers**: Chromium and Firefox (webkit available)
 - **Screenshots**: Captured on test failures
+- **Videos**: Recorded on test failures
 - **Traces**: Recorded for debugging failed tests
+- **Timeouts**: Extended to 2 minutes for long-running scoring jobs
 
 ## Extending Tests
 

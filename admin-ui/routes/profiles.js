@@ -70,6 +70,46 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// GET /profiles/:id/scoring-history - View scoring history for profile
+router.get('/:id/scoring-history', async (req, res) => {
+    try {
+        // Fetch profile info and scoring history
+        const [profileResponse, historyResponse] = await Promise.allSettled([
+            apiClient.get(`/profiles/${req.params.id}`),
+            // For now we'll mock scoring history since the endpoint might not exist yet
+            Promise.resolve({ data: [] })
+        ]);
+        
+        if (profileResponse.status === 'fulfilled') {
+            const profile = profileResponse.value.data;
+            const history = historyResponse.status === 'fulfilled' ? historyResponse.value.data : [];
+            
+            res.render('profiles/scoring-history', {
+                title: `Scoring History: ${profile.name}`,
+                profile: profile,
+                history: history,
+                currentPage: 'profiles'
+            });
+        } else {
+            throw profileResponse.reason;
+        }
+    } catch (error) {
+        logger.error(`Error fetching scoring history for profile ${req.params.id}:`, error);
+        if (error.response && error.response.status === 404) {
+            res.status(404).render('error', {
+                title: 'Profile Not Found',
+                message: 'The requested profile could not be found'
+            });
+        } else {
+            res.status(500).render('error', {
+                title: 'Error',
+                message: 'Failed to load scoring history',
+                error: process.env.NODE_ENV === 'development' ? error : {}
+            });
+        }
+    }
+});
+
 // DELETE /profiles/:id - Delete profile
 router.delete('/:id', async (req, res) => {
     try {

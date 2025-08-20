@@ -1,0 +1,75 @@
+# Page snapshot
+
+```yaml
+- navigation:
+  - text: 
+  - heading "LinkedIn" [level=5]
+  - text: Ingestion Admin
+  - list:
+    - listitem:
+      - link " Dashboard":
+        - /url: /
+    - listitem:
+      - link " Profiles":
+        - /url: /profiles
+    - listitem:
+      - link " Companies":
+        - /url: /companies
+    - listitem:
+      - link " Ingestion":
+        - /url: /ingestion
+    - listitem:
+      - link " Scoring":
+        - /url: /scoring
+    - listitem:
+      - link " Templates":
+        - /url: /templates
+  - separator
+  - text:  v2.1.0-development+ae6d5ec9 
+  - link "ae6d5ec":
+    - /url: https://github.com/bautrey/linkedin-ingestion/commit/ae6d5ec9
+  - text: development  8/19/2025  LinkedIn Ingestion Admin Dashboard
+- navigation:
+  - link " LinkedIn Ingestion Admin":
+    - /url: /
+  - list:
+    - listitem:
+      - link " Dashboard":
+        - /url: /
+    - listitem:
+      - link " Profiles":
+        - /url: /profiles
+    - listitem:
+      - link " Companies":
+        - /url: /companies
+  - list:
+    - listitem: 
+    - listitem:
+      - button " Admin"
+- link " Back to Scoring":
+  - /url: /scoring
+- heading "Scoring Job Details" [level=2]
+- paragraph: " Job ID: 11619721-b565-40e6-8f63-22b827f0bb61"
+- button " Retry Job"
+- link " View Profile":
+  - /url: /profiles/5ce5de74-33af-4e55-a9d9-1de8593c5103
+- heading " Job Status" [level=5]
+- strong: "Status:"
+- text:  Failed
+- strong: "Created:"
+- text: 8/20/2025, 7:57:58 AM
+- strong: "Failed:"
+- text: 8/20/2025, 7:57:58 AM
+- heading " Error Details" [level=5]
+- strong: "Error:"
+- text: "[object Object]"
+- heading "Job Metadata" [level=6]
+- text: Job ID 11619721-b565-40e6-8f63-22b827f0bb61 Profile ID 5ce5de74-33af-4e55-a9d9-1de8593c5103
+- heading "Actions" [level=6]
+- button " Refresh Status"
+- button " Retry Job"
+- link " View Profile":
+  - /url: /profiles/5ce5de74-33af-4e55-a9d9-1de8593c5103
+- link " Back to Scoring":
+  - /url: /scoring
+```

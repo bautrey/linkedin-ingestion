@@ -1,0 +1,11 @@
+
+Running 10 tests using 2 workers
+
+Test cleanup completed
+  ✘  1 [chromium] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow (16.6s)
+Test cleanup completed
+  ✘  2 [firefox] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow (16.6s)
+Test cleanup completed
+  ✘  3 [chromium] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow (retry #1) (16.5s)
+Test cleanup completed
+  ✘  4 [firefox] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow (retry #1) (17.0s)

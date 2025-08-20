@@ -1,0 +1,639 @@
+
+Running 10 tests using 2 workers
+
+Test cleanup completed
+  ✘  2 [chromium] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow (33.9s)
+Test cleanup completed
+  ✘  1 [firefox] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow (33.9s)
+Test cleanup completed
+  ✘  3 [chromium] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow (retry #1) (34.6s)
+Test cleanup completed
+  ✘  4 [firefox] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow (retry #1) (35.7s)
+Test cleanup completed
+  ✘  5 [chromium] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation (31.7s)
+Test cleanup completed
+  ✘  6 [firefox] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation (31.8s)
+Test cleanup completed
+  ✘  7 [chromium] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation (retry #1) (32.2s)
+Test cleanup completed
+  ✘  8 [firefox] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation (retry #1) (33.5s)
+Test cleanup completed
+  ✘  9 [chromium] › tests/scoring-flow.spec.js:137:3 › Profile Scoring Flow › Scoring history page navigation (11.5s)
+Test cleanup completed
+  ✘  10 [firefox] › tests/scoring-flow.spec.js:137:3 › Profile Scoring Flow › Scoring history page navigation (11.6s)
+Test cleanup completed
+  ✘  11 [chromium] › tests/scoring-flow.spec.js:137:3 › Profile Scoring Flow › Scoring history page navigation (retry #1) (11.4s)
+  ✓  13 [chromium] › tests/scoring-flow.spec.js:160:3 › Profile Scoring Flow › Scoring job detail page functionality (495ms)
+Test cleanup completed
+  ✓  14 [chromium] › tests/scoring-flow.spec.js:198:3 › Profile Scoring Flow › Template loading in scoring modal (4.4s)
+Test cleanup completed
+  ✘  12 [firefox] › tests/scoring-flow.spec.js:137:3 › Profile Scoring Flow › Scoring history page navigation (retry #1) (11.7s)
+  ✓  15 [firefox] › tests/scoring-flow.spec.js:160:3 › Profile Scoring Flow › Scoring job detail page functionality (890ms)
+Test cleanup completed
+  ✓  16 [firefox] › tests/scoring-flow.spec.js:198:3 › Profile Scoring Flow › Template loading in scoring modal (4.4s)
+
+
+  1) [chromium] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow 
+
+    TimeoutError: page.click: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('button:has-text("Score Profile"):not([data-bs-dismiss])')[22m
+    [2m    - locator resolved to 3 elements. Proceeding with the first one: <button class="btn btn-outline-primary" onclick="scoreProfile('5ce5de74-33af-4e55-a9d9-1de8593c5103')">…</button>[22m
+    [2m  - attempting click action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is not stable[22m
+    [2m  57 × retrying click action[22m
+    [2m       - waiting 500ms[22m
+    [2m       - waiting for element to be visible, enabled and stable[22m
+    [2m       - element is visible, enabled and stable[22m
+    [2m       - scrolling into view if needed[22m
+    [2m       - done scrolling[22m
+    [2m       - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting 500ms[22m
+
+
+      43 |     
+      44 |     // Submit the scoring request
+    > 45 |     await page.click('button:has-text("Score Profile"):not([data-bs-dismiss])');
+         |                ^
+      46 |     
+      47 |     // Wait for the modal to close and success notification
+      48 |     await expect(page.locator('#scoreModal')).not.toBeVisible({ timeout: 10000 });
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:45:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: page.click: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('button:has-text("Score Profile"):not([data-bs-dismiss])')[22m
+    [2m    - locator resolved to 3 elements. Proceeding with the first one: <button class="btn btn-outline-primary" onclick="scoreProfile('5ce5de74-33af-4e55-a9d9-1de8593c5103')">…</button>[22m
+    [2m  - attempting click action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is not stable[22m
+    [2m  57 × retrying click action[22m
+    [2m       - waiting 500ms[22m
+    [2m       - waiting for element to be visible, enabled and stable[22m
+    [2m       - element is visible, enabled and stable[22m
+    [2m       - scrolling into view if needed[22m
+    [2m       - done scrolling[22m
+    [2m       - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting 500ms[22m
+
+
+      43 |     
+      44 |     // Submit the scoring request
+    > 45 |     await page.click('button:has-text("Score Profile"):not([data-bs-dismiss])');
+         |                ^
+      46 |     
+      47 |     // Wait for the modal to close and success notification
+      48 |     await expect(page.locator('#scoreModal')).not.toBeVisible({ timeout: 10000 });
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:45:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation 
+
+    TimeoutError: page.click: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('button:has-text("Score Profile"):not([data-bs-dismiss])')[22m
+    [2m    - locator resolved to 3 elements. Proceeding with the first one: <button class="btn btn-outline-primary" onclick="scoreProfile('5ce5de74-33af-4e55-a9d9-1de8593c5103')">…</button>[22m
+    [2m  - attempting click action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is not stable[22m
+    [2m  57 × retrying click action[22m
+    [2m       - waiting 500ms[22m
+    [2m       - waiting for element to be visible, enabled and stable[22m
+    [2m       - element is visible, enabled and stable[22m
+    [2m       - scrolling into view if needed[22m
+    [2m       - done scrolling[22m
+    [2m       - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting 500ms[22m
+
+
+      119 |     
+      120 |     // Try to submit without selecting a template
+    > 121 |     await page.click('button:has-text("Score Profile"):not([data-bs-dismiss])');
+          |                ^
+      122 |     
+      123 |     // Should show validation error
+      124 |     page.on('dialog', async dialog => {
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:121:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: page.click: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('button:has-text("Score Profile"):not([data-bs-dismiss])')[22m
+    [2m    - locator resolved to 3 elements. Proceeding with the first one: <button class="btn btn-outline-primary" onclick="scoreProfile('5ce5de74-33af-4e55-a9d9-1de8593c5103')">…</button>[22m
+    [2m  - attempting click action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is not stable[22m
+    [2m  57 × retrying click action[22m
+    [2m       - waiting 500ms[22m
+    [2m       - waiting for element to be visible, enabled and stable[22m
+    [2m       - element is visible, enabled and stable[22m
+    [2m       - scrolling into view if needed[22m
+    [2m       - done scrolling[22m
+    [2m       - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting 500ms[22m
+
+
+      119 |     
+      120 |     // Try to submit without selecting a template
+    > 121 |     await page.click('button:has-text("Score Profile"):not([data-bs-dismiss])');
+          |                ^
+      122 |     
+      123 |     // Should show validation error
+      124 |     page.on('dialog', async dialog => {
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:121:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › tests/scoring-flow.spec.js:137:3 › Profile Scoring Flow › Scoring history page navigation 
+
+    Error: [31mTimed out 10000ms waiting for [39m[2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m
+
+    Locator: locator('h2')
+    Expected string: [32m"Scoring History"[39m
+    Received: <element(s) not found>
+    Call log:
+    [2m  - Expect "toContainText" with timeout 10000ms[22m
+    [2m  - waiting for locator('h2')[22m
+
+
+      150 |     
+      151 |     // Verify we're on the scoring history page
+    > 152 |     await expect(page.locator('h2')).toContainText('Scoring History');
+          |                                      ^
+      153 |     await expect(page.locator('text=Back to Profile')).toBeVisible();
+      154 |     
+      155 |     // Test the back button
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:152:38
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [31mTimed out 10000ms waiting for [39m[2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m
+
+    Locator: locator('h2')
+    Expected string: [32m"Scoring History"[39m
+    Received: <element(s) not found>
+    Call log:
+    [2m  - Expect "toContainText" with timeout 10000ms[22m
+    [2m  - waiting for locator('h2')[22m
+
+
+      150 |     
+      151 |     // Verify we're on the scoring history page
+    > 152 |     await expect(page.locator('h2')).toContainText('Scoring History');
+          |                                      ^
+      153 |     await expect(page.locator('text=Back to Profile')).toBeVisible();
+      154 |     
+      155 |     // Test the back button
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:152:38
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [firefox] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow 
+
+    TimeoutError: page.click: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('button:has-text("Score Profile"):not([data-bs-dismiss])')[22m
+    [2m    - locator resolved to 3 elements. Proceeding with the first one: <button class="btn btn-outline-primary" onclick="scoreProfile('5ce5de74-33af-4e55-a9d9-1de8593c5103')">…</button>[22m
+    [2m  - attempting click action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is not stable[22m
+    [2m  56 × retrying click action[22m
+    [2m       - waiting 500ms[22m
+    [2m       - waiting for element to be visible, enabled and stable[22m
+    [2m       - element is visible, enabled and stable[22m
+    [2m       - scrolling into view if needed[22m
+    [2m       - done scrolling[22m
+    [2m       - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting 500ms[22m
+
+
+      43 |     
+      44 |     // Submit the scoring request
+    > 45 |     await page.click('button:has-text("Score Profile"):not([data-bs-dismiss])');
+         |                ^
+      46 |     
+      47 |     // Wait for the modal to close and success notification
+      48 |     await expect(page.locator('#scoreModal')).not.toBeVisible({ timeout: 10000 });
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:45:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: page.click: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('button:has-text("Score Profile"):not([data-bs-dismiss])')[22m
+    [2m    - locator resolved to 3 elements. Proceeding with the first one: <button class="btn btn-outline-primary" onclick="scoreProfile('5ce5de74-33af-4e55-a9d9-1de8593c5103')">…</button>[22m
+    [2m  - attempting click action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is not stable[22m
+    [2m  56 × retrying click action[22m
+    [2m       - waiting 500ms[22m
+    [2m       - waiting for element to be visible, enabled and stable[22m
+    [2m       - element is visible, enabled and stable[22m
+    [2m       - scrolling into view if needed[22m
+    [2m       - done scrolling[22m
+    [2m       - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting 500ms[22m
+
+
+      43 |     
+      44 |     // Submit the scoring request
+    > 45 |     await page.click('button:has-text("Score Profile"):not([data-bs-dismiss])');
+         |                ^
+      46 |     
+      47 |     // Wait for the modal to close and success notification
+      48 |     await expect(page.locator('#scoreModal')).not.toBeVisible({ timeout: 10000 });
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:45:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [firefox] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation 
+
+    TimeoutError: page.click: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('button:has-text("Score Profile"):not([data-bs-dismiss])')[22m
+    [2m    - locator resolved to 3 elements. Proceeding with the first one: <button class="btn btn-outline-primary" onclick="scoreProfile('5ce5de74-33af-4e55-a9d9-1de8593c5103')">…</button>[22m
+    [2m  - attempting click action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is not stable[22m
+    [2m  57 × retrying click action[22m
+    [2m       - waiting 500ms[22m
+    [2m       - waiting for element to be visible, enabled and stable[22m
+    [2m       - element is visible, enabled and stable[22m
+    [2m       - scrolling into view if needed[22m
+    [2m       - done scrolling[22m
+    [2m       - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting 500ms[22m
+
+
+      119 |     
+      120 |     // Try to submit without selecting a template
+    > 121 |     await page.click('button:has-text("Score Profile"):not([data-bs-dismiss])');
+          |                ^
+      122 |     
+      123 |     // Should show validation error
+      124 |     page.on('dialog', async dialog => {
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:121:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-firefox/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-firefox/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: page.click: Timeout 30000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('button:has-text("Score Profile"):not([data-bs-dismiss])')[22m
+    [2m    - locator resolved to 3 elements. Proceeding with the first one: <button class="btn btn-outline-primary" onclick="scoreProfile('5ce5de74-33af-4e55-a9d9-1de8593c5103')">…</button>[22m
+    [2m  - attempting click action[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 × waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m    - waiting for element to be visible, enabled and stable[22m
+    [2m    - element is not stable[22m
+    [2m  56 × retrying click action[22m
+    [2m       - waiting 500ms[22m
+    [2m       - waiting for element to be visible, enabled and stable[22m
+    [2m       - element is visible, enabled and stable[22m
+    [2m       - scrolling into view if needed[22m
+    [2m       - done scrolling[22m
+    [2m       - <div tabindex="-1" role="dialog" id="scoreModal" aria-modal="true" class="modal fade show">…</div> intercepts pointer events[22m
+    [2m  - retrying click action[22m
+    [2m    - waiting 500ms[22m
+
+
+      119 |     
+      120 |     // Try to submit without selecting a template
+    > 121 |     await page.click('button:has-text("Score Profile"):not([data-bs-dismiss])');
+          |                ^
+      122 |     
+      123 |     // Should show validation error
+      124 |     page.on('dialog', async dialog => {
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:121:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-firefox-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-firefox-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-firefox-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-firefox-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-firefox-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [firefox] › tests/scoring-flow.spec.js:137:3 › Profile Scoring Flow › Scoring history page navigation 
+
+    Error: [31mTimed out 10000ms waiting for [39m[2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m
+
+    Locator: locator('h2')
+    Expected string: [32m"Scoring History"[39m
+    Received: <element(s) not found>
+    Call log:
+    [2m  - Expect "toContainText" with timeout 10000ms[22m
+    [2m  - waiting for locator('h2')[22m
+
+
+      150 |     
+      151 |     // Verify we're on the scoring history page
+    > 152 |     await expect(page.locator('h2')).toContainText('Scoring History');
+          |                                      ^
+      153 |     await expect(page.locator('text=Back to Profile')).toBeVisible();
+      154 |     
+      155 |     // Test the back button
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:152:38
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-firefox/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-firefox/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [31mTimed out 10000ms waiting for [39m[2mexpect([22m[31mlocator[39m[2m).[22mtoContainText[2m([22m[32mexpected[39m[2m)[22m
+
+    Locator: locator('h2')
+    Expected string: [32m"Scoring History"[39m
+    Received: <element(s) not found>
+    Call log:
+    [2m  - Expect "toContainText" with timeout 10000ms[22m
+    [2m  - waiting for locator('h2')[22m
+
+
+      150 |     
+      151 |     // Verify we're on the scoring history page
+    > 152 |     await expect(page.locator('h2')).toContainText('Scoring History');
+          |                                      ^
+      153 |     await expect(page.locator('text=Back to Profile')).toBeVisible();
+      154 |     
+      155 |     // Test the back button
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:152:38
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-firefox-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-firefox-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-firefox-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-firefox-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-firefox-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6 failed
+    [chromium] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow 
+    [chromium] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation 
+    [chromium] › tests/scoring-flow.spec.js:137:3 › Profile Scoring Flow › Scoring history page navigation 
+    [firefox] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow 
+    [firefox] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation ─
+    [firefox] › tests/scoring-flow.spec.js:137:3 › Profile Scoring Flow › Scoring history page navigation 
+  4 passed (2.9m)

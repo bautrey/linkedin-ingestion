@@ -401,9 +401,11 @@
             // Load available templates
             fetch('/api/templates')
                 .then(response => response.json())
-                .then(templates => {
+                .then(result => {
                     const select = document.getElementById('templateSelect');
                     select.innerHTML = '<option value="">Select a template...</option>';
+                    // Handle nested response structure
+                    const templates = result.data?.templates || result.templates || result.data || [];
                     templates.forEach(template => {
                         select.innerHTML += `<option value="${template.id}">${template.name}</option>`;
                     });
@@ -433,7 +435,7 @@
                 requestData.custom_prompt = customPrompt.trim();
             }
 
-            fetch('/api/scoring/score', {
+            fetch(`/api/profiles/${profileId}/score`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -445,9 +447,16 @@
                 if (result.success) {
                     bootstrap.Modal.getInstance(document.getElementById('scoreModal')).hide();
                     showNotification('Profile scoring started successfully', 'success');
-                    // Optionally redirect to scoring job page
+                    // Extract job_id from nested response structure
+                    const jobId = result.data?.job_id || result.job_id;
+                    // Redirect to scoring job page or profile page
                     setTimeout(() => {
-                        window.location.href = `/scoring/${result.job_id}`;
+                        if (jobId) {
+                            window.location.href = `/scoring/jobs/${jobId}`;
+                        } else {
+                            // Fallback to profile page
+                            location.reload();
+                        }
                     }, 2000);
                 } else {
                     showNotification('Error starting profile scoring: ' + result.message, 'error');

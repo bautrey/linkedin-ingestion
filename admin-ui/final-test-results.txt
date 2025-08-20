@@ -1,0 +1,177 @@
+
+Running 10 tests using 2 workers
+
+[1A[2K[1/10] [firefox] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow
+[1A[2K[2/10] [chromium] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow
+[1A[2K[chromium] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow
+Test cleanup completed
+
+[1A[2K[3/10] [chromium] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow (retry #1)
+[1A[2K[firefox] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow
+Test cleanup completed
+
+[1A[2K[4/10] [firefox] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow (retry #1)
+[1A[2K[chromium] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow
+Test cleanup completed
+
+[1A[2K  1) [chromium] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow 
+
+    Error: [31mTimed out 10000ms waiting for [39m[2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m
+
+    Locator: locator('text=Test scoring run via Playwright automation')
+    Expected: visible
+    Received: <element(s) not found>
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for locator('text=Test scoring run via Playwright automation')[22m
+
+
+      62 |     // Verify job details page content
+      63 |     await expect(page.locator('h2')).toContainText('Scoring Job');
+    > 64 |     await expect(page.locator('text=Test scoring run via Playwright automation')).toBeVisible();
+         |                                                                                   ^
+      65 |     
+      66 |     // Wait for job completion (with reasonable timeout)
+      67 |     // This will vary based on your scoring implementation
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:64:83
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [31mTimed out 10000ms waiting for [39m[2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m
+
+    Locator: locator('text=Test scoring run via Playwright automation')
+    Expected: visible
+    Received: <element(s) not found>
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for locator('text=Test scoring run via Playwright automation')[22m
+
+
+      62 |     // Verify job details page content
+      63 |     await expect(page.locator('h2')).toContainText('Scoring Job');
+    > 64 |     await expect(page.locator('text=Test scoring run via Playwright automation')).toBeVisible();
+         |                                                                                   ^
+      65 |     
+      66 |     // Wait for job completion (with reasonable timeout)
+      67 |     // This will vary based on your scoring implementation
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:64:83
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K[5/10] [chromium] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation
+[1A[2K[firefox] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow
+Test cleanup completed
+
+[1A[2K  2) [firefox] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow 
+
+    Error: [31mTimed out 10000ms waiting for [39m[2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m
+
+    Locator: locator('text=Test scoring run via Playwright automation')
+    Expected: visible
+    Received: <element(s) not found>
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for locator('text=Test scoring run via Playwright automation')[22m
+
+
+      62 |     // Verify job details page content
+      63 |     await expect(page.locator('h2')).toContainText('Scoring Job');
+    > 64 |     await expect(page.locator('text=Test scoring run via Playwright automation')).toBeVisible();
+         |                                                                                   ^
+      65 |     
+      66 |     // Wait for job completion (with reasonable timeout)
+      67 |     // This will vary based on your scoring implementation
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:64:83
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: [31mTimed out 10000ms waiting for [39m[2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m()[22m
+
+    Locator: locator('text=Test scoring run via Playwright automation')
+    Expected: visible
+    Received: <element(s) not found>
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 10000ms[22m
+    [2m  - waiting for locator('text=Test scoring run via Playwright automation')[22m
+
+
+      62 |     // Verify job details page content
+      63 |     await expect(page.locator('h2')).toContainText('Scoring Job');
+    > 64 |     await expect(page.locator('text=Test scoring run via Playwright automation')).toBeVisible();
+         |                                                                                   ^
+      65 |     
+      66 |     // Wait for job completion (with reasonable timeout)
+      67 |     // This will vary based on your scoring implementation
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:64:83
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[1A[2K[6/10] [firefox] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation
+[1A[2K[chromium] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation
+Test cleanup completed
+
+[1A[2K[firefox] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation
+Test cleanup completed
+
+[1A[2K[7/10] [chromium] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation (retry #1)
+[1A[2K[8/10] [firefox] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation (retry #1)
+[1A[2K[chromium] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation
+Test cleanup completed
+
+[1A[2K[firefox] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation
+Test cleanup completed
+

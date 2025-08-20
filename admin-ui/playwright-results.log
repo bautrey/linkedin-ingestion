@@ -1,0 +1,529 @@
+
+Running 10 tests using 2 workers
+
+Test cleanup completed
+  ✘  1 [chromium] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow (11.4s)
+Test cleanup completed
+  ✘  2 [firefox] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow (11.4s)
+Test cleanup completed
+  ✘  3 [chromium] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow (retry #1) (11.3s)
+Test cleanup completed
+  ✘  4 [firefox] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow (retry #1) (11.8s)
+Test cleanup completed
+  ✘  5 [chromium] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation (11.1s)
+Test cleanup completed
+  ✘  6 [firefox] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation (11.3s)
+Test cleanup completed
+  ✘  7 [chromium] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation (retry #1) (11.1s)
+Test cleanup completed
+  ✘  8 [firefox] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation (retry #1) (11.6s)
+Test cleanup completed
+  ✘  9 [chromium] › tests/scoring-flow.spec.js:137:3 › Profile Scoring Flow › Scoring history page navigation (11.2s)
+Test cleanup completed
+  ✘  10 [firefox] › tests/scoring-flow.spec.js:137:3 › Profile Scoring Flow › Scoring history page navigation (11.3s)
+Test cleanup completed
+  ✘  11 [chromium] › tests/scoring-flow.spec.js:137:3 › Profile Scoring Flow › Scoring history page navigation (retry #1) (11.2s)
+  ✓  13 [chromium] › tests/scoring-flow.spec.js:160:3 › Profile Scoring Flow › Scoring job detail page functionality (588ms)
+Test cleanup completed
+  ✘  12 [firefox] › tests/scoring-flow.spec.js:137:3 › Profile Scoring Flow › Scoring history page navigation (retry #1) (11.7s)
+  ✓  15 [firefox] › tests/scoring-flow.spec.js:160:3 › Profile Scoring Flow › Scoring job detail page functionality (919ms)
+Test cleanup completed
+  ✘  14 [chromium] › tests/scoring-flow.spec.js:198:3 › Profile Scoring Flow › Template loading in scoring modal (11.0s)
+Test cleanup completed
+  ✘  16 [firefox] › tests/scoring-flow.spec.js:198:3 › Profile Scoring Flow › Template loading in scoring modal (11.1s)
+Test cleanup completed
+  ✘  17 [chromium] › tests/scoring-flow.spec.js:198:3 › Profile Scoring Flow › Template loading in scoring modal (retry #1) (11.0s)
+Test cleanup completed
+  ✘  18 [firefox] › tests/scoring-flow.spec.js:198:3 › Profile Scoring Flow › Template loading in scoring modal (retry #1) (11.6s)
+
+
+  1) [chromium] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.profile-card') to be visible[22m
+
+
+      15 |
+      16 |     // Wait for profiles to load and click on the first profile
+    > 17 |     await page.waitForSelector('.profile-card', { timeout: 10000 });
+         |                ^
+      18 |     const firstProfileCard = page.locator('.profile-card').first();
+      19 |     await firstProfileCard.click();
+      20 |
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:17:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.profile-card') to be visible[22m
+
+
+      15 |
+      16 |     // Wait for profiles to load and click on the first profile
+    > 17 |     await page.waitForSelector('.profile-card', { timeout: 10000 });
+         |                ^
+      18 |     const firstProfileCard = page.locator('.profile-card').first();
+      19 |     await firstProfileCard.click();
+      20 |
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:17:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [chromium] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.profile-card') to be visible[22m
+
+
+      111 |     // Navigate to a profile page
+      112 |     await page.goto('/profiles');
+    > 113 |     await page.waitForSelector('.profile-card', { timeout: 10000 });
+          |                ^
+      114 |     await page.click('.profile-card:first-child');
+      115 |     
+      116 |     // Open scoring modal
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:113:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.profile-card') to be visible[22m
+
+
+      111 |     // Navigate to a profile page
+      112 |     await page.goto('/profiles');
+    > 113 |     await page.waitForSelector('.profile-card', { timeout: 10000 });
+          |                ^
+      114 |     await page.click('.profile-card:first-child');
+      115 |     
+      116 |     // Open scoring modal
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:113:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [chromium] › tests/scoring-flow.spec.js:137:3 › Profile Scoring Flow › Scoring history page navigation 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.profile-card') to be visible[22m
+
+
+      138 |     // Navigate to profiles and select first profile
+      139 |     await page.goto('/profiles');
+    > 140 |     await page.waitForSelector('.profile-card', { timeout: 10000 });
+          |                ^
+      141 |     await page.click('.profile-card:first-child');
+      142 |     
+      143 |     // Get profile ID
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:140:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.profile-card') to be visible[22m
+
+
+      138 |     // Navigate to profiles and select first profile
+      139 |     await page.goto('/profiles');
+    > 140 |     await page.waitForSelector('.profile-card', { timeout: 10000 });
+          |                ^
+      141 |     await page.click('.profile-card:first-child');
+      142 |     
+      143 |     // Get profile ID
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:140:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [chromium] › tests/scoring-flow.spec.js:198:3 › Profile Scoring Flow › Template loading in scoring modal 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.profile-card') to be visible[22m
+
+
+      199 |     // Navigate to a profile
+      200 |     await page.goto('/profiles');
+    > 201 |     await page.waitForSelector('.profile-card', { timeout: 10000 });
+          |                ^
+      202 |     await page.click('.profile-card:first-child');
+      203 |     
+      204 |     // Open scoring modal
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:201:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-8e186-te-loading-in-scoring-modal-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-8e186-te-loading-in-scoring-modal-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-8e186-te-loading-in-scoring-modal-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.profile-card') to be visible[22m
+
+
+      199 |     // Navigate to a profile
+      200 |     await page.goto('/profiles');
+    > 201 |     await page.waitForSelector('.profile-card', { timeout: 10000 });
+          |                ^
+      202 |     await page.click('.profile-card:first-child');
+      203 |     
+      204 |     // Open scoring modal
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:201:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-8e186-te-loading-in-scoring-modal-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-8e186-te-loading-in-scoring-modal-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-8e186-te-loading-in-scoring-modal-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-8e186-te-loading-in-scoring-modal-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/scoring-flow-Profile-Scori-8e186-te-loading-in-scoring-modal-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [firefox] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.profile-card') to be visible[22m
+
+
+      15 |
+      16 |     // Wait for profiles to load and click on the first profile
+    > 17 |     await page.waitForSelector('.profile-card', { timeout: 10000 });
+         |                ^
+      18 |     const firstProfileCard = page.locator('.profile-card').first();
+      19 |     await firstProfileCard.click();
+      20 |
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:17:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.profile-card') to be visible[22m
+
+
+      15 |
+      16 |     // Wait for profiles to load and click on the first profile
+    > 17 |     await page.waitForSelector('.profile-card', { timeout: 10000 });
+         |                ^
+      18 |     const firstProfileCard = page.locator('.profile-card').first();
+      19 |     await firstProfileCard.click();
+      20 |
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:17:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/scoring-flow-Profile-Scori-69d7b-te-profile-scoring-workflow-firefox-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [firefox] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.profile-card') to be visible[22m
+
+
+      111 |     // Navigate to a profile page
+      112 |     await page.goto('/profiles');
+    > 113 |     await page.waitForSelector('.profile-card', { timeout: 10000 });
+          |                ^
+      114 |     await page.click('.profile-card:first-child');
+      115 |     
+      116 |     // Open scoring modal
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:113:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-firefox/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-firefox/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.profile-card') to be visible[22m
+
+
+      111 |     // Navigate to a profile page
+      112 |     await page.goto('/profiles');
+    > 113 |     await page.waitForSelector('.profile-card', { timeout: 10000 });
+          |                ^
+      114 |     await page.click('.profile-card:first-child');
+      115 |     
+      116 |     // Open scoring modal
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:113:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-firefox-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-firefox-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-firefox-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-firefox-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/scoring-flow-Profile-Scoring-Flow-Scoring-modal-validation-firefox-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [firefox] › tests/scoring-flow.spec.js:137:3 › Profile Scoring Flow › Scoring history page navigation 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.profile-card') to be visible[22m
+
+
+      138 |     // Navigate to profiles and select first profile
+      139 |     await page.goto('/profiles');
+    > 140 |     await page.waitForSelector('.profile-card', { timeout: 10000 });
+          |                ^
+      141 |     await page.click('.profile-card:first-child');
+      142 |     
+      143 |     // Get profile ID
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:140:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-firefox/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-firefox/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.profile-card') to be visible[22m
+
+
+      138 |     // Navigate to profiles and select first profile
+      139 |     await page.goto('/profiles');
+    > 140 |     await page.waitForSelector('.profile-card', { timeout: 10000 });
+          |                ^
+      141 |     await page.click('.profile-card:first-child');
+      142 |     
+      143 |     // Get profile ID
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:140:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-firefox-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-firefox-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-firefox-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-firefox-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/scoring-flow-Profile-Scori-678f4-ing-history-page-navigation-firefox-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [firefox] › tests/scoring-flow.spec.js:198:3 › Profile Scoring Flow › Template loading in scoring modal 
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.profile-card') to be visible[22m
+
+
+      199 |     // Navigate to a profile
+      200 |     await page.goto('/profiles');
+    > 201 |     await page.waitForSelector('.profile-card', { timeout: 10000 });
+          |                ^
+      202 |     await page.click('.profile-card:first-child');
+      203 |     
+      204 |     // Open scoring modal
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:201:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-8e186-te-loading-in-scoring-modal-firefox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-8e186-te-loading-in-scoring-modal-firefox/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-8e186-te-loading-in-scoring-modal-firefox/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    TimeoutError: page.waitForSelector: Timeout 10000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('.profile-card') to be visible[22m
+
+
+      199 |     // Navigate to a profile
+      200 |     await page.goto('/profiles');
+    > 201 |     await page.waitForSelector('.profile-card', { timeout: 10000 });
+          |                ^
+      202 |     await page.click('.profile-card:first-child');
+      203 |     
+      204 |     // Open scoring modal
+        at /Users/burke/projects/linkedin-ingestion/admin-ui/tests/scoring-flow.spec.js:201:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-8e186-te-loading-in-scoring-modal-firefox-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-8e186-te-loading-in-scoring-modal-firefox-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/scoring-flow-Profile-Scori-8e186-te-loading-in-scoring-modal-firefox-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/scoring-flow-Profile-Scori-8e186-te-loading-in-scoring-modal-firefox-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/scoring-flow-Profile-Scori-8e186-te-loading-in-scoring-modal-firefox-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8 failed
+    [chromium] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow 
+    [chromium] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation 
+    [chromium] › tests/scoring-flow.spec.js:137:3 › Profile Scoring Flow › Scoring history page navigation 
+    [chromium] › tests/scoring-flow.spec.js:198:3 › Profile Scoring Flow › Template loading in scoring modal 
+    [firefox] › tests/scoring-flow.spec.js:11:3 › Profile Scoring Flow › Complete profile scoring workflow 
+    [firefox] › tests/scoring-flow.spec.js:110:3 › Profile Scoring Flow › Scoring modal validation ─
+    [firefox] › tests/scoring-flow.spec.js:137:3 › Profile Scoring Flow › Scoring history page navigation 
+    [firefox] › tests/scoring-flow.spec.js:198:3 › Profile Scoring Flow › Template loading in scoring modal 
+  2 passed (1.7m)
