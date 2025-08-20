@@ -17,8 +17,8 @@ router.get('/', async (req, res) => {
             try {
                 // Fetch templates for scoring selection
                 const templatesResponse = await apiClient.get('/templates');
-                // Handle nested response structure: response.data.data.templates
-                templatesData = templatesResponse.data?.data?.templates || templatesResponse.data?.templates || templatesResponse.data || [];
+                // Handle API response structure: response.data.templates
+                templatesData = templatesResponse.data?.templates || [];
                 logger.info(`Fetched ${templatesData.length} templates for scoring`);
                 logger.debug('Templates data:', templatesData);
                 

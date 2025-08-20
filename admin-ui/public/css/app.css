@@ -413,6 +413,40 @@ body {
     box-shadow: 0 0 0 0.2rem rgba(0, 115, 177, 0.25);
 }
 
+/* Improve visibility of select dropdown options */
+.form-select {
+    color: var(--secondary-color);
+    background-color: white;
+}
+
+.form-select option {
+    color: #212529 !important;
+    background-color: white !important;
+    font-weight: 500;
+    padding: 8px 12px;
+}
+
+.form-select option:hover {
+    background-color: var(--light-bg) !important;
+    color: var(--secondary-color) !important;
+}
+
+.form-select option:checked, .form-select option:focus {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+/* Dark text for better visibility */
+.form-select option {
+    color: #2c3e50 !important;
+    background: white !important;
+}
+
+.form-select:focus option:checked {
+    background: var(--primary-color) !important;
+    color: white !important;
+}
+
 /* Profile Images */
 .profile-img {
     width: 40px;

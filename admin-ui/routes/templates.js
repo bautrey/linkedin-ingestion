@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
         
         res.render('templates/list', {
             title: 'Prompt Templates',
-            templates: response.data || []
+            templates: response.data?.templates || []
         });
     } catch (error) {
         logger.error('Error fetching templates:', error);

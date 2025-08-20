@@ -26,8 +26,8 @@
                         <div>
                             <h2 class="fw-bold mb-1"><i class="bi bi-file-text me-2"></i><%= title %></h2>
                             <p class="text-muted mb-0">
-                                <% if (templates && templates.templates) { %>
-                                    <%= templates.templates.length %> templates available
+                                <% if (templates && templates.length > 0) { %>
+                                    <%= templates.length %> templates available
                                 <% } else { %>
                                     No templates found
                                 <% } %>
@@ -122,8 +122,8 @@
                                         </tr>
                                     </thead>
                                     <tbody id="templatesTableBody">
-                                        <% if (templates && templates.templates && templates.templates.length > 0) { %>
-                                            <% templates.templates.forEach(template => { %>
+                                        <% if (templates && templates.length > 0) { %>
+                                            <% templates.forEach(template => { %>
                                                 <tr data-template-id="<%= template.id %>" 
                                                     data-category="<%= template.category %>" 
                                                     data-status="<%= template.is_active ? 'active' : 'inactive' %>">
@@ -229,13 +229,13 @@
                     </div>
 
                     <!-- Stats Summary -->
-                    <% if (templates && templates.templates && templates.templates.length > 0) { %>
+                    <% if (templates && templates.length > 0) { %>
                         <div class="row mt-4">
                             <div class="col-md-3">
                                 <div class="card bg-light">
                                     <div class="card-body text-center">
                                         <h5 class="card-title">Total Templates</h5>
-                                        <h3 class="text-primary"><%= templates.templates.length %></h3>
+                                        <h3 class="text-primary"><%= templates.length %></h3>
                                     </div>
                                 </div>
                             </div>
@@ -243,7 +243,7 @@
                                 <div class="card bg-light">
                                     <div class="card-body text-center">
                                         <h5 class="card-title">Active</h5>
-                                        <h3 class="text-success"><%= templates.templates.filter(t => t.is_active).length %></h3>
+                                        <h3 class="text-success"><%= templates.filter(t => t.is_active).length %></h3>
                                     </div>
                                 </div>
                             </div>
@@ -251,7 +251,7 @@
                                 <div class="card bg-light">
                                     <div class="card-body text-center">
                                         <h5 class="card-title">Categories</h5>
-                                        <h3 class="text-info"><%= [...new Set(templates.templates.map(t => t.category))].length %></h3>
+                                        <h3 class="text-info"><%= [...new Set(templates.map(t => t.category))].length %></h3>
                                     </div>
                                 </div>
                             </div>
@@ -260,7 +260,7 @@
                                     <div class="card-body text-center">
                                         <h5 class="card-title">Most Recent</h5>
                                         <p class="mb-0">
-                                            <% const mostRecent = templates.templates.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0]; %>
+                                            <% const mostRecent = templates.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0]; %>
                                             <%= new Date(mostRecent.created_at).toLocaleDateString() %>
                                         </p>
                                     </div>
