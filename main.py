@@ -951,6 +951,36 @@ async def delete_profile(
             detail=error_response.model_dump()
         )
 
+# Simple companies endpoint for dashboard
+class CompanyListResponse(BaseModel):
+    data: List[Dict[str, Any]]
+    pagination: PaginationMetadata
+
+@app.get(
+    "/api/v1/companies", 
+    response_model=CompanyListResponse,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def list_companies(
+    limit: int = Query(50, ge=1, le=100, description="Number of companies to return"),
+    offset: int = Query(0, ge=0, description="Number of companies to skip"),
+    api_key: str = Depends(verify_api_key)
+):
+    """List companies (placeholder implementation)"""
+    # For now, return empty list since companies feature is not fully implemented
+    return CompanyListResponse(
+        data=[],
+        pagination=PaginationMetadata(
+            limit=limit,
+            offset=offset,
+            total=0,
+            has_more=False
+        )
+    )
+
 
 # Initialize Scoring Controllers
 def get_profile_scoring_controller():
@@ -1011,6 +1041,50 @@ async def get_scoring_job_status(
         status_code=200,
         content=jsonable_encoder(response, exclude_none=True)
     )
+
+
+@app.get(
+    "/api/v1/scoring-jobs",
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def list_scoring_jobs(
+    limit: int = Query(50, ge=1, le=100, description="Number of jobs to return"),
+    offset: int = Query(0, ge=0, description="Number of jobs to skip"),
+    status: Optional[str] = Query(None, description="Filter by job status"),
+    api_key: str = Depends(verify_api_key)
+):
+    """List scoring jobs for dashboard"""
+    try:
+        # For now, return empty list since we need to implement list method in service
+        # This matches the pattern used for companies endpoint
+        return {
+            "jobs": [],
+            "stats": {
+                "total_jobs": 0,
+                "pending_jobs": 0,
+                "completed_jobs": 0,
+                "failed_jobs": 0
+            },
+            "pagination": {
+                "limit": limit,
+                "offset": offset,
+                "total": 0,
+                "has_more": False
+            }
+        }
+    except Exception as e:
+        error_response = ErrorResponse(
+            error_code="JOBS_LIST_ERROR",
+            message=f"Failed to retrieve scoring jobs: {str(e)}",
+            details={
+                "operation": "list_scoring_jobs",
+                "exception_type": type(e).__name__
+            }
+        )
+        raise HTTPException(status_code=500, detail=error_response.model_dump())
 
 
 @app.post(
