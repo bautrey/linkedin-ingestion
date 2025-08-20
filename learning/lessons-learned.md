@@ -326,6 +326,55 @@ assert job_data["status"] in ["pending", "processing", "completed"]
 - **Zero Warnings Policy**: Maintained clean codebase with no deprecation warnings
 - **Production Validation**: Real job processing verification confirmed system functionality
 
+### CRITICAL LEARNINGS: Database Migration Token Waste Prevention (2025-01-20)
+
+#### Supabase CLI Operations - linkedin-ingestion Project
+**MEMORIZE THESE DETAILS TO PREVENT FUTURE TOKEN WASTE**
+
+**Project Connection Details:**
+- **Service Role Password**: `dvm2rjq6ngk@GZN-wth` (for CLI operations)
+- **Project URL**: `https://nggbqpkfdbhakbkbtxgc.supabase.co`
+- **Project ID**: `nggbqpkfdbhakbkbtxgc`
+
+**Mandatory CLI Command Templates:**
+```bash
+# Database dump (ALWAYS use this exact format)
+supabase db dump -p "dvm2rjq6ngk@GZN-wth" -s public
+
+# Database migration push (ALWAYS include password)
+supabase db push -p "dvm2rjq6ngk@GZN-wth"
+
+# Migration repair (ALWAYS include password)
+supabase migration repair [timestamp] -p "dvm2rjq6ngk@GZN-wth"
+
+# List migrations (ALWAYS include password)
+supabase migration list -p "dvm2rjq6ngk@GZN-wth"
+```
+
+#### Critical Mistakes That Waste Tokens
+1. **SQL Dump Trial-and-Error**: Trying multiple dump approaches instead of using proven template
+2. **Password Confusion**: Using regular password instead of service role password for CLI
+3. **Tool Preference Ignoring**: Using API/SQL editor when user explicitly says "use CLI"
+4. **Missing Password Parameter**: Trying CLI commands without `-p` flag (causes terminal freeze)
+5. **Context Ignorance**: Searching for known Supabase details that are already documented
+
+#### Efficiency Rules
+- **ALWAYS** start with proven CLI templates + service role password
+- **NEVER** experiment with command variations when templates exist
+- **FOLLOW** user's exact tool preferences (CLI vs API vs SQL editor)
+- **CHECK** available context before searching for known information
+- **INCLUDE** password parameter in ALL Supabase CLI commands
+
+#### Token Impact Assessment
+- **Actual Commands Used**: 15-20 trial-and-error attempts
+- **Efficient Approach**: Should have been 3-4 commands total
+- **Efficiency Loss**: ~75% token waste due to not following established patterns
+
+#### Password Usage Rules
+- **Service Role Password** (`dvm2rjq6ngk@GZN-wth`): Use for CLI operations
+- **Regular Password**: Use for direct database connections (psql, SQL editors)
+- **Memory Rule**: Supabase CLI commands ALWAYS need service role password
+
 ---
 
 ## Session: V1.8 Task 2 Completion (2025-08-04)

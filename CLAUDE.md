@@ -45,13 +45,17 @@ When asked to work on this codebase:
 ### Memory Keeper MCP Integration
 **CRITICAL SESSION MANAGEMENT** - Memory Keeper MCP is essential for hibernation protocol
 
-- ✅ **ALWAYS** use Memory Keeper during hibernation: `call_mcp_tool` with correct tool names
+- ✅ **ALWAYS** use Memory Keeper during hibernation: `call_mcp_tool` with correct parameter formats
 - 🔧 **Available Tools**: `create_entities`, `create_relations`, `add_observations`, `delete_entities`, `delete_observations`, `delete_relations`, `read_graph`, `search_nodes`, `open_nodes`
-- 📝 **Correct Usage**: Use `entityName` parameter (not `entity_name`), create entities before adding observations
+- 📝 **CORRECT USAGE PATTERNS (RESEARCHED 2025-01-20)**:
+  - `create_entities`: Use `{"entities":[{"name":"Entity_Name","entityType":"type","observations":["obs1"]}]}`
+  - `add_observations`: Use `{"observations":[{"entityName":"Entity Name","contents":["obs1"]}]}`
+  - `search_nodes`: Use `{"query":"search terms"}`
+- ⚠️ **CRITICAL**: See `MEMORY_KEEPER_MCP_GUIDE.md` for complete usage documentation
 - 🎯 **Purpose**: Evaluate Memory Keeper as potential replacement for session files
 - ⚠️ **Never Skip**: Memory Keeper integration is mandatory during hibernation - failure to use undermines process evaluation
 
-*Memory Keeper MCP server visible in Warp terminal with `mcp-server-memory` command*
+*Memory Keeper MCP server visible in Warp terminal with green "Running" indicator*
 
 ### Session File Location Rule
 **CRITICAL HIBERNATION RULE** - Project owner explicitly requires centralized session management
@@ -70,15 +74,18 @@ When asked to work on this codebase:
 **Essential for debugging and knowledge retention across sessions**
 
 - 🟢 **Status Check**: Memory server shows as "Running" with green indicator in Warp terminal
-- 🔧 **Available Tools**: 
-  - `create_entities`: Store new findings, issues, solutions
-  - `create_relations`: Link related concepts
-  - `add_observations`: Update existing entities with new info
-  - `search_nodes`: Find previously stored information
-  - `read_graph`, `open_nodes`: Explore stored knowledge
+- 📚 **CRITICAL REFERENCE**: See `MEMORY_KEEPER_MCP_GUIDE.md` for complete usage documentation
+- 🔧 **Available Tools with CORRECT Formats**: 
+  - `create_entities`: `{"entities":[{"name":"Name","entityType":"type","observations":["obs"]}]}`
+  - `add_observations`: `{"observations":[{"entityName":"Name","contents":["obs"]}]}`
+  - `search_nodes`: `{"query":"search terms"}` 
+  - `create_relations`: `{"relations":[{"from":"Entity1","to":"Entity2","relationType":"uses"}]}`
 - 📋 **Usage Pattern**: Document key learnings, API patterns, debugging solutions
 - 💡 **Best Practice**: Store troubleshooting patterns to avoid repeating same mistakes
-- ⚡ **Quick Access**: Use `call_mcp_tool` with `name: "search_nodes"` to find past solutions
+- ⚡ **Quick Access**: Use search_nodes to find previously stored solutions
+- 🚨 **CRITICAL ENTITIES STORED**: 
+  - `LinkedIn Ingestion Service` - Project status and progress
+  - `Supabase_CLI_Token_Waste_Prevention` - Database operation patterns
 
 ### Common Issues & Solutions
 **Recently resolved patterns (stored in memory server)**
