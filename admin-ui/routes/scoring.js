@@ -17,12 +17,18 @@ router.get('/', async (req, res) => {
             try {
                 // Fetch templates for scoring selection
                 const templatesResponse = await apiClient.get('/templates');
-                templatesData = templatesResponse.data || [];
+                // Handle nested response structure: response.data.data.templates
+                templatesData = templatesResponse.data?.data?.templates || templatesResponse.data?.templates || templatesResponse.data || [];
+                logger.info(`Fetched ${templatesData.length} templates for scoring`);
+                logger.debug('Templates data:', templatesData);
                 
                 if (profile_id) {
                     // Single profile scoring
                     const profileResponse = await apiClient.get(`/profiles/${profile_id}`);
-                    profilesData = [profileResponse.data];
+                    // Handle nested response structure for single profile
+                    const profileData = profileResponse.data?.data || profileResponse.data;
+                    profilesData = [profileData];
+                    logger.info(`Fetched profile: ${profileData?.name || profileData?.full_name || 'Unknown'}`);
                 } else if (profile_ids) {
                     // Bulk profile scoring
                     const idsArray = profile_ids.split(',');
@@ -33,7 +39,9 @@ router.get('/', async (req, res) => {
                         })
                     );
                     const profileResponses = await Promise.all(profilePromises);
-                    profilesData = profileResponses.filter(Boolean).map(response => response.data);
+                    // Handle nested response structure for each profile
+                    profilesData = profileResponses.filter(Boolean).map(response => response.data?.data || response.data);
+                    logger.info(`Fetched ${profilesData.length} profiles for bulk scoring`);
                 }
                 
                 const title = profilesData.length === 1 

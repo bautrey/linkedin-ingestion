@@ -4,7 +4,7 @@ const logger = require('../utils/logger');
 const apiClient = axios.create({
     baseURL: (process.env.FASTAPI_BASE_URL || 'http://localhost:8000') + '/api/v1',
     headers: {
-        'X-API-Key': process.env.API_KEY,
+        'X-API-Key': process.env.API_KEY || 'li_HieZz-IjBp0uE7d-rZkRE0qyy12r5_ZJS_FR4jMvv0I',
         'Content-Type': 'application/json',
         'User-Agent': 'LinkedIn-Ingestion-Admin-UI/1.0'
     },

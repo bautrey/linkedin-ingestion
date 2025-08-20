@@ -99,15 +99,15 @@
                                                                 <% } %>
                                                             </td>
                                                             <td>
-                                                                <% if (profile.current_company) { %>
-                                                                    <%= profile.current_company %>
+                                                                <% if (profile.current_company && profile.current_company.name) { %>
+                                                                    <%= profile.current_company.name %>
                                                                 <% } else { %>
                                                                     <span class="text-muted">—</span>
                                                                 <% } %>
                                                             </td>
                                                             <td>
-                                                                <% if (profile.current_position) { %>
-                                                                    <%= profile.current_position.substring(0, 30) %>...
+                                                                <% if (profile.position) { %>
+                                                                    <%= profile.position.length > 30 ? profile.position.substring(0, 30) + '...' : profile.position %>
                                                                 <% } else { %>
                                                                     <span class="text-muted">—</span>
                                                                 <% } %>
