@@ -162,6 +162,12 @@ class MockSupabaseTable:
     
     def upsert(self, data: Dict[str, Any]):
         return self.insert(data)
+    
+    def update(self, data: Dict[str, Any]):
+        return MockSupabaseUpdateQuery(self._stored_data, data)
+    
+    def delete(self):
+        return MockSupabaseDeleteQuery(self._stored_data)
 
 
 class MockSupabaseQuery:
@@ -182,6 +188,47 @@ class MockSupabaseQuery:
     
     def execute(self):
         return MockSupabaseResponse(self._data)
+
+
+class MockSupabaseUpdateQuery:
+    """Mock Supabase update operations"""
+    
+    def __init__(self, data: List[Dict[str, Any]], update_data: Dict[str, Any]):
+        self._data = data
+        self._update_data = update_data
+    
+    def eq(self, field: str, value: Any):
+        # Find and update matching records
+        updated_records = []
+        for item in self._data:
+            if item.get(field) == value:
+                updated_item = {**item, **self._update_data}
+                # Update the original data in place
+                item.update(self._update_data)
+                updated_records.append(updated_item)
+        return MockSupabaseResponse(updated_records)
+
+
+class MockSupabaseDeleteQuery:
+    """Mock Supabase delete operations"""
+    
+    def __init__(self, data: List[Dict[str, Any]]):
+        self._data = data
+    
+    def eq(self, field: str, value: Any):
+        # Find and remove matching records
+        deleted_records = []
+        items_to_remove = []
+        for i, item in enumerate(self._data):
+            if item.get(field) == value:
+                deleted_records.append(item)
+                items_to_remove.append(i)
+        
+        # Remove items in reverse order to maintain indices
+        for i in reversed(items_to_remove):
+            self._data.pop(i)
+        
+        return MockSupabaseResponse(deleted_records)
 
 
 class MockSupabaseClient:
@@ -353,6 +400,75 @@ class TestSupabaseClient:
             print(f"  - {profile.get('name', 'Unknown')} (similarity: {profile.get('similarity', 0):.2f})")
     
     @pytest.mark.asyncio
+    async def test_update_profile_suggested_role(self, mock_supabase_client):
+        """Test updating profile suggested role"""
+        print("Testing profile suggested role update...")
+        
+        # First store a profile
+        import time
+        unique_id = f"update-test-{int(time.time() * 1000)}"
+        mock_data = {
+            "profile_id": unique_id,
+            "full_name": "Update Test User",
+            "linkedin_url": f"https://linkedin.com/in/{unique_id}",
+            "headline": "Software Engineer",
+            "about": "Profile for testing suggested role updates",
+            "city": "San Francisco",
+            "country": "US",
+            "follower_count": 200,
+            "connection_count": 100,
+            "experiences": [],
+            "educations": [],
+            "languages": ["English"],
+            "suggested_role": RoleType.SOFTWARE_ENGINEER
+        }
+        profile = CanonicalProfile(**mock_data)
+        record_id = await mock_supabase_client.store_profile(profile)
+        
+        # Now update the suggested role
+        new_role = "CTO"
+        result = await mock_supabase_client.update_profile_suggested_role(record_id, new_role)
+        
+        assert isinstance(result, bool)
+        assert result == True  # Should return True for successful update
+        
+        print(f"✓ Profile suggested role updated successfully: {record_id} -> {new_role}")
+    
+    @pytest.mark.asyncio
+    async def test_delete_profile(self, mock_supabase_client):
+        """Test deleting profile"""
+        print("Testing profile deletion...")
+        
+        # First store a profile
+        import time
+        unique_id = f"delete-test-{int(time.time() * 1000)}"
+        mock_data = {
+            "profile_id": unique_id,
+            "full_name": "Delete Test User",
+            "linkedin_url": f"https://linkedin.com/in/{unique_id}",
+            "headline": "Test Engineer",
+            "about": "Profile for testing deletion",
+            "city": "Test City",
+            "country": "US",
+            "follower_count": 50,
+            "connection_count": 25,
+            "experiences": [],
+            "educations": [],
+            "languages": ["English"],
+            "suggested_role": RoleType.SOFTWARE_ENGINEER
+        }
+        profile = CanonicalProfile(**mock_data)
+        record_id = await mock_supabase_client.store_profile(profile)
+        
+        # Now delete the profile
+        result = await mock_supabase_client.delete_profile(record_id)
+        
+        assert isinstance(result, bool)
+        assert result == True  # Should return True for successful deletion
+        
+        print(f"✓ Profile deleted successfully: {record_id}")
+    
+    @pytest.mark.asyncio
     async def test_health_check(self, mock_supabase_client):
         """Test database health check"""
         print("Testing database health check...")
@@ -400,6 +516,8 @@ async def run_database_tests():
         await db_tests.test_store_company()
         await db_tests.test_get_profile_by_linkedin_id()
         await db_tests.test_find_similar_profiles()
+        await db_tests.test_update_profile_suggested_role()
+        await db_tests.test_delete_profile()
         await db_tests.test_health_check()
         
         print("✓ All database integration tests passed")
