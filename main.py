@@ -548,13 +548,14 @@ class ProfileController:
         # Process profile through workflow for complete data
         request_id, enriched_profile = await self.linkedin_workflow.process_profile(workflow_request)
         
-        # Set the suggested_role on the profile before storing
-        enriched_profile.profile.suggested_role = request.suggested_role
-        
         # Store in database using the enriched profile data
         record_id = await self.db_client.store_profile(enriched_profile.profile)
         
-        # Retrieve the stored profile to return consistent data
+        # Update the stored profile with the suggested role
+        if request.suggested_role:
+            await self.db_client.update_profile_suggested_role(record_id, request.suggested_role.value)
+        
+        # Retrieve the updated profile to return consistent data
         stored_profile = await self.db_client.get_profile_by_id(record_id)
         return self._convert_db_profile_to_response(stored_profile)
     
@@ -592,8 +593,9 @@ class ProfileController:
         profile_id = pipeline_result["storage_ids"]["profile"]
         
         # Update the stored profile with the suggested role
-        # Note: This would need a method to update profile role in the database
-        # For now, we'll retrieve and return the profile as-is
+        await self.db_client.update_profile_suggested_role(profile_id, request.suggested_role.value)
+        
+        # Retrieve the updated profile
         stored_profile = await self.db_client.get_profile_by_id(profile_id)
         
         # Convert to response format and add company information from pipeline result
