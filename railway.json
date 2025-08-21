@@ -1,6 +1,7 @@
 {
   "build": {
     "builder": "NIXPACKS",
+    "nixpacksVersion": "1.38.0",
     "watchPatterns": [
       "app/**",
       "main.py",
