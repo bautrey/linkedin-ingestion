@@ -6,7 +6,7 @@
 buildpack = "python"
 
 # Start command for the FastAPI application
-startCommand = "uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 2"
+# Removed startCommand to let Procfile take precedence
 
 # Health check path
 healthcheckPath = "/api/v1/health"
