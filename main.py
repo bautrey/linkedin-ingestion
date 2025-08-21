@@ -379,21 +379,10 @@ class ProfileCreateRequest(BaseModel):
     name: Optional[str] = None
     include_companies: bool = Field(default=True, description="Include company profiles for all experience entries")
     suggested_role: RoleType = Field(..., description="The suggested role for this profile: CIO, CTO, or CISO for role-specific scoring")
-    
-    @field_validator('linkedin_url', mode='before')
-    @classmethod
-    def normalize_linkedin_url(cls, v):
-        """Normalize LinkedIn URLs by adding https:// if missing protocol"""
-        if isinstance(v, str):
-            # Remove trailing whitespace
-            v = v.strip()
-            
-            # If URL doesn't start with http:// or https://, add https://
-            if not v.startswith(('http://', 'https://')):
-                # Handle common cases like "www.linkedin.com" or "linkedin.com"
-                if v.startswith('www.') or 'linkedin.com' in v:
-                    v = f"https://{v}"
-        return v
+
+class BatchProfileCreateRequest(BaseModel):
+    profiles: List[ProfileCreateRequest] = Field(..., min_items=1, max_items=10, description="List of profiles to ingest (max 10 per batch)")
+    max_concurrent: int = Field(default=3, ge=1, le=5, description="Maximum concurrent processing (1-5)")
 
 class PaginationMetadata(BaseModel):
     limit: int
@@ -430,6 +419,16 @@ class ProfileResponse(BaseModel):
 class ProfileListResponse(BaseModel):
     data: List[ProfileResponse]
     pagination: PaginationMetadata
+
+class BatchProfileResponse(BaseModel):
+    batch_id: str = Field(..., description="Unique identifier for this batch operation")
+    total_requested: int = Field(..., description="Total number of profiles requested")
+    successful: int = Field(..., description="Number of profiles successfully processed")
+    failed: int = Field(..., description="Number of profiles that failed processing")
+    results: List[ProfileResponse] = Field(..., description="Individual profile results")
+    started_at: str = Field(..., description="Batch processing start time")
+    completed_at: str = Field(..., description="Batch processing completion time")
+    processing_time_seconds: float = Field(..., description="Total processing time in seconds")
 
 # ProfileController class for REST endpoints
 class ProfileController:
@@ -610,6 +609,79 @@ class ProfileController:
         }
         
         return response
+    
+    async def batch_create_profiles_enhanced(self, request: BatchProfileCreateRequest) -> BatchProfileResponse:
+        """Batch create profiles using enhanced pipeline with company processing"""
+        import time
+        from uuid import uuid4
+        
+        batch_id = str(uuid4())
+        start_time = time.time()
+        started_at = datetime.now(timezone.utc)
+        
+        # Extract LinkedIn URLs from the batch request
+        linkedin_urls = [str(profile_req.linkedin_url) for profile_req in request.profiles]
+        
+        # Use enhanced pipeline for batch processing
+        pipeline_results = await self.enhanced_pipeline.batch_ingest_profiles_with_companies(
+            linkedin_urls=linkedin_urls,
+            max_concurrent=request.max_concurrent
+        )
+        
+        # Convert pipeline results to response format
+        profile_responses = []
+        successful_count = 0
+        
+        for i, pipeline_result in enumerate(pipeline_results):
+            if pipeline_result.get("status") == "completed":
+                # Get the profile from storage
+                profile_id = pipeline_result["storage_ids"]["profile"]
+                stored_profile = await self.db_client.get_profile_by_id(profile_id)
+                
+                # Convert to response format with enhanced metadata
+                response = self._convert_db_profile_to_response(stored_profile)
+                response.companies_processed = pipeline_result.get("companies", [])
+                response.pipeline_metadata = {
+                    "pipeline_id": pipeline_result["pipeline_id"],
+                    "companies_found": len(pipeline_result.get("companies", [])),
+                    "has_embeddings": "profile" in pipeline_result.get("embeddings", {}),
+                    "processing_time": pipeline_result.get("completed_at", pipeline_result.get("started_at"))
+                }
+                
+                successful_count += 1
+            else:
+                # Create error response for failed profiles
+                response = ProfileResponse(
+                    id="",
+                    name=f"Failed: {request.profiles[i].linkedin_url}",
+                    url=str(request.profiles[i].linkedin_url),
+                    position="Processing Failed",
+                    about=f"Error: {pipeline_result.get('errors', [{'error': 'Unknown error'}])[0].get('error', 'Unknown error')}",
+                    created_at=started_at.isoformat(),
+                    experience=[],
+                    education=[],
+                    certifications=[],
+                    pipeline_metadata={
+                        "status": "failed",
+                        "errors": pipeline_result.get("errors", [])
+                    }
+                )
+            
+            profile_responses.append(response)
+        
+        end_time = time.time()
+        processing_time = end_time - start_time
+        
+        return BatchProfileResponse(
+            batch_id=batch_id,
+            total_requested=len(request.profiles),
+            successful=successful_count,
+            failed=len(request.profiles) - successful_count,
+            results=profile_responses,
+            started_at=started_at.isoformat(),
+            completed_at=datetime.now(timezone.utc).isoformat(),
+            processing_time_seconds=processing_time
+        )
 
 
 @app.get("/")
@@ -975,6 +1047,26 @@ async def create_profile_enhanced(
     """Create a new profile using enhanced pipeline with company processing"""
     controller = get_profile_controller()
     return await controller.create_profile_enhanced(request)
+
+
+@app.post(
+    "/api/v1/profiles/batch-enhanced", 
+    response_model=BatchProfileResponse, 
+    status_code=201,
+    responses={
+        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
+        422: {"model": ValidationErrorResponse, "description": "Validation error"},
+        429: {"model": ErrorResponse, "description": "Too many profiles in batch or rate limit exceeded"},
+        500: {"model": ErrorResponse, "description": "Internal server error"}
+    }
+)
+async def batch_create_profiles_enhanced(
+    request: BatchProfileCreateRequest,
+    api_key: str = Depends(verify_api_key)
+):
+    """Batch create profiles using enhanced pipeline with company processing (max 10 profiles per batch)"""
+    controller = get_profile_controller()
+    return await controller.batch_create_profiles_enhanced(request)
 
 
 @app.delete(

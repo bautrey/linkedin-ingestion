@@ -1,0 +1,111 @@
+{
+    "name": "LinkedIn Batch Enhanced Ingestion Test",
+    "description": "A scenario to test the batch enhanced profile ingestion endpoint of the LinkedIn Ingestion Service.",
+    "blueprint": {
+        "version": "1.0",
+        "modules": [
+            {
+                "id": "1",
+                "type": "json",
+                "name": "LinkedIn Profiles",
+                "data": {
+                    "source": "manual",
+                    "json": {
+                        "profiles": [
+                            {"linkedin_url": "https://www.linkedin.com/in/gregory-pascuzzi-a2b6b3b/"},
+                            {"linkedin_url": "https://www.linkedin.com/in/jeffweiner08/"},
+                            {"linkedin_url": "https://www.linkedin.com/in/reidhoffman/"}
+                        ]
+                    }
+                }
+            },
+            {
+                "id": "2",
+                "type": "http",
+                "name": "Batch Ingestion Request",
+                "data": {
+                    "url": "https://linkedin-ingestion-production.up.railway.app/api/v1/profiles/batch-enhanced",
+                    "method": "post",
+                    "headers": [
+                        {
+                            "name": "X-API-Key",
+                            "value": "{{API_KEY}}"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ],
+                    "body": {
+                        "type": "raw",
+                        "content": "{{module[1].json.profiles}}"
+                    },
+                    "timeout": 300
+                }
+            },
+            {
+                "id": "3",
+                "type": "router",
+                "name": "Check Response",
+                "routes": [
+                    {
+                        "id": "success",
+                        "name": "Success",
+                        "filter": {
+                            "conditions": [
+                                {
+                                    "left": "{{module[2].status_code}}",
+                                    "operator": "equal",
+                                    "right": 200
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "id": "failure",
+                        "name": "Failure",
+                        "filter": {
+                            "conditions": [
+                                {
+                                    "left": "{{module[2].status_code}}",
+                                    "operator": "notequal",
+                                    "right": 200
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "4",
+                "type": "note",
+                "name": "Successful Ingestion",
+                "data": {
+                    "text": "Batch ingestion successful!\n\nSuccessful: {{module[2].data.successful_profiles_count}}\nFailed: {{module[2].data.failed_profiles_count}}"
+                },
+                "routes": [
+                    {
+                        "source": "success"
+                    }
+                ]
+            },
+            {
+                "id": "5",
+                "type": "note",
+                "name": "Failed Ingestion",
+                "data": {
+                    "text": "Batch ingestion failed!\n\nStatus Code: {{module[2].status_code}}\nResponse:\n{{module[2].data}}"
+                },
+                "routes": [
+                    {
+                        "source": "failure"
+                    }
+                ]
+            }
+        ],
+        "schedule": {
+            "type": "manual"
+        }
+    }
+}
+

@@ -1,0 +1,65 @@
+# Railway deployment configuration
+# https://docs.railway.app/reference/config-file
+
+[deploy]
+# Use Python buildpack
+buildpack = "python"
+
+# Start command for the FastAPI application
+startCommand = "uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 2"
+
+# Health check path
+healthcheckPath = "/api/v1/health"
+
+# Health check timeout and interval
+healthcheckTimeout = 30
+healthcheckInterval = 30
+
+[build]
+# Build command to install dependencies and run any build steps
+buildCommand = "pip install -r requirements.txt && python scripts/migrate.py --check-only"
+
+# Cache settings
+watchPatterns = ["**/*.py", "requirements.txt", "alembic.ini", "alembic/**/*.py"]
+
+[variables]
+# Environment variables for Railway deployment
+# These reference Railway service variables that need to be set in the dashboard
+
+# Application settings
+ENVIRONMENT = "production"
+DEBUG = "false"
+LOG_LEVEL = "INFO"
+LOG_FORMAT = "json"
+
+# Rate limiting for production
+RATE_LIMIT_PER_MINUTE = "100"
+CASSIDY_RATE_LIMIT = "20"
+
+# Vector configuration
+VECTOR_DIMENSION = "1536"
+SIMILARITY_THRESHOLD = "0.8"
+
+# OpenAI configuration
+OPENAI_DEFAULT_MODEL = "gpt-3.5-turbo"
+OPENAI_MAX_TOKENS = "2000"
+OPENAI_TEMPERATURE = "0.1"
+
+# Cassidy configuration
+CASSIDY_TIMEOUT = "300"
+CASSIDY_MAX_RETRIES = "3"
+CASSIDY_BACKOFF_FACTOR = "2.0"
+
+# Feature flags
+ENABLE_COMPANY_INGESTION = "true"
+ENABLE_VECTOR_SEARCH = "true"
+ENABLE_ASYNC_PROCESSING = "true"
+
+# Note: Sensitive variables like API keys and database URLs
+# should be set directly in Railway dashboard as service variables:
+# - DATABASE_URL (from Railway PostgreSQL plugin)
+# - SUPABASE_URL
+# - SUPABASE_ANON_KEY  
+# - SUPABASE_SERVICE_KEY
+# - OPENAI_API_KEY
+# - API_KEY

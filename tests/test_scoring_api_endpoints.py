@@ -525,9 +525,9 @@ class TestScoringAPIEndpoints:
             assert data["detail"]["error_code"] == "PROFILE_ACCESS_ERROR"
 
 
-@pytest.mark.integration
+@pytest.mark.production
 class TestScoringAPIIntegration:
-    """Integration tests for scoring API with real dependencies"""
+    """Production tests for scoring API with real dependencies"""
     
     @pytest.fixture
     def client(self):

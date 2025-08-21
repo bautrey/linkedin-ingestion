@@ -20,7 +20,7 @@ from app.models.template_models import (
 from app.database.supabase_client import SupabaseClient
 
 
-@pytest.mark.integration
+@pytest.mark.production
 class TestTemplateServiceProduction:
     """Production validation tests for TemplateService"""
 
