@@ -108,10 +108,10 @@ class ExperienceEntry(BaseModel):
             return int(v)
         return v
     
-    @field_validator('start_month', 'end_month', mode='before')
+    @field_validator('start_month', mode='before')
     @classmethod
-    def handle_month(cls, v):
-        """Handle month fields that might be int or string"""
+    def handle_start_month(cls, v):
+        """Handle start_month field that might be int or string"""
         if v == "":
             return None
         if isinstance(v, int):
@@ -120,8 +120,20 @@ class ExperienceEntry(BaseModel):
             return int(v)
         return v
     
+    @field_validator('end_month', mode='before')
+    @classmethod
+    def handle_end_month(cls, v):
+        """Handle end_month field - convert to string"""
+        if v == "" or v is None:
+            return None
+        if isinstance(v, int):
+            return str(v)  # Convert int to string for end_month
+        if isinstance(v, str):
+            return v.strip() or None
+        return str(v) if v else None
+    
     @field_validator('company', 'company_id', 'company_linkedin_url', 'company_logo_url',
-                     'date_range', 'description', 'duration', 'end_month', 'job_type',
+                     'date_range', 'description', 'duration', 'job_type',
                      'location', 'skills', 'title', mode='before')
     @classmethod
     def handle_flexible_strings(cls, v):

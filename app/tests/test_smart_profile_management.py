@@ -241,7 +241,8 @@ class TestEndpointIntegration:
             "/api/v1/profiles",
             json={
                 "linkedin_url": "https://linkedin.com/in/test",
-                "include_companies": False
+                "include_companies": False,
+                "suggested_role": "CTO"
             },
             headers={"x-api-key": settings.API_KEY}
         )
@@ -277,7 +278,10 @@ class TestEndpointIntegration:
         # Test request with minimal fields (should use defaults)
         response = client.post(
             "/api/v1/profiles",
-            json={"linkedin_url": "https://linkedin.com/in/test"},
+            json={
+                "linkedin_url": "https://linkedin.com/in/test",
+                "suggested_role": "CTO"
+            },
             headers={"x-api-key": settings.API_KEY}
         )
         

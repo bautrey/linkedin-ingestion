@@ -77,7 +77,10 @@ class TestExceptionHandlerIntegration:
         
         response = self.client.post(
             "/api/v1/profiles",
-            json={"linkedin_url": "https://linkedin.com/in/test"},
+            json={
+                "linkedin_url": "https://linkedin.com/in/test", 
+                "suggested_role": "CTO"
+            },
             headers=self.headers
         )
         

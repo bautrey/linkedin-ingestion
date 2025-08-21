@@ -73,7 +73,7 @@ class TestEnhancedProfileIngestion:
                     start_year=2018,
                     start_month=6,
                     end_year=2019,
-                    end_month=12
+                    end_month="12"
                 )
             ]
         )
@@ -106,9 +106,10 @@ class TestEnhancedProfileIngestion:
 
     # Test 4.1: Enhanced profile ingestion pipeline with company data extraction
 
+    @pytest.mark.asyncio
     @patch('app.services.linkedin_pipeline.LinkedInDataPipeline._has_db_config')
     @patch('app.services.linkedin_pipeline.LinkedInDataPipeline._has_openai_config')
-    async def test_profile_ingestion_extracts_company_data(self, mock_openai_config, mock_db_config, 
+    async def test_profile_ingestion_extracts_company_data(self, mock_openai_config, mock_db_config,
                                                          linkedin_pipeline, sample_linkedin_profile, 
                                                          sample_company_profiles, mock_company_service):
         """Test that profile ingestion extracts and processes company data."""
@@ -149,6 +150,7 @@ class TestEnhancedProfileIngestion:
 
     # Test 4.3: Company data parsing with validation and error handling
 
+    @pytest.mark.asyncio
     async def test_extract_company_data_from_profile(self, linkedin_pipeline, sample_linkedin_profile):
         """Test extraction of company data from LinkedIn profile."""
         # Execute
@@ -167,6 +169,7 @@ class TestEnhancedProfileIngestion:
         exp_company = company_data_list[1]  
         assert exp_company.company_name == "StartupInc"
 
+    @pytest.mark.asyncio
     async def test_extract_company_data_handles_missing_data(self, linkedin_pipeline):
         """Test extraction handles profiles with missing company data gracefully."""
         # Setup profile with minimal data
@@ -183,6 +186,7 @@ class TestEnhancedProfileIngestion:
         # Verify
         assert len(company_data_list) == 0  # No companies to extract
 
+    @pytest.mark.asyncio
     async def test_extract_company_data_deduplicates_companies(self, linkedin_pipeline):
         """Test that company extraction deduplicates companies by LinkedIn URL."""
         # Setup profile with duplicate companies
@@ -217,6 +221,7 @@ class TestEnhancedProfileIngestion:
 
     # Test 4.5 & 4.6: Error handling for malformed/missing company data
 
+    @pytest.mark.asyncio
     @patch('app.services.linkedin_pipeline.LinkedInDataPipeline._has_db_config')
     async def test_profile_ingestion_handles_company_processing_errors(self, mock_db_config,
                                                                      linkedin_pipeline, sample_linkedin_profile,
@@ -248,6 +253,7 @@ class TestEnhancedProfileIngestion:
         assert len(result["errors"]) == 1
         assert "company service error" in result["errors"][0]["error"].lower()
 
+    @pytest.mark.asyncio
     async def test_company_data_validation_handles_invalid_data(self, linkedin_pipeline):
         """Test that company data validation handles invalid or malformed data."""
         # Setup profile with invalid company data
@@ -274,6 +280,7 @@ class TestEnhancedProfileIngestion:
 
     # Test 4.7: Integration tests for complete flow
 
+    @pytest.mark.asyncio
     @patch('app.services.linkedin_pipeline.LinkedInDataPipeline._has_db_config')
     @patch('app.services.linkedin_pipeline.LinkedInDataPipeline._has_openai_config')
     async def test_complete_profile_ingestion_with_companies_integration(self, mock_openai_config, mock_db_config,
@@ -320,6 +327,7 @@ class TestEnhancedProfileIngestion:
 
     # Test 4.8: CompanyService integration during processing
 
+    @pytest.mark.asyncio
     async def test_profile_ingestion_calls_company_service_correctly(self, linkedin_pipeline, sample_linkedin_profile,
                                                                    mock_company_service):
         """Test that profile ingestion calls CompanyService with correct parameters."""
@@ -343,6 +351,7 @@ class TestEnhancedProfileIngestion:
 
     # Test 4.9: Realistic company data scenarios
 
+    @pytest.mark.asyncio
     async def test_profile_ingestion_with_complex_company_scenarios(self, linkedin_pipeline, mock_company_service):
         """Test profile ingestion with complex, realistic company data scenarios."""
         # Setup complex profile with various company scenarios
@@ -423,6 +432,7 @@ class TestEnhancedProfileIngestion:
         assert "TechStartup" in company_names
         assert "Unknown Corp" not in company_names
 
+    @pytest.mark.asyncio
     async def test_batch_profile_ingestion_with_companies(self, linkedin_pipeline, sample_linkedin_profile,
                                                         mock_company_service):
         """Test batch profile ingestion includes company processing."""

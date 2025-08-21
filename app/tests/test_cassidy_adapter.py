@@ -685,7 +685,7 @@ class TestCassidyAdapterValidation:
         assert company.funding_info is None  # Empty dict should not create FundingInfo object
         assert company.locations == []  # Empty array should remain empty
         assert company.affiliated_companies == []  # Should be empty list, not None
-        assert company.industries == ["Tech", "", "Software"]  # Preserve array with empty strings
+        assert company.industries == ["Tech", "Software"]  # Empty strings should be filtered out
     
     def test_transform_profile_with_mixed_data_types(self, adapter):
         """Test transforming profile with unexpected data types."""

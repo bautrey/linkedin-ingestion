@@ -68,7 +68,10 @@ class TestProfileEndpoints:
         # Make the request to create a duplicate profile
         response = self.client.post(
             "/api/v1/profiles",
-            json={"linkedin_url": "https://www.linkedin.com/in/duplicate"},
+            json={
+                "linkedin_url": "https://www.linkedin.com/in/duplicate", 
+                "suggested_role": "CTO"
+            },
             headers=self.headers
         )
         
