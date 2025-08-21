@@ -167,6 +167,40 @@ class SupabaseClient(LoggerMixin):
                 error=str(e)
             )
             raise
+    
+    async def update_profile_suggested_role(self, profile_id: str, suggested_role: str) -> bool:
+        """
+        Update the suggested_role field for a profile
+
+        Args:
+            profile_id: Profile record ID
+            suggested_role: New suggested role value
+
+        Returns:
+            bool: True if update was successful, False otherwise
+        """
+        await self._ensure_client()
+        self.logger.info("Updating profile suggested role", profile_id=profile_id, suggested_role=suggested_role)
+
+        try:
+            table = self.client.table("linkedin_profiles")
+            result = await table.update({"suggested_role": suggested_role}).eq("id", profile_id).execute()
+
+            # Check if any rows were updated (result.data will contain updated rows)
+            if result.data and len(result.data) > 0:
+                self.logger.info("Profile suggested role updated", profile_id=profile_id, suggested_role=suggested_role)
+                return True
+            else:
+                self.logger.warning("Profile not found for suggested role update", profile_id=profile_id)
+                return False
+
+        except Exception as e:
+            self.logger.error(
+                "Failed to update profile suggested role",
+                profile_id=profile_id,
+                error=str(e)
+            )
+            raise
         
     async def store_company(
         self, 
