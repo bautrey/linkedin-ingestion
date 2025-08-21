@@ -23,12 +23,13 @@ def mock_external_dependencies():
     mock_supabase_client.table.return_value.select.return_value.eq.return_value.execute.return_value.data = []
     mock_supabase_client.rpc.return_value.execute.return_value.data = []
     
-    # Mock OpenAI
-    mock_openai = Mock()
-    mock_openai.Embedding.acreate = AsyncMock(return_value={
-        'data': [{'embedding': [0.1] * 1536}],
-        'usage': {'total_tokens': 100}
-    })
+    # Mock OpenAI - using new v1.0+ API structure
+    mock_embedding_response = Mock()
+    mock_embedding_response.data = [Mock(embedding=[0.1] * 1536)]
+    mock_embedding_response.usage = Mock(total_tokens=100)
+    
+    mock_openai_client = Mock()
+    mock_openai_client.embeddings.create = AsyncMock(return_value=mock_embedding_response)
     
     # Mock tiktoken
     mock_encoding = Mock()

@@ -4,7 +4,7 @@ Embedding generation service using OpenAI's embedding API
 Handles text-to-vector conversion for LinkedIn profiles and companies
 """
 
-import openai
+from openai import AsyncOpenAI
 from typing import List, Optional, Dict, Any
 import tiktoken
 from functools import lru_cache
@@ -24,9 +24,7 @@ class EmbeddingService(LoggerMixin):
         Args:
             api_key: OpenAI API key (falls back to environment if not provided)
         """
-        if api_key:
-            openai.api_key = api_key
-        
+        self.client = AsyncOpenAI(api_key=api_key)
         self.model = "text-embedding-ada-002"  # OpenAI's current embedding model
         self.max_tokens = 8192  # Model token limit
         self.encoding = tiktoken.get_encoding("cl100k_base")  # GPT-4 encoding
@@ -93,17 +91,17 @@ class EmbeddingService(LoggerMixin):
         )
         
         try:
-            response = await openai.Embedding.acreate(
+            response = await self.client.embeddings.create(
                 model=self.model,
                 input=processed_text
             )
             
-            embedding = response['data'][0]['embedding']
+            embedding = response.data[0].embedding
             
             self.logger.debug(
                 "Embedding generated successfully",
                 dimension=len(embedding),
-                tokens_used=response.get('usage', {}).get('total_tokens', token_count)
+                tokens_used=response.usage.total_tokens if response.usage else token_count
             )
             
             return embedding
@@ -152,12 +150,12 @@ class EmbeddingService(LoggerMixin):
         )
         
         try:
-            response = await openai.Embedding.acreate(
+            response = await self.client.embeddings.create(
                 model=self.model,
                 input=non_empty_texts
             )
             
-            embeddings = [item['embedding'] for item in response['data']]
+            embeddings = [item.embedding for item in response.data]
             
             # Reconstruct full embedding list with zero vectors for empty texts
             result = []
@@ -173,7 +171,7 @@ class EmbeddingService(LoggerMixin):
             self.logger.info(
                 "Batch embeddings generated successfully",
                 embeddings_count=len(result),
-                tokens_used=response.get('usage', {}).get('total_tokens', 0)
+                tokens_used=response.usage.total_tokens if response.usage else 0
             )
             
             return result
