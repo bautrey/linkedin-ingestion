@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  linkedin-admin-ui:
+    build: .
+    container_name: linkedin-admin-ui
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=development
+      - PORT=3003
+      - FASTAPI_BASE_URL=https://smooth-mailbox-production.up.railway.app
+    volumes:
+      - ./logs:/app/logs
+      - ./public:/app/public:ro
+      - ./views:/app/views:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

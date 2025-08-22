@@ -1,0 +1,482 @@
+
+[35m[Region: us-west1][0m
+[35m==============
+Using Nixpacks
+==============
+[0m
+context: frqc-IU7m
+╔══════════════════════════════ Nixpacks v1.38.0 ══════════════════════════════╗
+║ setup      │ python310, git, bash, curl                                      ║
+║──────────────────────────────────────────────────────────────────────────────║
+║ install    │ python -m venv --copies /opt/venv && . /opt/venv/bin/activate   ║
+║            │ && pip install -r requirements.txt                              ║
+║──────────────────────────────────────────────────────────────────────────────║
+║ build      │ chmod +x scripts/version.sh                                     ║
+║            │ bash scripts/version.sh                                         ║
+║            │ pip install -r requirements.txt                                 ║
+║──────────────────────────────────────────────────────────────────────────────║
+║ start      │ uvicorn main:app --host 0.0.0.0 --port $PORT                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+[internal] load build definition from Dockerfile
+[internal] load build definition from Dockerfile
+[internal] load build definition from Dockerfile
+[internal] load build definition from Dockerfile
+[internal] load build definition from Dockerfile
+[internal] load metadata for ghcr.io/railwayapp/nixpacks:ubuntu-1745885067
+[internal] load metadata for ghcr.io/railwayapp/nixpacks:ubuntu-1745885067
+[internal] load .dockerignore
+[internal] load .dockerignore
+[internal] load .dockerignore
+[internal] load .dockerignore
+[internal] load build context
+[internal] load build context
+[internal] load build context
+[stage-0  3/12] COPY .nixpacks/nixpkgs-bc8f8d1be58e8c8383e683a06e1e1e57893fff87.nix .nixpacks/nixpkgs-bc8f8d1be58e8c8383e683a06e1e1e57893fff87.nix
+[stage-0  4/12] RUN nix-env -if .nixpacks/nixpkgs-bc8f8d1be58e8c8383e683a06e1e1e57893fff87.nix && nix-collect-garbage -d
+[stage-0  5/12] COPY . /app/.
+[stage-0  5/12] COPY . /app/.
+[stage-0  6/12] RUN --mount=type=cache,id=s/7101a8bc-173b-4379-bbba-24ff74b8e9d2-/root/cache/pip,target=/root/.cache/pip python -m venv --copies /opt/venv && . /opt/venv/bin/activate && pip install -r requirements.txt
+Collecting fastapi==0.104.1
+
+  Downloading fastapi-0.104.1-py3-none-any.whl (92 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 92.9/92.9 kB 8.7 MB/s eta 0:00:00
+
+
+Collecting uvicorn[standard]==0.24.0
+
+  Downloading uvicorn-0.24.0-py3-none-any.whl (59 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 59.6/59.6 kB 63.4 MB/s eta 0:00:00
+
+
+Collecting pydantic<3.0.0,>=2.11.7
+
+  Downloading pydantic-2.11.7-py3-none-any.whl (444 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 444.8/444.8 kB 44.6 MB/s eta 0:00:00
+
+
+Collecting pydantic-settings==2.4.0
+
+  Downloading pydantic_settings-2.4.0-py3-none-any.whl (23 kB)
+
+Collecting httpx<0.29,>=0.26
+
+  Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 73.5/73.5 kB 224.3 MB/s eta 0:00:00
+
+
+Collecting supabase==2.17.0
+
+  Downloading supabase-2.17.0-py3-none-any.whl (17 kB)
+
+Collecting python-dotenv==1.0.0
+
+  Downloading python_dotenv-1.0.0-py3-none-any.whl (19 kB)
+
+Collecting tenacity==8.2.3
+
+  Downloading tenacity-8.2.3-py3-none-any.whl (24 kB)
+
+Collecting structlog==23.2.0
+
+  Downloading structlog-23.2.0-py3-none-any.whl (62 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.9/62.9 kB 213.8 MB/s eta 0:00:00
+
+
+Collecting python-json-logger==3.3.0
+
+  Downloading python_json_logger-3.3.0-py3-none-any.whl (15 kB)
+
+Collecting openai>=1.99.0
+
+  Downloading openai-1.100.2-py3-none-any.whl (787 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 787.8/787.8 kB 184.2 MB/s eta 0:00:00
+
+
+Collecting tiktoken>=0.4.0
+
+  Downloading tiktoken-0.11.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.2 MB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 343.6 MB/s eta 0:00:00
+
+
+Collecting anyio<4.0.0,>=3.7.1
+
+  Downloading anyio-3.7.1-py3-none-any.whl (80 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 80.9/80.9 kB 251.6 MB/s eta 0:00:00
+
+
+Collecting typing-extensions>=4.8.0
+
+  Downloading typing_extensions-4.14.1-py3-none-any.whl (43 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 43.9/43.9 kB 255.5 MB/s eta 0:00:00
+
+
+Collecting starlette<0.28.0,>=0.27.0
+
+  Downloading starlette-0.27.0-py3-none-any.whl (66 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 67.0/67.0 kB 327.1 MB/s eta 0:00:00
+
+
+Collecting click>=7.0
+
+  Downloading click-8.2.1-py3-none-any.whl (102 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 102.2/102.2 kB 381.1 MB/s eta 0:00:00
+
+
+Collecting h11>=0.8
+
+  Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+
+Collecting uvloop!=0.15.0,!=0.15.1,>=0.14.0
+
+  Downloading uvloop-0.21.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.8 MB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.8/3.8 MB 348.3 MB/s eta 0:00:00
+
+
+Collecting watchfiles>=0.13
+
+  Downloading watchfiles-1.1.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (453 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 453.1/453.1 kB 340.7 MB/s eta 0:00:00
+
+
+Collecting websockets>=10.4
+
+  Downloading websockets-15.0.1-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (181 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 181.6/181.6 kB 399.3 MB/s eta 0:00:00
+
+
+Collecting pyyaml>=5.1
+
+  Downloading PyYAML-6.0.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (751 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 751.2/751.2 kB 373.4 MB/s eta 0:00:00
+
+
+Collecting httptools>=0.5.0
+
+  Downloading httptools-0.6.4-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl (442 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 442.1/442.1 kB 371.8 MB/s eta 0:00:00
+
+
+Collecting gotrue==2.12.3
+
+  Downloading gotrue-2.12.3-py3-none-any.whl (44 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 44.0/44.0 kB 294.6 MB/s eta 0:00:00
+
+
+Collecting storage3==0.12.0
+
+  Downloading storage3-0.12.0-py3-none-any.whl (18 kB)
+
+Collecting postgrest==1.1.1
+
+  Downloading postgrest-1.1.1-py3-none-any.whl (22 kB)
+
+Collecting realtime==2.6.0
+
+  Downloading realtime-2.6.0-py3-none-any.whl (21 kB)
+
+Collecting supafunc==0.10.1
+
+  Downloading supafunc-0.10.1-py3-none-any.whl (8.0 kB)
+
+Collecting pyjwt<3.0.0,>=2.10.1
+
+  Downloading PyJWT-2.10.1-py3-none-any.whl (22 kB)
+
+Collecting strenum<0.5.0,>=0.4.9
+
+  Downloading StrEnum-0.4.15-py3-none-any.whl (8.9 kB)
+
+Collecting deprecation<3.0.0,>=2.1.0
+
+  Downloading deprecation-2.1.0-py2.py3-none-any.whl (11 kB)
+
+Collecting python-dateutil<3.0.0,>=2.8.2
+
+  Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 229.9/229.9 kB 393.8 MB/s eta 0:00:00
+
+
+Collecting annotated-types>=0.6.0
+
+  Downloading annotated_types-0.7.0-py3-none-any.whl (13 kB)
+
+Collecting typing-inspection>=0.4.0
+
+  Downloading typing_inspection-0.4.1-py3-none-any.whl (14 kB)
+
+Collecting pydantic-core==2.33.2
+
+  Downloading pydantic_core-2.33.2-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.0 MB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 389.6 MB/s eta 0:00:00
+
+
+Collecting certifi
+
+  Downloading certifi-2025.8.3-py3-none-any.whl (161 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 161.2/161.2 kB 419.8 MB/s eta 0:00:00
+
+
+Collecting httpcore==1.*
+
+  Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 78.8/78.8 kB 280.8 MB/s eta 0:00:00
+
+
+Collecting idna
+
+  Downloading idna-3.10-py3-none-any.whl (70 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 70.4/70.4 kB 357.2 MB/s eta 0:00:00
+
+
+Collecting jiter<1,>=0.4.0
+
+  Downloading jiter-0.10.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (352 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 352.5/352.5 kB 340.8 MB/s eta 0:00:00
+
+
+Collecting sniffio
+
+  Downloading sniffio-1.3.1-py3-none-any.whl (10 kB)
+
+Collecting tqdm>4
+
+  Downloading tqdm-4.67.1-py3-none-any.whl (78 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 78.5/78.5 kB 343.9 MB/s eta 0:00:00
+
+
+Collecting distro<2,>=1.7.0
+
+  Downloading distro-1.9.0-py3-none-any.whl (20 kB)
+
+Collecting regex>=2022.1.18
+
+  Downloading regex-2025.7.34-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (789 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 789.8/789.8 kB 346.3 MB/s eta 0:00:00
+
+
+Collecting requests>=2.26.0
+
+  Downloading requests-2.32.5-py3-none-any.whl (64 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 64.7/64.7 kB 205.9 MB/s eta 0:00:00
+
+
+Collecting exceptiongroup
+
+  Downloading exceptiongroup-1.3.0-py3-none-any.whl (16 kB)
+
+Collecting urllib3<3,>=1.21.1
+
+  Downloading urllib3-2.5.0-py3-none-any.whl (129 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 129.8/129.8 kB 238.4 MB/s eta 0:00:00
+
+
+Collecting charset_normalizer<4,>=2
+
+  Downloading charset_normalizer-3.4.3-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (152 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 152.4/152.4 kB 365.6 MB/s eta 0:00:00
+
+
+Collecting packaging
+
+  Downloading packaging-25.0-py3-none-any.whl (66 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 66.5/66.5 kB 179.5 MB/s eta 0:00:00
+
+
+Collecting h2<5,>=3
+
+  Downloading h2-4.2.0-py3-none-any.whl (60 kB)
+
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 61.0/61.0 kB 226.1 MB/s eta 0:00:00
+
+
+Collecting six>=1.5
+
+  Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+
+Collecting hyperframe<7,>=6.1
+
+  Downloading hyperframe-6.1.0-py3-none-any.whl (13 kB)
+
+Collecting hpack<5,>=4.1
+
+  Downloading hpack-4.1.0-py3-none-any.whl (34 kB)
+
+Installing collected packages: strenum, websockets, uvloop, urllib3, typing-extensions, tqdm, tenacity, structlog, sniffio, six, regex, pyyaml, python-json-logger, python-dotenv, pyjwt, packaging, jiter, idna, hyperframe, httptools, hpack, h11, distro, click, charset_normalizer, certifi, annotated-types, uvicorn, typing-inspection, requests, python-dateutil, pydantic-core, httpcore, h2, exceptiongroup, deprecation, tiktoken, pydantic, anyio, watchfiles, starlette, realtime, pydantic-settings, httpx, openai, fastapi, supafunc, storage3, postgrest, gotrue, supabase
+
+Successfully installed annotated-types-0.7.0 anyio-3.7.1 certifi-2025.8.3 charset_normalizer-3.4.3 click-8.2.1 deprecation-2.1.0 distro-1.9.0 exceptiongroup-1.3.0 fastapi-0.104.1 gotrue-2.12.3 h11-0.16.0 h2-4.2.0 hpack-4.1.0 httpcore-1.0.9 httptools-0.6.4 httpx-0.28.1 hyperframe-6.1.0 idna-3.10 jiter-0.10.0 openai-1.100.2 packaging-25.0 postgrest-1.1.1 pydantic-2.11.7 pydantic-core-2.33.2 pydantic-settings-2.4.0 pyjwt-2.10.1 python-dateutil-2.9.0.post0 python-dotenv-1.0.0 python-json-logger-3.3.0 pyyaml-6.0.2 realtime-2.6.0 regex-2025.7.34 requests-2.32.5 six-1.17.0 sniffio-1.3.1 starlette-0.27.0 storage3-0.12.0 strenum-0.4.15 structlog-23.2.0 supabase-2.17.0 supafunc-0.10.1 tenacity-8.2.3 tiktoken-0.11.0 tqdm-4.67.1 typing-extensions-4.14.1 typing-inspection-0.4.1 urllib3-2.5.0 uvicorn-0.24.0 uvloop-0.21.0 watchfiles-1.1.0 websockets-15.0.1
+
+[stage-0  6/12] RUN --mount=type=cache,id=s/7101a8bc-173b-4379-bbba-24ff74b8e9d2-/root/cache/pip,target=/root/.cache/pip python -m venv --copies /opt/venv && . /opt/venv/bin/activate && pip install -r requirements.txt
+[stage-0  7/12] COPY . /app/.
+[stage-0  7/12] COPY . /app/.
+[stage-0  8/12] RUN  chmod +x scripts/version.sh
+[stage-0  8/12] RUN  chmod +x scripts/version.sh
+[stage-0  9/12] RUN  bash scripts/version.sh
+🔧 Generating version information...
+
+📦 Generated version: 2.1.0-$RAILWAY_ENVIRONMENT_NAME+$RAILWAY
+🔍 Git commit: $RAILWAY
+🌿 Git branch: $RAILWAY_GIT_BRANCH
+⏰ Build time: 2025-08-20T16:46:09Z
+🚂 Environment: $RAILWAY_ENVIRONMENT_NAME
+
+✅ Updated app/core/config.py with version: 2.1.0-$RAILWAY_ENVIRONMENT_NAME+$RAILWAY
+
+✅ Version generation completed successfully!
+
+[stage-0  9/12] RUN  bash scripts/version.sh
+[stage-0 10/12] RUN  pip install -r requirements.txt
+Requirement already satisfied: fastapi==0.104.1 in /opt/venv/lib/python3.10/site-packages (from -r requirements.txt (line 2)) (0.104.1)
+
+Requirement already satisfied: uvicorn[standard]==0.24.0 in /opt/venv/lib/python3.10/site-packages (from -r requirements.txt (line 3)) (0.24.0)
+
+Requirement already satisfied: pydantic<3.0.0,>=2.11.7 in /opt/venv/lib/python3.10/site-packages (from -r requirements.txt (line 4)) (2.11.7)
+
+Requirement already satisfied: pydantic-settings==2.4.0 in /opt/venv/lib/python3.10/site-packages (from -r requirements.txt (line 5)) (2.4.0)
+
+Requirement already satisfied: httpx<0.29,>=0.26 in /opt/venv/lib/python3.10/site-packages (from -r requirements.txt (line 8)) (0.28.1)
+
+Requirement already satisfied: supabase==2.17.0 in /opt/venv/lib/python3.10/site-packages (from -r requirements.txt (line 11)) (2.17.0)
+
+Requirement already satisfied: python-dotenv==1.0.0 in /opt/venv/lib/python3.10/site-packages (from -r requirements.txt (line 14)) (1.0.0)
+
+Requirement already satisfied: tenacity==8.2.3 in /opt/venv/lib/python3.10/site-packages (from -r requirements.txt (line 17)) (8.2.3)
+
+Requirement already satisfied: structlog==23.2.0 in /opt/venv/lib/python3.10/site-packages (from -r requirements.txt (line 20)) (23.2.0)
+
+Requirement already satisfied: python-json-logger==3.3.0 in /opt/venv/lib/python3.10/site-packages (from -r requirements.txt (line 21)) (3.3.0)
+
+Requirement already satisfied: openai>=1.99.0 in /opt/venv/lib/python3.10/site-packages (from -r requirements.txt (line 24)) (1.100.2)
+
+Requirement already satisfied: tiktoken>=0.4.0 in /opt/venv/lib/python3.10/site-packages (from -r requirements.txt (line 25)) (0.11.0)
+
+Requirement already satisfied: anyio<4.0.0,>=3.7.1 in /opt/venv/lib/python3.10/site-packages (from fastapi==0.104.1->-r requirements.txt (line 2)) (3.7.1)
+
+Requirement already satisfied: starlette<0.28.0,>=0.27.0 in /opt/venv/lib/python3.10/site-packages (from fastapi==0.104.1->-r requirements.txt (line 2)) (0.27.0)
+
+Requirement already satisfied: typing-extensions>=4.8.0 in /opt/venv/lib/python3.10/site-packages (from fastapi==0.104.1->-r requirements.txt (line 2)) (4.14.1)
+
+Requirement already satisfied: h11>=0.8 in /opt/venv/lib/python3.10/site-packages (from uvicorn[standard]==0.24.0->-r requirements.txt (line 3)) (0.16.0)
+
+Requirement already satisfied: click>=7.0 in /opt/venv/lib/python3.10/site-packages (from uvicorn[standard]==0.24.0->-r requirements.txt (line 3)) (8.2.1)
+
+Requirement already satisfied: pyyaml>=5.1 in /opt/venv/lib/python3.10/site-packages (from uvicorn[standard]==0.24.0->-r requirements.txt (line 3)) (6.0.2)
+
+Requirement already satisfied: httptools>=0.5.0 in /opt/venv/lib/python3.10/site-packages (from uvicorn[standard]==0.24.0->-r requirements.txt (line 3)) (0.6.4)
+
+Requirement already satisfied: uvloop!=0.15.0,!=0.15.1,>=0.14.0 in /opt/venv/lib/python3.10/site-packages (from uvicorn[standard]==0.24.0->-r requirements.txt (line 3)) (0.21.0)
+
+Requirement already satisfied: watchfiles>=0.13 in /opt/venv/lib/python3.10/site-packages (from uvicorn[standard]==0.24.0->-r requirements.txt (line 3)) (1.1.0)
+
+Requirement already satisfied: websockets>=10.4 in /opt/venv/lib/python3.10/site-packages (from uvicorn[standard]==0.24.0->-r requirements.txt (line 3)) (15.0.1)
+
+Requirement already satisfied: gotrue==2.12.3 in /opt/venv/lib/python3.10/site-packages (from supabase==2.17.0->-r requirements.txt (line 11)) (2.12.3)
+
+Requirement already satisfied: postgrest==1.1.1 in /opt/venv/lib/python3.10/site-packages (from supabase==2.17.0->-r requirements.txt (line 11)) (1.1.1)
+
+Requirement already satisfied: storage3==0.12.0 in /opt/venv/lib/python3.10/site-packages (from supabase==2.17.0->-r requirements.txt (line 11)) (0.12.0)
+
+Requirement already satisfied: supafunc==0.10.1 in /opt/venv/lib/python3.10/site-packages (from supabase==2.17.0->-r requirements.txt (line 11)) (0.10.1)
+
+Requirement already satisfied: realtime==2.6.0 in /opt/venv/lib/python3.10/site-packages (from supabase==2.17.0->-r requirements.txt (line 11)) (2.6.0)
+
+Requirement already satisfied: pyjwt<3.0.0,>=2.10.1 in /opt/venv/lib/python3.10/site-packages (from gotrue==2.12.3->supabase==2.17.0->-r requirements.txt (line 11)) (2.10.1)
+
+Requirement already satisfied: deprecation<3.0.0,>=2.1.0 in /opt/venv/lib/python3.10/site-packages (from postgrest==1.1.1->supabase==2.17.0->-r requirements.txt (line 11)) (2.1.0)
+
+Requirement already satisfied: strenum<0.5.0,>=0.4.9 in /opt/venv/lib/python3.10/site-packages (from postgrest==1.1.1->supabase==2.17.0->-r requirements.txt (line 11)) (0.4.15)
+
+Requirement already satisfied: python-dateutil<3.0.0,>=2.8.2 in /opt/venv/lib/python3.10/site-packages (from storage3==0.12.0->supabase==2.17.0->-r requirements.txt (line 11)) (2.9.0.post0)
+
+Requirement already satisfied: typing-inspection>=0.4.0 in /opt/venv/lib/python3.10/site-packages (from pydantic<3.0.0,>=2.11.7->-r requirements.txt (line 4)) (0.4.1)
+
+Requirement already satisfied: pydantic-core==2.33.2 in /opt/venv/lib/python3.10/site-packages (from pydantic<3.0.0,>=2.11.7->-r requirements.txt (line 4)) (2.33.2)
+
+Requirement already satisfied: annotated-types>=0.6.0 in /opt/venv/lib/python3.10/site-packages (from pydantic<3.0.0,>=2.11.7->-r requirements.txt (line 4)) (0.7.0)
+
+Requirement already satisfied: certifi in /opt/venv/lib/python3.10/site-packages (from httpx<0.29,>=0.26->-r requirements.txt (line 8)) (2025.8.3)
+
+Requirement already satisfied: idna in /opt/venv/lib/python3.10/site-packages (from httpx<0.29,>=0.26->-r requirements.txt (line 8)) (3.10)
+
+Requirement already satisfied: httpcore==1.* in /opt/venv/lib/python3.10/site-packages (from httpx<0.29,>=0.26->-r requirements.txt (line 8)) (1.0.9)
+
+Requirement already satisfied: jiter<1,>=0.4.0 in /opt/venv/lib/python3.10/site-packages (from openai>=1.99.0->-r requirements.txt (line 24)) (0.10.0)
+
+Requirement already satisfied: distro<2,>=1.7.0 in /opt/venv/lib/python3.10/site-packages (from openai>=1.99.0->-r requirements.txt (line 24)) (1.9.0)
+
+Requirement already satisfied: tqdm>4 in /opt/venv/lib/python3.10/site-packages (from openai>=1.99.0->-r requirements.txt (line 24)) (4.67.1)
+
+Requirement already satisfied: sniffio in /opt/venv/lib/python3.10/site-packages (from openai>=1.99.0->-r requirements.txt (line 24)) (1.3.1)
+
+Requirement already satisfied: regex>=2022.1.18 in /opt/venv/lib/python3.10/site-packages (from tiktoken>=0.4.0->-r requirements.txt (line 25)) (2025.7.34)
+
+Requirement already satisfied: requests>=2.26.0 in /opt/venv/lib/python3.10/site-packages (from tiktoken>=0.4.0->-r requirements.txt (line 25)) (2.32.5)
+
+Requirement already satisfied: exceptiongroup in /opt/venv/lib/python3.10/site-packages (from anyio<4.0.0,>=3.7.1->fastapi==0.104.1->-r requirements.txt (line 2)) (1.3.0)
+
+Requirement already satisfied: charset_normalizer<4,>=2 in /opt/venv/lib/python3.10/site-packages (from requests>=2.26.0->tiktoken>=0.4.0->-r requirements.txt (line 25)) (3.4.3)
+
+Requirement already satisfied: urllib3<3,>=1.21.1 in /opt/venv/lib/python3.10/site-packages (from requests>=2.26.0->tiktoken>=0.4.0->-r requirements.txt (line 25)) (2.5.0)
+
+Requirement already satisfied: packaging in /opt/venv/lib/python3.10/site-packages (from deprecation<3.0.0,>=2.1.0->postgrest==1.1.1->supabase==2.17.0->-r requirements.txt (line 11)) (25.0)
+
+Requirement already satisfied: h2<5,>=3 in /opt/venv/lib/python3.10/site-packages (from httpx<0.29,>=0.26->-r requirements.txt (line 8)) (4.2.0)
+
+Requirement already satisfied: six>=1.5 in /opt/venv/lib/python3.10/site-packages (from python-dateutil<3.0.0,>=2.8.2->storage3==0.12.0->supabase==2.17.0->-r requirements.txt (line 11)) (1.17.0)
+
+Requirement already satisfied: hyperframe<7,>=6.1 in /opt/venv/lib/python3.10/site-packages (from h2<5,>=3->httpx<0.29,>=0.26->-r requirements.txt (line 8)) (6.1.0)
+
+Requirement already satisfied: hpack<5,>=4.1 in /opt/venv/lib/python3.10/site-packages (from h2<5,>=3->httpx<0.29,>=0.26->-r requirements.txt (line 8)) (4.1.0)
+
+[stage-0 10/12] RUN  pip install -r requirements.txt
+[stage-0 11/12] RUN printf '\nPATH=/opt/venv/bin:$PATH' >> /root/.profile
+[stage-0 11/12] RUN printf '\nPATH=/opt/venv/bin:$PATH' >> /root/.profile
+[stage-0 12/12] COPY . /app
+[stage-0 12/12] COPY . /app
+exporting to docker image format
+exporting to image
+[auth] sharing credentials for production-us-west2.railway-registry.com
+[auth] sharing credentials for production-us-west2.railway-registry.com
+importing to docker
+importing to docker
+=== Successfully Built! ===
+Run:
+docker run -it production-us-west2.railway-registry.com/7101a8bc-173b-4379-bbba-24ff74b8e9d2:d20ad6c9-8ccb-461a-88c8-758f4a355042
+[92mBuild time: 77.10 seconds[0m
+
+[35m====================
+Starting Healthcheck
+====================
+[0m
+[37mPath: /api/v1/health[0m
+[37mRetry window: 1m40s[0m
+
+[92m[1/1] Healthcheck succeeded![0m

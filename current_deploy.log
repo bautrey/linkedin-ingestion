@@ -1,0 +1,501 @@
+INFO:     100.64.0.7:61944 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.10:42674 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.7:56602 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.9:51956 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.10:28952 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.6:48374 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.10:34190 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.10:50074 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.9:62566 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.9:36176 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.4:19570 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.10:17948 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.9:32242 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.4:31030 - "GET /api/version HTTP/1.1" 200 OK
+INFO:     100.64.0.9:32974 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.4:25468 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.7:18312 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.4:25468 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.10:32268 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.9:62584 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.3:11422 - "GET / HTTP/1.1" 200 OK
+INFO:     100.64.0.3:11422 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+2025-08-21 20:23:21 [info     ] Retrieving profile by LinkedIn URL linkedin_url=https://www.linkedin.com/in/ashishjainit/
+2025-08-21 20:23:22 [info     ] Profile not found by URL       linkedin_url=https://www.linkedin.com/in/ashishjainit/
+2025-08-21 20:23:22 [info     ] Starting profile processing workflow include_companies=True linkedin_url=https://www.linkedin.com/in/ashishjainit request_id=3ddc8a28-3968-44f1-9362-60e4cd702da7
+2025-08-21 20:23:22 [info     ] Fetching profile data          request_id=3ddc8a28-3968-44f1-9362-60e4cd702da7
+2025-08-21 20:23:22 [info     ] Starting profile fetch         linkedin_url=https://www.linkedin.com/in/ashishjainit
+2025-08-21 20:23:22 [debug    ] Executing profile workflow     payload={'profile': 'https://www.linkedin.com/in/ashishjainit'} url=https://app.cassidyai.com/api/webhook/workflows/cmbv9eaaz00139pa7krnjmoa0?results=true
+2025-08-21 20:23:26 [info     ] DEBUG: Cassidy profile response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T20:23:22.434Z', 'finishedAt': '2025-08-21T20:23:26.522Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/in/ashishjainit'}, 'actionResults': [{'name': 'Get LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"about":"Proven ability to identify technology capabilities that grow revenues, improve service, and reduce costs.  Strong industry knowledge in 
+2025-08-21 20:23:26 [debug    ] Workflow profile completed     execution_time_seconds=4.536801 status_code=200
+2025-08-21 20:23:26 [info     ] DEBUG: Extracted profile data structure experiences_length=5 experiences_type=list has_educations=True has_experiences=True profile_keys=['about', 'city', 'company', 'company_description', 'company_domain', 'company_employee_count', 'company_employee_range', 'company_industry', 'company_linkedin_url', 'company_logo_url', 'company_website', 'company_year_founded', 'connection_count', 'country', 'current_company_join_month', 'current_company_join_year', 'current_job_duration', 'educations', 'email', 'experiences', 'first_name', 'follower_count', 'full_name', 'headline', 'hq_city', 'hq_country', 'hq_region', 'is_creator', 'is_influencer', 'is_premium', 'is_verified', 'job_title', 'languages', 'last_name', 'linkedin_url', 'location', 'phone', 'profile_id', 'profile_image_url', 'public_id', 'school', 'state', 'urn'] sample_fields={'about': 'Proven ability to identify technology capabilities that grow revenues, improve service, and reduce c...', 'city': 'Glen Allen', 'company': 'Microsoft', 'company_description': "Every company has a mission. What's ours? To empower every person and every organization to achieve ...", 'company_domain': 'news.microsoft.com'}
+2025-08-21 20:23:26 [info     ] Profile fetch completed successfully experience_count=5 linkedin_url=https://www.linkedin.com/in/ashishjainit profile_id=29369416
+2025-08-21 20:23:26 [info     ] Fetching company data for experiences experience_count=5 request_id=3ddc8a28-3968-44f1-9362-60e4cd702da7
+2025-08-21 20:23:26 [info     ] Fetching companies for profile profile_id=29369416 request_id=3ddc8a28-3968-44f1-9362-60e4cd702da7 unique_companies=4
+2025-08-21 20:23:26 [info     ] Starting batch company fetch   company_count=4 delay_seconds=5.0
+2025-08-21 20:23:26 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/1035
+2025-08-21 20:23:26 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/1035'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-21 20:23:31 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T20:23:26.930Z', 'finishedAt': '2025-08-21T20:23:30.986Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/1035'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[{"company_id":"18612750","linkedin_url":"https://www.linkedin.com/company/m12vc","name":"M12, Microsoft\'s Ventur
+2025-08-21 20:23:31 [debug    ] Workflow company completed     execution_time_seconds=4.461872 status_code=200
+2025-08-21 20:23:31 [info     ] Company fetch completed successfully company_name=Microsoft company_url=https://www.linkedin.com/company/1035 employee_count=230209
+2025-08-21 20:23:31 [debug    ] Waiting 5.0s before next company fetch current_index=0 remaining=3
+2025-08-21 20:23:36 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/1028
+2025-08-21 20:23:36 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/1028'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-21 20:23:42 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T20:23:36.393Z', 'finishedAt': '2025-08-21T20:23:42.086Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/1028'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[{"company_id":"106487009","linkedin_url":"https://www.linkedin.com/company/oracle-canada","name":"Oracle Canada"}
+2025-08-21 20:23:42 [debug    ] Workflow company completed     execution_time_seconds=6.098934 status_code=200
+2025-08-21 20:23:42 [info     ] Company fetch completed successfully company_name=Oracle company_url=https://www.linkedin.com/company/1028 employee_count=201907
+2025-08-21 20:23:42 [debug    ] Waiting 5.0s before next company fetch current_index=1 remaining=2
+2025-08-21 20:23:47 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/1419
+2025-08-21 20:23:47 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/1419'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-21 20:23:51 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T20:23:47.448Z', 'finishedAt': '2025-08-21T20:23:51.788Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/1419'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[{"company_id":"3735584","linkedin_url":"https://www.linkedin.com/company/velocityapp","name":"Velocity Black"}],"
+2025-08-21 20:23:51 [debug    ] Workflow company completed     execution_time_seconds=4.706216 status_code=200
+2025-08-21 20:23:51 [info     ] Company fetch completed successfully company_name=Capital One company_url=https://www.linkedin.com/company/1419 employee_count=62950
+2025-08-21 20:23:51 [debug    ] Waiting 5.0s before next company fetch current_index=2 remaining=1
+2025-08-21 20:23:56 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/42303
+2025-08-21 20:23:56 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/42303'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-21 20:24:00 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T20:23:57.136Z', 'finishedAt': '2025-08-21T20:24:00.573Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/42303'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[],"company_id":"42303","company_name":"Datalinx","description":"","domain":"","email":"","employee_count":42,"em
+2025-08-21 20:24:00 [debug    ] Workflow company completed     execution_time_seconds=4.066508 status_code=200
+2025-08-21 20:24:00 [info     ] Company fetch completed successfully company_name=Datalinx company_url=https://www.linkedin.com/company/42303 employee_count=42
+2025-08-21 20:24:00 [info     ] Batch company fetch completed  failed=0 successful=4 total_requested=4
+2025-08-21 20:24:00 [info     ] Company fetch completed for profile failed=0 profile_id=29369416 request_id=3ddc8a28-3968-44f1-9362-60e4cd702da7 successful=4 total_requested=4
+2025-08-21 20:24:00 [info     ] Profile processing workflow completed successfully companies_fetched=4 execution_time_seconds=38.876879 profile_id=29369416 request_id=3ddc8a28-3968-44f1-9362-60e4cd702da7
+2025-08-21 20:24:00 [info     ] Storing LinkedIn profile       profile_id=29369416 profile_name=Ashish J.
+2025-08-21 20:24:01 [info     ] Profile stored successfully    has_embedding=False linkedin_id=29369416 record_id=7ca41c6c-f8ac-4925-9304-3011aee82f41
+2025-08-21 20:24:01 [info     ] Retrieving profile by ID       profile_id=7ca41c6c-f8ac-4925-9304-3011aee82f41
+2025-08-21 20:24:01 [info     ] Profile found by ID            profile_id=7ca41c6c-f8ac-4925-9304-3011aee82f41
+INFO:     100.64.0.9:24428 - "POST /api/v1/profiles HTTP/1.1" 201 Created
+INFO:     100.64.0.10:15490 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.3:21212 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.3:21212 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.4:12514 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.5:18052 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.5:18052 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.4:24272 - "GET /api/version HTTP/1.1" 200 OK
+INFO:     100.64.0.5:37548 - "POST /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.8:20078 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.10:11858 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.8:56982 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.4:25174 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.7:57186 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+2025-08-21 21:23:19 [info     ] Retrieving profile by LinkedIn URL linkedin_url=https://www.linkedin.com/in/ashishjainit/
+2025-08-21 21:23:20 [info     ] Profile found by URL           linkedin_url=https://www.linkedin.com/in/ashishjainit/
+2025-08-21 21:23:20 [info     ] Deleting profile by ID         profile_id=7ca41c6c-f8ac-4925-9304-3011aee82f41
+2025-08-21 21:23:20 [info     ] Profile deleted                deleted_count=1 profile_id=7ca41c6c-f8ac-4925-9304-3011aee82f41
+2025-08-21 21:23:20 [info     ] Starting profile processing workflow include_companies=True linkedin_url=https://www.linkedin.com/in/ashishjainit request_id=414f288d-dccd-46a6-8171-e43bca3fa4cc
+2025-08-21 21:23:20 [info     ] Fetching profile data          request_id=414f288d-dccd-46a6-8171-e43bca3fa4cc
+2025-08-21 21:23:20 [info     ] Starting profile fetch         linkedin_url=https://www.linkedin.com/in/ashishjainit
+2025-08-21 21:23:20 [debug    ] Executing profile workflow     payload={'profile': 'https://www.linkedin.com/in/ashishjainit'} url=https://app.cassidyai.com/api/webhook/workflows/cmbv9eaaz00139pa7krnjmoa0?results=true
+2025-08-21 21:23:24 [info     ] DEBUG: Cassidy profile response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T21:23:20.773Z', 'finishedAt': '2025-08-21T21:23:24.751Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/in/ashishjainit'}, 'actionResults': [{'name': 'Get LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"about":"Proven ability to identify technology capabilities that grow revenues, improve service, and reduce costs.  Strong industry knowledge in 
+2025-08-21 21:23:24 [debug    ] Workflow profile completed     execution_time_seconds=4.280723 status_code=200
+2025-08-21 21:23:24 [info     ] DEBUG: Extracted profile data structure experiences_length=5 experiences_type=list has_educations=True has_experiences=True profile_keys=['about', 'city', 'company', 'company_description', 'company_domain', 'company_employee_count', 'company_employee_range', 'company_industry', 'company_linkedin_url', 'company_logo_url', 'company_website', 'company_year_founded', 'connection_count', 'country', 'current_company_join_month', 'current_company_join_year', 'current_job_duration', 'educations', 'email', 'experiences', 'first_name', 'follower_count', 'full_name', 'headline', 'hq_city', 'hq_country', 'hq_region', 'is_creator', 'is_influencer', 'is_premium', 'is_verified', 'job_title', 'languages', 'last_name', 'linkedin_url', 'location', 'phone', 'profile_id', 'profile_image_url', 'public_id', 'school', 'state', 'urn'] sample_fields={'about': 'Proven ability to identify technology capabilities that grow revenues, improve service, and reduce c...', 'city': 'Glen Allen', 'company': 'Microsoft', 'company_description': "Every company has a mission. What's ours? To empower every person and every organization to achieve ...", 'company_domain': 'news.microsoft.com'}
+2025-08-21 21:23:24 [info     ] Profile fetch completed successfully experience_count=5 linkedin_url=https://www.linkedin.com/in/ashishjainit profile_id=29369416
+2025-08-21 21:23:24 [info     ] Fetching company data for experiences experience_count=5 request_id=414f288d-dccd-46a6-8171-e43bca3fa4cc
+2025-08-21 21:23:24 [info     ] Fetching companies for profile profile_id=29369416 request_id=414f288d-dccd-46a6-8171-e43bca3fa4cc unique_companies=4
+2025-08-21 21:23:24 [info     ] Starting batch company fetch   company_count=4 delay_seconds=5.0
+2025-08-21 21:23:24 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/1035
+2025-08-21 21:23:24 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/1035'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-21 21:23:29 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T21:23:25.059Z', 'finishedAt': '2025-08-21T21:23:29.640Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/1035'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[{"company_id":"18612750","linkedin_url":"https://www.linkedin.com/company/m12vc","name":"M12, Microsoft\'s Ventur
+2025-08-21 21:23:29 [debug    ] Workflow company completed     execution_time_seconds=4.914498 status_code=200
+2025-08-21 21:23:29 [info     ] Company fetch completed successfully company_name=Microsoft company_url=https://www.linkedin.com/company/1035 employee_count=230209
+2025-08-21 21:23:29 [debug    ] Waiting 5.0s before next company fetch current_index=0 remaining=3
+2025-08-21 21:23:34 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/1028
+2025-08-21 21:23:34 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/1028'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-21 21:23:41 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T21:23:34.956Z', 'finishedAt': '2025-08-21T21:23:41.733Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/1028'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[{"company_id":"106487009","linkedin_url":"https://www.linkedin.com/company/oracle-canada","name":"Oracle Canada"}
+2025-08-21 21:23:41 [debug    ] Workflow company completed     execution_time_seconds=7.08354 status_code=200
+2025-08-21 21:23:41 [info     ] Company fetch completed successfully company_name=Oracle company_url=https://www.linkedin.com/company/1028 employee_count=201907
+2025-08-21 21:23:41 [debug    ] Waiting 5.0s before next company fetch current_index=1 remaining=2
+2025-08-21 21:23:46 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/1419
+2025-08-21 21:23:46 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/1419'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-21 21:23:49 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T21:23:46.977Z', 'finishedAt': '2025-08-21T21:23:49.514Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/1419'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[{"company_id":"3735584","linkedin_url":"https://www.linkedin.com/company/velocityapp","name":"Velocity Black"}],"
+2025-08-21 21:23:49 [debug    ] Workflow company completed     execution_time_seconds=2.741768 status_code=200
+2025-08-21 21:23:49 [info     ] Company fetch completed successfully company_name=Capital One company_url=https://www.linkedin.com/company/1419 employee_count=62950
+2025-08-21 21:23:49 [debug    ] Waiting 5.0s before next company fetch current_index=2 remaining=1
+2025-08-21 21:23:54 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/42303
+2025-08-21 21:23:54 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/42303'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-21 21:23:59 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T21:23:54.967Z', 'finishedAt': '2025-08-21T21:23:59.078Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/42303'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[],"company_id":"42303","company_name":"Datalinx","description":"","domain":"","email":"","employee_count":42,"em
+2025-08-21 21:23:59 [debug    ] Workflow company completed     execution_time_seconds=4.5888 status_code=200
+2025-08-21 21:23:59 [info     ] Company fetch completed successfully company_name=Datalinx company_url=https://www.linkedin.com/company/42303 employee_count=42
+2025-08-21 21:23:59 [info     ] Batch company fetch completed  failed=0 successful=4 total_requested=4
+2025-08-21 21:23:59 [info     ] Company fetch completed for profile failed=0 profile_id=29369416 request_id=414f288d-dccd-46a6-8171-e43bca3fa4cc successful=4 total_requested=4
+2025-08-21 21:23:59 [info     ] Profile processing workflow completed successfully companies_fetched=4 execution_time_seconds=38.620334 profile_id=29369416 request_id=414f288d-dccd-46a6-8171-e43bca3fa4cc
+2025-08-21 21:23:59 [info     ] Storing LinkedIn profile       profile_id=29369416 profile_name=Ashish J.
+2025-08-21 21:23:59 [info     ] Profile stored successfully    has_embedding=False linkedin_id=29369416 record_id=7b03b01c-fdf8-4bbf-a9ca-02b453fc38de
+2025-08-21 21:23:59 [info     ] Retrieving profile by ID       profile_id=7b03b01c-fdf8-4bbf-a9ca-02b453fc38de
+2025-08-21 21:23:59 [info     ] Profile found by ID            profile_id=7b03b01c-fdf8-4bbf-a9ca-02b453fc38de
+INFO:     100.64.0.6:24018 - "POST /api/v1/profiles HTTP/1.1" 201 Created
+INFO:     100.64.0.5:31278 - "GET /api/version HTTP/1.1" 200 OK
+INFO:     100.64.0.6:34336 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.7:59194 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.6:34228 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.6:34228 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.9:47064 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.9:15566 - "GET /api/version HTTP/1.1" 200 OK
+2025-08-21 21:32:47 [info     ] LLM Scoring Service initialized default_model=gpt-3.5-turbo has_api_key=True max_concurrent=10
+2025-08-21 21:32:47 [debug    ] Listing scoring jobs           limit=50 offset=0 status_filter=None
+2025-08-21 21:32:48 [debug    ] Listed scoring jobs            job_count=50 limit=50 offset=0 total_jobs=65
+INFO:     100.64.0.8:50082 - "GET /api/v1/scoring-jobs HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:32:48 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.8:50082 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.5:27196 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.7:45434 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     100.64.0.10:35158 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     100.64.0.4:18948 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.9:16586 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.3:13240 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.4:18962 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     100.64.0.10:35146 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.8:50096 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.3:13222 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.8:50104 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.10:35170 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     100.64.0.3:13230 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.4:18950 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.8:50086 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     100.64.0.5:27210 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.4:18952 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.5:27216 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:32:48 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.6:28484 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:32:50 [info     ] Searching profiles             company=None limit=20 name=None offset=0
+INFO:     100.64.0.5:27216 - "GET /api/v1/companies?limit=10&offset=0 HTTP/1.1" 200 OK
+INFO:     100.64.0.4:18952 - "GET /api/v1/health HTTP/1.1" 200 OK
+2025-08-21 21:32:50 [info     ] Profile search completed       count=20
+INFO:     100.64.0.6:28484 - "GET /api/v1/profiles?limit=20&offset=0 HTTP/1.1" 200 OK
+INFO:     100.64.0.4:18952 - "GET /api/v1/companies?limit=10&offset=0 HTTP/1.1" 200 OK
+2025-08-21 21:32:52 [info     ] Searching profiles             company=None limit=20 name=None offset=0
+INFO:     100.64.0.5:27216 - "GET /api/v1/health HTTP/1.1" 200 OK
+2025-08-21 21:32:53 [info     ] Profile search completed       count=20
+INFO:     100.64.0.6:28484 - "GET /api/v1/profiles?limit=20&offset=0 HTTP/1.1" 200 OK
+INFO:     100.64.0.9:44398 - "GET /api/v1/jobs?limit=20&type=ingestion HTTP/1.1" 404 Not Found
+2025-08-21 21:33:58 [info     ] Retrieving profile by LinkedIn URL linkedin_url=https://www.linkedin.com/in/jeffreyratter/
+2025-08-21 21:33:58 [info     ] Profile not found by URL       linkedin_url=https://www.linkedin.com/in/jeffreyratter/
+2025-08-21 21:33:58 [info     ] Starting profile processing workflow include_companies=True linkedin_url=https://www.linkedin.com/in/jeffreyratter/ request_id=b9e964d4-dd4e-42b4-9e25-9194ca80f207
+2025-08-21 21:33:58 [info     ] Fetching profile data          request_id=b9e964d4-dd4e-42b4-9e25-9194ca80f207
+2025-08-21 21:33:58 [info     ] Starting profile fetch         linkedin_url=https://www.linkedin.com/in/jeffreyratter/
+2025-08-21 21:33:58 [debug    ] Executing profile workflow     payload={'profile': 'https://www.linkedin.com/in/jeffreyratter/'} url=https://app.cassidyai.com/api/webhook/workflows/cmbv9eaaz00139pa7krnjmoa0?results=true
+2025-08-21 21:34:03 [info     ] DEBUG: Cassidy profile response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T21:33:59.136Z', 'finishedAt': '2025-08-21T21:34:03.570Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/in/jeffreyratter/'}, 'actionResults': [{'name': 'Get LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"about":"Providing Leadership Grounded in Technical Proficiencies and Growth of IT Professionals\\nExperienced CIO with strong credentials in f
+2025-08-21 21:34:03 [debug    ] Workflow profile completed     execution_time_seconds=4.72122 status_code=200
+2025-08-21 21:34:03 [info     ] DEBUG: Extracted profile data structure experiences_length=6 experiences_type=list has_educations=True has_experiences=True profile_keys=['about', 'city', 'company', 'company_description', 'company_domain', 'company_employee_count', 'company_employee_range', 'company_industry', 'company_linkedin_url', 'company_logo_url', 'company_website', 'company_year_founded', 'connection_count', 'country', 'current_company_join_month', 'current_company_join_year', 'current_job_duration', 'educations', 'email', 'experiences', 'first_name', 'follower_count', 'full_name', 'headline', 'hq_city', 'hq_country', 'hq_region', 'is_creator', 'is_influencer', 'is_premium', 'is_verified', 'job_title', 'languages', 'last_name', 'linkedin_url', 'location', 'phone', 'profile_id', 'profile_image_url', 'public_id', 'school', 'state', 'urn'] sample_fields={'about': 'Providing Leadership Grounded in Technical Proficiencies and Growth of IT Professionals\nExperienced ...', 'city': 'Santa Barbara', 'company': 'Fortium Partners', 'company_description': 'Fortium Partners is the largest team of operating technology executives in the world serving public,...', 'company_domain': 'fortiumpartners.com'}
+2025-08-21 21:34:03 [info     ] Profile fetch completed successfully experience_count=6 linkedin_url=https://www.linkedin.com/in/jeffreyratter/ profile_id=66189735
+2025-08-21 21:34:03 [info     ] Fetching company data for experiences experience_count=6 request_id=b9e964d4-dd4e-42b4-9e25-9194ca80f207
+2025-08-21 21:34:03 [info     ] Fetching companies for profile profile_id=66189735 request_id=b9e964d4-dd4e-42b4-9e25-9194ca80f207 unique_companies=6
+2025-08-21 21:34:03 [info     ] Starting batch company fetch   company_count=6 delay_seconds=5.0
+2025-08-21 21:34:03 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/5116524
+2025-08-21 21:34:03 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/5116524'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-21 21:34:06 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T21:34:03.859Z', 'finishedAt': '2025-08-21T21:34:06.842Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/5116524'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[],"company_id":"5116524","company_name":"Fortium Partners","description":"Fortium Partners is the largest team
+2025-08-21 21:34:06 [debug    ] Workflow company completed     execution_time_seconds=3.247572 status_code=200
+2025-08-21 21:34:06 [info     ] Company fetch completed successfully company_name=Fortium Partners company_url=https://www.linkedin.com/company/5116524 employee_count=162
+2025-08-21 21:34:06 [debug    ] Waiting 5.0s before next company fetch current_index=0 remaining=5
+2025-08-21 21:34:07 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-21 21:34:07 [info     ] Profile search completed       count=30
+INFO:     100.64.0.6:62114 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+2025-08-21 21:34:11 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/10191199
+2025-08-21 21:34:11 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/10191199'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-21 21:34:13 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-21 21:34:13 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     100.64.0.8:39936 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+2025-08-21 21:34:16 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T21:34:12.294Z', 'finishedAt': '2025-08-21T21:34:16.512Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/10191199'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[{"company_id":"2144637","linkedin_url":"https://www.linkedin.com/company/planet-financial-group-llc","name":"
+2025-08-21 21:34:16 [debug    ] Workflow company completed     execution_time_seconds=4.698275 status_code=200
+2025-08-21 21:34:16 [info     ] Company fetch completed successfully company_name=Planet Home Lending, LLC company_url=https://www.linkedin.com/company/10191199 employee_count=1116
+2025-08-21 21:34:16 [debug    ] Waiting 5.0s before next company fetch current_index=1 remaining=4
+2025-08-21 21:34:21 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/47707
+2025-08-21 21:34:21 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/47707'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-21 21:34:26 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T21:34:21.821Z', 'finishedAt': '2025-08-21T21:34:26.891Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/47707'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[{"company_id":"14370","linkedin_url":"https://www.linkedin.com/company/rate-official","name":"Rate"}],"company_i
+2025-08-21 21:34:26 [debug    ] Workflow company completed     execution_time_seconds=5.357939 status_code=200
+2025-08-21 21:34:26 [info     ] Company fetch completed successfully company_name=Stearns Lending, Inc company_url=https://www.linkedin.com/company/47707 employee_count=602
+2025-08-21 21:34:26 [debug    ] Waiting 5.0s before next company fetch current_index=2 remaining=3
+2025-08-21 21:34:31 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/7615
+2025-08-21 21:34:31 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/7615'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+INFO:     100.64.0.3:39762 - "GET /api/v1/companies?page=1&limit=50 HTTP/1.1" 200 OK
+2025-08-21 21:34:35 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-21 21:34:36 [info     ] Profile search completed       count=30
+INFO:     100.64.0.3:39762 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+2025-08-21 21:34:36 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T21:34:32.115Z', 'finishedAt': '2025-08-21T21:34:36.855Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/7615'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[],"company_id":"7615","company_name":"Impac Mortgage Corp.","description":"It’s time to partner with Impac Mortga
+2025-08-21 21:34:36 [debug    ] Workflow company completed     execution_time_seconds=4.956066 status_code=200
+2025-08-21 21:34:36 [info     ] Company fetch completed successfully company_name=Impac Mortgage Corp. company_url=https://www.linkedin.com/company/7615 employee_count=394
+2025-08-21 21:34:36 [debug    ] Waiting 5.0s before next company fetch current_index=3 remaining=2
+2025-08-21 21:34:41 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/6171514
+2025-08-21 21:34:41 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/6171514'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-21 21:34:45 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-21 21:34:45 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     100.64.0.6:40316 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+2025-08-21 21:34:46 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T21:34:42.127Z', 'finishedAt': '2025-08-21T21:34:46.508Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/6171514'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[],"company_id":"6171514","company_name":"Wireless Facilities Inc","description":"Wireless Facilities Inc is a 
+2025-08-21 21:34:46 [debug    ] Workflow company completed     execution_time_seconds=4.651231 status_code=200
+2025-08-21 21:34:46 [info     ] Company fetch completed successfully company_name=Wireless Facilities Inc company_url=https://www.linkedin.com/company/6171514 employee_count=18
+2025-08-21 21:34:46 [debug    ] Waiting 5.0s before next company fetch current_index=4 remaining=1
+2025-08-21 21:34:51 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/1235
+2025-08-21 21:34:51 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/1235'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-21 21:34:57 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T21:34:51.766Z', 'finishedAt': '2025-08-21T21:34:57.009Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/1235'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[{"company_id":"1409","linkedin_url":"https://www.linkedin.com/company/wells-fargo-advisors","name":"Wells Fargo A
+2025-08-21 21:34:57 [debug    ] Workflow company completed     execution_time_seconds=5.498845 status_code=200
+2025-08-21 21:34:57 [info     ] Company fetch completed successfully company_name=Wells Fargo company_url=https://www.linkedin.com/company/1235 employee_count=205179
+2025-08-21 21:34:57 [info     ] Batch company fetch completed  failed=0 successful=6 total_requested=6
+2025-08-21 21:34:57 [info     ] Company fetch completed for profile failed=0 profile_id=66189735 request_id=b9e964d4-dd4e-42b4-9e25-9194ca80f207 successful=6 total_requested=6
+2025-08-21 21:34:57 [info     ] Profile processing workflow completed successfully companies_fetched=6 execution_time_seconds=58.141943 profile_id=66189735 request_id=b9e964d4-dd4e-42b4-9e25-9194ca80f207
+2025-08-21 21:34:57 [info     ] Storing LinkedIn profile       profile_id=66189735 profile_name=Jeffrey Ratter
+2025-08-21 21:34:57 [info     ] Profile stored successfully    has_embedding=False linkedin_id=66189735 record_id=94d19518-974b-4227-94ca-22c27d81fc33
+2025-08-21 21:34:57 [info     ] Retrieving profile by ID       profile_id=94d19518-974b-4227-94ca-22c27d81fc33
+2025-08-21 21:34:57 [info     ] Profile found by ID            profile_id=94d19518-974b-4227-94ca-22c27d81fc33
+INFO:     100.64.0.4:16278 - "POST /api/v1/profiles HTTP/1.1" 201 Created
+2025-08-21 21:35:14 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-21 21:35:14 [info     ] Profile search completed       count=31
+INFO:     100.64.0.3:57520 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+2025-08-21 21:35:19 [info     ] Retrieving profile by ID       profile_id=94d19518-974b-4227-94ca-22c27d81fc33
+2025-08-21 21:35:19 [info     ] Profile found by ID            profile_id=94d19518-974b-4227-94ca-22c27d81fc33
+INFO:     100.64.0.3:57520 - "GET /api/v1/profiles/94d19518-974b-4227-94ca-22c27d81fc33 HTTP/1.1" 200 OK
+INFO:     100.64.0.5:25892 - "GET /api/v1/companies?page=1&limit=50 HTTP/1.1" 200 OK
+2025-08-21 21:35:31 [info     ] Searching profiles             company=None limit=50 name=None offset=0
+2025-08-21 21:35:31 [info     ] Profile search completed       count=31
+INFO:     100.64.0.5:25892 - "GET /api/v1/profiles?page=1&limit=50 HTTP/1.1" 200 OK
+2025-08-21 21:35:50 [info     ] Retrieving profile by ID       profile_id=94d19518-974b-4227-94ca-22c27d81fc33
+2025-08-21 21:35:51 [info     ] Profile found by ID            profile_id=94d19518-974b-4227-94ca-22c27d81fc33
+INFO:     100.64.0.5:45470 - "GET /api/v1/profiles/94d19518-974b-4227-94ca-22c27d81fc33 HTTP/1.1" 200 OK
+2025-08-21 21:38:52 [info     ] Listing templates              category=None include_inactive=False limit=None
+2025-08-21 21:38:52 [info     ] Templates retrieved successfully category=None count=4 include_inactive=False
+INFO:     100.64.0.4:62626 - "GET /api/v1/templates HTTP/1.1" 200 OK
+2025-08-21 21:38:53 [info     ] Retrieving template by ID      template_id=3540af7c-29cb-4e4c-b04f-a64881f9975d
+2025-08-21 21:38:54 [info     ] Template retrieved successfully template_id=3540af7c-29cb-4e4c-b04f-a64881f9975d template_name=Enhanced CIO Evaluation Template
+INFO:     100.64.0.4:62626 - "GET /api/v1/templates/3540af7c-29cb-4e4c-b04f-a64881f9975d HTTP/1.1" 200 OK
+2025-08-21 21:38:59 [info     ] Retrieving template by ID      template_id=3540af7c-29cb-4e4c-b04f-a64881f9975d
+2025-08-21 21:38:59 [info     ] Template retrieved successfully template_id=3540af7c-29cb-4e4c-b04f-a64881f9975d template_name=Enhanced CIO Evaluation Template
+INFO:     100.64.0.7:20950 - "GET /api/v1/templates/3540af7c-29cb-4e4c-b04f-a64881f9975d HTTP/1.1" 200 OK
+2025-08-21 21:55:02 [info     ] LLM Scoring Service initialized default_model=gpt-3.5-turbo has_api_key=True max_concurrent=10
+2025-08-21 21:55:02 [debug    ] Listing scoring jobs           limit=50 offset=0 status_filter=None
+2025-08-21 21:55:03 [debug    ] Listed scoring jobs            job_count=50 limit=50 offset=0 total_jobs=65
+INFO:     100.64.0.10:42236 - "GET /api/v1/scoring-jobs HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-21 21:55:03 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.10:42236 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.10:26638 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.5:11546 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.3:54852 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.9:18630 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.8:50662 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.6:62750 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.10:26652 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     100.64.0.7:24386 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.8:50652 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.5:11542 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     100.64.0.8:50642 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     100.64.0.8:50676 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.3:54842 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     100.64.0.7:24392 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.4:13454 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.8:50692 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.4:13466 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     100.64.0.6:62768 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+2025-08-21 21:55:03 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.6:62764 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:55:44 [info     ] LLM Scoring Service initialized default_model=gpt-3.5-turbo has_api_key=True max_concurrent=10
+2025-08-21 21:55:44 [debug    ] Retrieving job status          job_id=8296fe08-f21c-492e-a708-8c58c0d91014
+2025-08-21 21:55:44 [debug    ] Retrieved scoring job          job_id=8296fe08-f21c-492e-a708-8c58c0d91014 profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121 status=completed
+INFO:     100.64.0.5:56314 - "GET /api/v1/scoring-jobs/8296fe08-f21c-492e-a708-8c58c0d91014 HTTP/1.1" 200 OK
+2025-08-21 21:56:39 [info     ] LLM Scoring Service initialized default_model=gpt-3.5-turbo has_api_key=True max_concurrent=10
+2025-08-21 21:56:39 [debug    ] Listing scoring jobs           limit=50 offset=0 status_filter=None
+2025-08-21 21:56:39 [debug    ] Listed scoring jobs            job_count=50 limit=50 offset=0 total_jobs=65
+INFO:     100.64.0.5:60668 - "GET /api/v1/scoring-jobs HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+2025-08-21 21:56:40 [info     ] Retrieving profile by ID       profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.5:60668 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.9:32270 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.7:26090 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     100.64.0.5:60676 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.5:60696 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.5:60682 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.4:27322 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.8:31516 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.9:32276 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.9:32288 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     100.64.0.9:32264 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.3:35116 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.7:26088 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.6:53272 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     100.64.0.6:53270 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.10:42896 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     100.64.0.6:53264 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.7:26086 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+INFO:     100.64.0.8:31518 - "GET /api/v1/profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121 HTTP/1.1" 200 OK
+2025-08-21 21:56:40 [info     ] Profile found by ID            profile_id=3d644180-9ae4-4f42-90e3-69d2da27c108
+INFO:     100.64.0.3:35108 - "GET /api/v1/profiles/3d644180-9ae4-4f42-90e3-69d2da27c108 HTTP/1.1" 200 OK
+INFO:     100.64.0.4:34884 - "GET /api/version HTTP/1.1" 200 OK
+INFO:     100.64.0.10:52634 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.3:59106 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.4:25266 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.6:56288 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.7:44760 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.10:14728 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.5:34848 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.8:56948 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.4:41398 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.5:46868 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.5:18542 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.3:24822 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.10:44120 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.9:50504 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.8:21524 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.6:40830 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.6:15366 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.3:48288 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+2025-08-21 22:23:19 [info     ] Retrieving profile by LinkedIn URL linkedin_url=https://www.linkedin.com/in/ashishjainit/
+2025-08-21 22:23:19 [info     ] Profile found by URL           linkedin_url=https://www.linkedin.com/in/ashishjainit/
+2025-08-21 22:23:19 [info     ] Deleting profile by ID         profile_id=7b03b01c-fdf8-4bbf-a9ca-02b453fc38de
+2025-08-21 22:23:20 [info     ] Profile deleted                deleted_count=1 profile_id=7b03b01c-fdf8-4bbf-a9ca-02b453fc38de
+2025-08-21 22:23:20 [info     ] Starting profile processing workflow include_companies=True linkedin_url=https://www.linkedin.com/in/ashishjainit request_id=f6053fcd-957e-4380-b277-3f69f9de36be
+2025-08-21 22:23:20 [info     ] Fetching profile data          request_id=f6053fcd-957e-4380-b277-3f69f9de36be
+2025-08-21 22:23:20 [info     ] Starting profile fetch         linkedin_url=https://www.linkedin.com/in/ashishjainit
+2025-08-21 22:23:20 [debug    ] Executing profile workflow     payload={'profile': 'https://www.linkedin.com/in/ashishjainit'} url=https://app.cassidyai.com/api/webhook/workflows/cmbv9eaaz00139pa7krnjmoa0?results=true
+2025-08-21 22:23:24 [info     ] DEBUG: Cassidy profile response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T22:23:20.280Z', 'finishedAt': '2025-08-21T22:23:24.388Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/in/ashishjainit'}, 'actionResults': [{'name': 'Get LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"about":"Proven ability to identify technology capabilities that grow revenues, improve service, and reduce costs.  Strong industry knowledge in 
+2025-08-21 22:23:24 [debug    ] Workflow profile completed     execution_time_seconds=4.407489 status_code=200
+2025-08-21 22:23:24 [info     ] DEBUG: Extracted profile data structure experiences_length=5 experiences_type=list has_educations=True has_experiences=True profile_keys=['about', 'city', 'company', 'company_description', 'company_domain', 'company_employee_count', 'company_employee_range', 'company_industry', 'company_linkedin_url', 'company_logo_url', 'company_website', 'company_year_founded', 'connection_count', 'country', 'current_company_join_month', 'current_company_join_year', 'current_job_duration', 'educations', 'email', 'experiences', 'first_name', 'follower_count', 'full_name', 'headline', 'hq_city', 'hq_country', 'hq_region', 'is_creator', 'is_influencer', 'is_premium', 'is_verified', 'job_title', 'languages', 'last_name', 'linkedin_url', 'location', 'phone', 'profile_id', 'profile_image_url', 'public_id', 'school', 'state', 'urn'] sample_fields={'about': 'Proven ability to identify technology capabilities that grow revenues, improve service, and reduce c...', 'city': 'Glen Allen', 'company': 'Microsoft', 'company_description': "Every company has a mission. What's ours? To empower every person and every organization to achieve ...", 'company_domain': 'news.microsoft.com'}
+2025-08-21 22:23:24 [info     ] Profile fetch completed successfully experience_count=5 linkedin_url=https://www.linkedin.com/in/ashishjainit profile_id=29369416
+2025-08-21 22:23:24 [info     ] Fetching company data for experiences experience_count=5 request_id=f6053fcd-957e-4380-b277-3f69f9de36be
+2025-08-21 22:23:24 [info     ] Fetching companies for profile profile_id=29369416 request_id=f6053fcd-957e-4380-b277-3f69f9de36be unique_companies=4
+2025-08-21 22:23:24 [info     ] Starting batch company fetch   company_count=4 delay_seconds=5.0
+2025-08-21 22:23:24 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/1035
+2025-08-21 22:23:24 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/1035'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-21 22:23:29 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T22:23:24.841Z', 'finishedAt': '2025-08-21T22:23:29.075Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/1035'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[{"company_id":"18612750","linkedin_url":"https://www.linkedin.com/company/m12vc","name":"M12, Microsoft\'s Ventur
+2025-08-21 22:23:29 [debug    ] Workflow company completed     execution_time_seconds=4.709529 status_code=200
+2025-08-21 22:23:29 [info     ] Company fetch completed successfully company_name=Microsoft company_url=https://www.linkedin.com/company/1035 employee_count=230209
+2025-08-21 22:23:29 [debug    ] Waiting 5.0s before next company fetch current_index=0 remaining=3
+2025-08-21 22:23:34 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/1028
+2025-08-21 22:23:34 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/1028'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-21 22:23:38 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T22:23:34.513Z', 'finishedAt': '2025-08-21T22:23:38.065Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/1028'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[{"company_id":"106487009","linkedin_url":"https://www.linkedin.com/company/oracle-canada","name":"Oracle Canada"}
+2025-08-21 22:23:38 [debug    ] Workflow company completed     execution_time_seconds=3.975894 status_code=200
+2025-08-21 22:23:38 [info     ] Company fetch completed successfully company_name=Oracle company_url=https://www.linkedin.com/company/1028 employee_count=201907
+2025-08-21 22:23:38 [debug    ] Waiting 5.0s before next company fetch current_index=1 remaining=2
+2025-08-21 22:23:43 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/1419
+2025-08-21 22:23:43 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/1419'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-21 22:23:47 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T22:23:43.379Z', 'finishedAt': '2025-08-21T22:23:47.578Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/1419'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[{"company_id":"3735584","linkedin_url":"https://www.linkedin.com/company/velocityapp","name":"Velocity Black"}],"
+2025-08-21 22:23:47 [debug    ] Workflow company completed     execution_time_seconds=4.471497 status_code=200
+2025-08-21 22:23:47 [info     ] Company fetch completed successfully company_name=Capital One company_url=https://www.linkedin.com/company/1419 employee_count=62950
+2025-08-21 22:23:47 [debug    ] Waiting 5.0s before next company fetch current_index=2 remaining=1
+2025-08-21 22:23:52 [info     ] Starting company fetch         company_url=https://www.linkedin.com/company/42303
+2025-08-21 22:23:52 [debug    ] Executing company workflow     payload={'profile': 'https://www.linkedin.com/company/42303'} url=https://app.cassidyai.com/api/webhook/workflows/cmckultwk008bknkgisuk5fef?results=true
+2025-08-21 22:23:57 [info     ] DEBUG: Cassidy company response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-21T22:23:52.793Z', 'finishedAt': '2025-08-21T22:23:57.455Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/company/42303'}, 'actionResults': [{'name': 'Scrape Company LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"affiliated_companies":[],"company_id":"42303","company_name":"Datalinx","description":"","domain":"","email":"","employee_count":42,"em
+2025-08-21 22:23:57 [debug    ] Workflow company completed     execution_time_seconds=4.892196 status_code=200
+2025-08-21 22:23:57 [info     ] Company fetch completed successfully company_name=Datalinx company_url=https://www.linkedin.com/company/42303 employee_count=42
+2025-08-21 22:23:57 [info     ] Batch company fetch completed  failed=0 successful=4 total_requested=4
+2025-08-21 22:23:57 [info     ] Company fetch completed for profile failed=0 profile_id=29369416 request_id=f6053fcd-957e-4380-b277-3f69f9de36be successful=4 total_requested=4
+2025-08-21 22:23:57 [info     ] Profile processing workflow completed successfully companies_fetched=4 execution_time_seconds=37.467637 profile_id=29369416 request_id=f6053fcd-957e-4380-b277-3f69f9de36be
+2025-08-21 22:23:57 [info     ] Storing LinkedIn profile       profile_id=29369416 profile_name=Ashish J.
+2025-08-21 22:23:57 [info     ] Profile stored successfully    has_embedding=False linkedin_id=29369416 record_id=1685a752-6cf6-4312-970a-204c4543a527
+2025-08-21 22:23:57 [info     ] Retrieving profile by ID       profile_id=1685a752-6cf6-4312-970a-204c4543a527
+2025-08-21 22:23:57 [info     ] Profile found by ID            profile_id=1685a752-6cf6-4312-970a-204c4543a527
+INFO:     100.64.0.8:56280 - "POST /api/v1/profiles HTTP/1.1" 201 Created
+INFO:     100.64.0.9:23588 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.10:55528 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.8:34468 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.3:41878 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
+INFO:     100.64.0.4:49722 - "GET /api/v1/health HTTP/1.1" 200 OK
+INFO:     100.64.0.4:49722 - "OPTIONS /api/v1/profiles/enhanced HTTP/1.1" 405 Method Not Allowed
