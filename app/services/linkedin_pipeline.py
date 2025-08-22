@@ -439,18 +439,26 @@ class LinkedInDataPipeline(LoggerMixin):
     
     def _extract_company_urls(self, profile: LinkedInProfile) -> List[str]:
         """Extract company LinkedIn URLs from profile experience"""
+        self.logger.info(f"DEBUG: Starting company URL extraction from profile: {getattr(profile, 'full_name', 'Unknown')}")
         company_urls = []
         
         # Get from current company - using hasattr and attribute access for Pydantic model
         if hasattr(profile, 'current_company') and profile.current_company:
             if hasattr(profile.current_company, 'linkedin_url') and profile.current_company.linkedin_url:
+                self.logger.info(f"DEBUG: Found current company URL: {profile.current_company.linkedin_url}")
                 company_urls.append(profile.current_company.linkedin_url)
         
         # Get from experience - using attribute access since ExperienceEntry is a Pydantic model
         if hasattr(profile, 'experience') and profile.experience:
-            for exp in profile.experience:
+            self.logger.info(f"DEBUG: Profile has {len(profile.experience)} experience entries")
+            for i, exp in enumerate(profile.experience):
                 if hasattr(exp, 'company_linkedin_url') and exp.company_linkedin_url:
+                    self.logger.info(f"DEBUG: Experience {i+1}: Found company URL: {exp.company_linkedin_url} (Company: {getattr(exp, 'company', 'Unknown')})")
                     company_urls.append(exp.company_linkedin_url)
+                else:
+                    self.logger.info(f"DEBUG: Experience {i+1}: No company URL found (Company: {getattr(exp, 'company', 'Unknown')})")
+        
+        self.logger.info(f"DEBUG: Total company URLs found before deduplication: {len(company_urls)}")
         
         # Remove duplicates while preserving order
         seen = set()
@@ -459,29 +467,49 @@ class LinkedInDataPipeline(LoggerMixin):
             if url not in seen:
                 seen.add(url)
                 unique_urls.append(url)
+            else:
+                self.logger.info(f"DEBUG: Skipping duplicate URL: {url}")
         
-        return unique_urls[:5]  # Limit to 5 companies to avoid rate limits
+        self.logger.info(f"DEBUG: Unique company URLs after deduplication: {len(unique_urls)}")
+        
+        # Apply rate limit filtering
+        filtered_urls = unique_urls[:5]  # Limit to 5 companies to avoid rate limits
+        if len(unique_urls) > 5:
+            self.logger.info(f"DEBUG: Rate limiting applied - processing first 5 of {len(unique_urls)} companies")
+            
+        self.logger.info(f"DEBUG: Final company URLs to fetch: {len(filtered_urls)}")
+        for i, url in enumerate(filtered_urls):
+            self.logger.info(f"DEBUG: Company URL {i+1}: {url}")
+            
+        return filtered_urls
     
     async def _fetch_companies(self, company_urls: List[str]) -> List[CompanyProfile]:
         """Fetch company profiles from URLs"""
+        self.logger.info(f"DEBUG: Starting company fetch for {len(company_urls)} URLs")
         companies = []
         
-        for url in company_urls:
+        for i, url in enumerate(company_urls):
+            self.logger.info(f"DEBUG: Fetching company {i+1}/{len(company_urls)}: {url}")
             try:
+                self.logger.info(f"DEBUG: Calling Cassidy API for company: {url}")
                 company = await self.cassidy_client.fetch_company(url)
+                self.logger.info(f"DEBUG: Successfully fetched company: {getattr(company, 'company_name', 'Unknown')} from {url}")
                 companies.append(company)
                 
                 # Small delay to respect rate limits
+                self.logger.info(f"DEBUG: Adding 1 second delay before next company fetch")
                 await asyncio.sleep(1)
                 
             except Exception as e:
-                self.logger.warning(
-                    "Failed to fetch company",
+                self.logger.error(
+                    f"DEBUG: Failed to fetch company {i+1}/{len(company_urls)}",
                     company_url=url,
-                    error=str(e)
+                    error=str(e),
+                    error_type=type(e).__name__
                 )
                 continue
         
+        self.logger.info(f"DEBUG: Company fetch completed - successfully fetched {len(companies)} out of {len(company_urls)} companies")
         return companies
     
     def convert_cassidy_to_canonical(self, cassidy_companies: List[CompanyProfile]) -> List[CanonicalCompany]:

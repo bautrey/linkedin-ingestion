@@ -167,17 +167,23 @@ class CompanyService:
         """
         results = []
         
-        logger.info(f"Starting batch processing of {len(companies)} companies")
+        logger.info(f"DEBUG: Starting batch processing of {len(companies)} companies")
         
         for i, company in enumerate(companies):
             try:
+                logger.info(f"DEBUG: Processing company {i+1}/{len(companies)}: {company.company_name} (LinkedIn ID: {getattr(company, 'company_id', 'None')})")
+                
                 # Check for duplicates
+                logger.info(f"DEBUG: Checking for duplicates for company: {company.company_name}")
                 existing = await self.deduplicate_company(company)
                 
                 if existing:
+                    logger.info(f"DEBUG: Found existing company, will update: {existing.company_name} (DB ID: {existing.id})")
                     # Update existing company with new data
                     merged = self._merge_company_data(existing, company)
+                    logger.info(f"DEBUG: Calling repository update for company: {company.company_name}")
                     result = await self.company_repo.update(existing.id, merged)
+                    logger.info(f"DEBUG: Successfully updated company in database: {company.company_name} (DB ID: {result['id']})")
                     
                     results.append({
                         "success": True,
@@ -187,8 +193,11 @@ class CompanyService:
                         "data": result
                     })
                 else:
+                    logger.info(f"DEBUG: No existing company found, will create new: {company.company_name}")
                     # Create new company
+                    logger.info(f"DEBUG: Calling repository create for company: {company.company_name}")
                     result = await self.company_repo.create(company)
+                    logger.info(f"DEBUG: Successfully created company in database: {company.company_name} (DB ID: {result['id']})")
                     
                     results.append({
                         "success": True,
