@@ -675,12 +675,21 @@ class LinkedInDataPipeline(LoggerMixin):
             
             # Extract company ID from LinkedIn URL
             if company_data["linkedin_url"]:
-                company_data["company_id"] = self._extract_company_id_from_linkedin_url(company_data["linkedin_url"])
+                extracted_id = self._extract_company_id_from_linkedin_url(company_data["linkedin_url"])
+                company_data["company_id"] = extracted_id
+                self.logger.debug(f"Extracted company ID: {extracted_id} from URL: {company_data['linkedin_url']}")
             
             # Only add if we have a LinkedIn URL (required for deduplication)
             if company_data["linkedin_url"]:
                 try:
-                    canonical_company = CanonicalCompany(**{k: v for k, v in company_data.items() if v is not None})
+                    # Filter out None values but keep empty strings for company_id (better than None for DB)
+                    filtered_data = {k: v for k, v in company_data.items() if v is not None}
+                    # Ensure company_id is included and never None/empty for DB constraint
+                    if "company_id" not in filtered_data or not filtered_data.get("company_id"):
+                        # Use a fallback if extraction failed - this shouldn't happen with our regex but ensures DB compatibility
+                        filtered_data["company_id"] = "unknown"
+                    
+                    canonical_company = CanonicalCompany(**filtered_data)
                     companies.append(canonical_company)
                     seen_urls.add(company_data["linkedin_url"])
                 except Exception as e:
@@ -700,10 +709,19 @@ class LinkedInDataPipeline(LoggerMixin):
                     }
                     
                     # Extract company ID from LinkedIn URL
-                    exp_company_data["company_id"] = self._extract_company_id_from_linkedin_url(exp.company_linkedin_url)
+                    extracted_id = self._extract_company_id_from_linkedin_url(exp.company_linkedin_url)
+                    exp_company_data["company_id"] = extracted_id
+                    self.logger.debug(f"Extracted company ID: {extracted_id} from experience URL: {exp.company_linkedin_url}")
                     
                     try:
-                        canonical_company = CanonicalCompany(**{k: v for k, v in exp_company_data.items() if v is not None})
+                        # Filter out None values but ensure company_id is preserved
+                        filtered_data = {k: v for k, v in exp_company_data.items() if v is not None}
+                        # Ensure company_id is included and never None/empty for DB constraint  
+                        if "company_id" not in filtered_data or not filtered_data.get("company_id"):
+                            # Use a fallback if extraction failed - this shouldn't happen with our regex but ensures DB compatibility
+                            filtered_data["company_id"] = "unknown"
+                        
+                        canonical_company = CanonicalCompany(**filtered_data)
                         companies.append(canonical_company)
                         seen_urls.add(exp.company_linkedin_url)
                     except Exception as e:
