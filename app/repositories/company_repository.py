@@ -35,6 +35,7 @@ class CompanyRepository:
             supabase_client: SupabaseClient instance for database operations
         """
         self.supabase_client = supabase_client
+        self.client = supabase_client.client  # For sync operations
         self.table_name = "companies"
     
     async def create(self, company: CanonicalCompany) -> Dict[str, Any]:

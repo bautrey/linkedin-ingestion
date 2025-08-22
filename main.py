@@ -1232,7 +1232,7 @@ class CompanyController:
         from app.repositories.company_repository import CompanyRepository
         from app.services.company_service import CompanyService
         
-        self.company_repo = CompanyRepository(db_client.client)
+        self.company_repo = CompanyRepository(db_client)
         self.company_service = CompanyService(self.company_repo)
     
     def _convert_canonical_to_response(self, company) -> CompanyResponse:

@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-08-19T08:34:39.296649",
+  "timestamp": "2025-08-22T10:26:54.514024",
   "base_url": "https://linkedin-ingestion-production.up.railway.app",
   "checks": [
     {
@@ -11,7 +11,7 @@
         "status": "error",
         "code": 404,
         "message": "Application not found",
-        "request_id": "mPmoSF3hRY-0J7fCezItjw"
+        "request_id": "qL43aoQRQrycrH3JozsQ6Q"
       },
       "success": false
     },
@@ -24,7 +24,7 @@
         "status": "error",
         "code": 404,
         "message": "Application not found",
-        "request_id": "GYh5nMvCQZCA5Gt-Aax-fw"
+        "request_id": "JMONaoEYQnSS3FKeCx5-qw"
       },
       "success": false
     }
