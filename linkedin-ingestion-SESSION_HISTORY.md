@@ -764,3 +764,18 @@ Session File: ./sessions/linkedin-ingestion-session-2025-08-20-195925.md
 
 ---
 
+## Session 2025-08-22 05:56:41
+
+Session File: ./sessions/linkedin-ingestion-session-20250822-055641.md
+
+**Critical Async Fix Completed**: Resolved 'coroutine' object has no attribute 'data' errors in company processing by making CompanyRepository and CompanyService methods properly async. Enhanced profile ingestion pipeline should now work correctly without async issues.
+
+**Key Changes**:
+- CompanyRepository: Made create, update, get_by_linkedin_id, search_by_name async
+- CompanyService: Updated to await all repository operations  
+- LinkedInPipeline: Fixed to await company service batch processing
+
+**Next Session**: Test the fixes and deploy to Railway
+
+---
+
