@@ -189,14 +189,12 @@
                                                     </a>
                                                 </div>
                                             <% } %>
-                                            <% if (versionInfo.environment && versionInfo.environment !== 'unknown') { %>
                                                 <div class="d-flex justify-content-between mb-1">
                                                     <span>Environment:</span>
-                                                    <span class="badge bg-<%= versionInfo.environment === 'production' ? 'success' : 'warning' %> badge-sm">
-                                                        <%= versionInfo.environment %>
+                                                    <span class="badge bg-<%= apiEnvironment === 'production' ? 'success' : apiEnvironment === 'localhost' ? 'warning' : 'secondary' %> badge-sm">
+                                                        <%= apiEnvironment === 'production' ? 'PRODUCTION' : apiEnvironment === 'localhost' ? 'LOCAL' : 'DEVELOPMENT' %>
                                                     </span>
                                                 </div>
-                                            <% } %>
                                         </div>
                                     </div>
                                     

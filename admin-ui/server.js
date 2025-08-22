@@ -63,9 +63,24 @@ async function loadVersionInfo() {
 // Load version info at startup only
 loadVersionInfo();
 
-// Middleware to add version info to all requests
+// Middleware to add version info and API environment to all requests
 app.use((req, res, next) => {
+    const apiBaseUrl = process.env.FASTAPI_BASE_URL || 'http://localhost:8000';
+    let apiEnvironment = 'development';
+    
+    // Environment is determined by which API we're connecting to, not NODE_ENV
+    if (apiBaseUrl.includes('railway.app')) {
+        apiEnvironment = 'production';
+    } else if (apiBaseUrl.includes('localhost')) {
+        apiEnvironment = 'localhost';
+    } else {
+        apiEnvironment = 'staging';
+    }
+    
     res.locals.versionInfo = versionInfo;
+    res.locals.apiBaseUrl = apiBaseUrl;
+    res.locals.apiEnvironment = apiEnvironment;
+    res.locals.apiHost = new URL(apiBaseUrl).host;
     next();
 });
 
@@ -113,6 +128,13 @@ app.use('/scoring', require('./routes/scoring'));
 app.use('/templates', require('./routes/templates'));
 app.use('/ingestion', require('./routes/ingestion'));
 app.use('/api', require('./routes/api'));
+
+// Environment configuration page
+app.get('/environment', (req, res) => {
+    res.render('environment', {
+        title: 'Environment Configuration'
+    });
+});
 
 // Health check endpoint
 app.get('/health', async (req, res) => {

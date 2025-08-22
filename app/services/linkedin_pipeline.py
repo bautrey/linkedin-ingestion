@@ -29,8 +29,13 @@ class LinkedInDataPipeline(LoggerMixin):
         
         # Initialize company service for profile ingestion with company processing
         if self.db_client:
-            # We'll initialize the company service lazily when needed
-            self.company_service = None  # Will be initialized lazily
+            # Initialize company service immediately
+            try:
+                company_repo = CompanyRepository(self.db_client)
+                self.company_service = CompanyService(company_repo)
+            except Exception as e:
+                self.logger.warning(f"Failed to initialize company service: {str(e)}")
+                self.company_service = None
         else:
             self.company_service = None
         
@@ -50,11 +55,19 @@ class LinkedInDataPipeline(LoggerMixin):
         return bool(getattr(settings, 'OPENAI_API_KEY', None))
     
     async def _ensure_company_service(self):
-        """Lazily initialize company service when needed"""
+        """Ensure company service is available (already initialized in __init__)"""
         if self.company_service is None and self.db_client:
-            # Create company repository with SupabaseClient instance
-            company_repo = CompanyRepository(self.db_client)
-            self.company_service = CompanyService(company_repo)
+            self.logger.warning("Company service was not initialized during startup, initializing now")
+            try:
+                company_repo = CompanyRepository(self.db_client)
+                self.company_service = CompanyService(company_repo)
+                self.logger.info("Company service initialized successfully")
+            except Exception as e:
+                self.logger.error(f"Failed to initialize company service: {str(e)}")
+                self.company_service = None
+        
+        if self.company_service is None:
+            self.logger.error("Company service is not available - company processing will be skipped")
     
     async def ingest_profile(
         self, 

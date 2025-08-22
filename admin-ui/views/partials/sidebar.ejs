@@ -79,11 +79,9 @@
                         </div>
                     </div>
                     <div class="text-end">
-                        <% if (versionInfo.environment) { %>
-                            <span class="badge badge-<%= versionInfo.environment === 'production' ? 'success' : 'warning' %> badge-sm">
-                                <%= versionInfo.environment %>
+                            <span class="badge badge-<%= apiEnvironment === 'production' ? 'success' : apiEnvironment === 'localhost' ? 'warning' : 'secondary' %> badge-sm">
+                                <%= apiEnvironment === 'production' ? 'PROD' : apiEnvironment === 'localhost' ? 'LOCAL' : 'DEV' %>
                             </span>
-                        <% } %>
                         <% if (versionInfo.build_time && versionInfo.build_time !== 'unknown') { %>
                             <div class="text-muted" style="font-size: 0.65rem;" title="Build time: <%= versionInfo.build_time %>">
                                 <i class="bi bi-clock"></i> <%= new Date(versionInfo.build_time).toLocaleDateString() %>
