@@ -485,18 +485,21 @@ class LinkedInDataPipeline(LoggerMixin):
         return companies
     
     def convert_cassidy_to_canonical(self, cassidy_companies: List[CompanyProfile]) -> List[CanonicalCompany]:
-        """Convert Cassidy CompanyProfile objects to CanonicalCompany for database storage
+        """
+        Convert Cassidy CompanyProfile objects to CanonicalCompany format
         
         Args:
             cassidy_companies: List of CompanyProfile objects from Cassidy API
             
         Returns:
-            List of CanonicalCompany objects ready for database processing
+            List of CanonicalCompany objects ready for database storage
         """
+        self.logger.info(f"DEBUG: convert_cassidy_to_canonical starting with {len(cassidy_companies)} companies")
         canonical_companies = []
-        
-        for cassidy_company in cassidy_companies:
+        for i, cassidy_company in enumerate(cassidy_companies):
             try:
+                self.logger.info(f"DEBUG: Converting company {i+1}/{len(cassidy_companies)}: {getattr(cassidy_company, 'company_name', 'Unknown')}")
+                
                 # Convert CompanyProfile to CanonicalCompany format
                 canonical_data = {
                     "company_name": cassidy_company.company_name,
@@ -515,10 +518,16 @@ class LinkedInDataPipeline(LoggerMixin):
                     "logo_url": cassidy_company.logo_url,
                 }
                 
+                self.logger.info(f"DEBUG: Company data before filtering: {len([k for k, v in canonical_data.items() if v is not None])} non-None fields")
+                
                 # Filter out None values and create CanonicalCompany
                 filtered_data = {k: v for k, v in canonical_data.items() if v is not None}
+                self.logger.info(f"DEBUG: Creating CanonicalCompany with {len(filtered_data)} fields")
+                
                 canonical_company = CanonicalCompany(**filtered_data)
                 canonical_companies.append(canonical_company)
+                
+                self.logger.info(f"DEBUG: Successfully converted company {i+1}: {canonical_company.company_name}")
             except Exception as e:
                 self.logger.warning(
                     "Failed to convert Cassidy company to canonical format",
@@ -527,6 +536,7 @@ class LinkedInDataPipeline(LoggerMixin):
                 )
                 continue
         
+        self.logger.info(f"DEBUG: convert_cassidy_to_canonical completed with {len(canonical_companies)} canonical companies")
         return canonical_companies
     
     # Enhanced Profile Ingestion with Company Processing

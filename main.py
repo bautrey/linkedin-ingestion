@@ -578,7 +578,9 @@ class ProfileController:
                         logger.info(f"Successfully fetched {len(cassidy_companies)} companies from Cassidy API")
                         
                         # Convert Cassidy CompanyProfile objects to CanonicalCompany for database storage
+                        logger.info(f"DEBUG: Starting conversion of {len(cassidy_companies)} Cassidy companies to canonical format")
                         canonical_companies = self.linkedin_pipeline.convert_cassidy_to_canonical(cassidy_companies)
+                        logger.info(f"DEBUG: Conversion completed - got {len(canonical_companies)} canonical companies")
                         
                         # Use CompanyService to process companies (create/update with deduplication)
                         if canonical_companies:
