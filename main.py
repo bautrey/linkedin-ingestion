@@ -530,13 +530,7 @@ class ProfileController:
     async def create_profile(self, request: ProfileCreateRequest) -> ProfileResponse:
         """Create a new LinkedIn profile with complete company processing
         
-        This method:
-        1. Fetches the LinkedIn profile via Cassidy API
-        2. Extracts company URLs from experience section 
-        3. Fetches each company's detailed info via Cassidy Company API
-        4. Stores profile in database
-        5. Stores companies in database with deduplication
-        6. Links profile to companies in junction table
+        Single unified path for profile creation with company processing.
         """
         import asyncio
         from app.services.company_service import CompanyService
@@ -552,14 +546,8 @@ class ProfileController:
             # Smart update behavior: delete existing profile and create fresh one
             await self.db_client.delete_profile(existing["id"])
         
-        # Step 1: Fetch profile using LinkedInWorkflow (includes company processing)
-        from app.cassidy.models import ProfileIngestionRequest
-        workflow_request = ProfileIngestionRequest(
-            linkedin_url=linkedin_url,
-            include_companies=request.include_companies
-        )
-        request_id, enriched_profile = await self.linkedin_workflow.process_profile(workflow_request)
-        profile = enriched_profile.profile
+        # Step 1: Fetch profile directly from Cassidy API
+        profile = await self.cassidy_client.fetch_profile(linkedin_url)
         
         # Step 2: Store profile in database first
         profile_id = await self.db_client.store_profile(profile)
@@ -570,90 +558,51 @@ class ProfileController:
         
         companies_processed = []
         
-        # Step 4: Process companies if requested
+        # Step 4: Process companies if requested (using working logic from LinkedInDataPipeline)
         if request.include_companies and hasattr(profile, 'experience') and profile.experience:
             try:
-                # Extract unique company LinkedIn URLs from profile experience
-                company_urls = self._extract_company_urls_from_experience(profile.experience)
+                # Initialize company service (ensure it's available)
+                company_repo = CompanyRepository(self.db_client)
+                company_service = CompanyService(company_repo)
+                
+                # Extract company URLs from profile experience
+                company_urls = self.linkedin_pipeline._extract_company_urls(profile)
                 
                 if company_urls:
-                    # Step 4a: Fetch company details from Cassidy API
-                    companies_data = []
-                    for company_url in company_urls:
-                        try:
-                            company_profile = await self.cassidy_client.fetch_company(company_url)
-                            companies_data.append(company_profile)
-                            # Rate limiting to be nice to Cassidy API
-                            await asyncio.sleep(1)
-                        except Exception as e:
-                            logger.warning(f"Failed to fetch company {company_url}: {str(e)}")
-                            continue
+                    logger.info(f"Found {len(company_urls)} companies to fetch for profile {profile.name}")
                     
-                    if companies_data:
-                        # Step 4b: Store companies using CompanyService (with deduplication)
-                        company_repo = CompanyRepository(self.db_client)
-                        company_service = CompanyService(company_repo)
+                    # Fetch detailed company data from Cassidy API
+                    cassidy_companies = await self.linkedin_pipeline._fetch_companies(company_urls)
+                    
+                    if cassidy_companies:
+                        logger.info(f"Successfully fetched {len(cassidy_companies)} companies from Cassidy API")
                         
-                        # Convert Cassidy CompanyProfile to CanonicalCompany
-                        canonical_companies = []
-                        for cassidy_company in companies_data:
-                            try:
-                                canonical_data = {
-                                    "company_name": cassidy_company.company_name,
-                                    "company_id": self._extract_company_id_from_url(cassidy_company.linkedin_url),
-                                    "linkedin_url": cassidy_company.linkedin_url,
-                                    "description": cassidy_company.description,
-                                    "website": cassidy_company.website,
-                                    "domain": cassidy_company.domain,
-                                    "employee_count": cassidy_company.employee_count,
-                                    "employee_range": cassidy_company.employee_range,
-                                    "year_founded": cassidy_company.year_founded,
-                                    "industries": cassidy_company.industries or [],
-                                    "hq_city": cassidy_company.hq_city,
-                                    "hq_region": cassidy_company.hq_region,
-                                    "hq_country": cassidy_company.hq_country,
-                                    "logo_url": cassidy_company.logo_url,
-                                }
-                                # Filter out None values
-                                filtered_data = {k: v for k, v in canonical_data.items() if v is not None}
-                                canonical_companies.append(CanonicalCompany(**filtered_data))
-                            except Exception as e:
-                                logger.warning(f"Failed to convert company to canonical format: {str(e)}")
-                                continue
+                        # Convert Cassidy CompanyProfile objects to CanonicalCompany for database storage
+                        canonical_companies = self.linkedin_pipeline.convert_cassidy_to_canonical(cassidy_companies)
                         
-                        # Step 4c: Batch process companies (create/update with deduplication)
+                        # Use CompanyService to process companies (create/update with deduplication)
                         if canonical_companies:
                             processing_results = await company_service.batch_process_companies(canonical_companies)
                             
-                            # Step 4d: Create profile-company junction records
+                            # Convert results for response
                             for process_result in processing_results:
                                 if process_result["success"]:
-                                    try:
-                                        # Find matching experience entry to get job details
-                                        job_info = self._find_job_info_for_company(profile.experience, process_result["linkedin_url"])
-                                        
-                                        await self.db_client.link_profile_to_company(
-                                            profile_id=profile_id,
-                                            company_id=process_result["company_id"],
-                                            job_title=job_info.get("title"),
-                                            start_date=job_info.get("start_date"),
-                                            end_date=job_info.get("end_date"),
-                                            duration_text=job_info.get("duration"),
-                                            is_current_role=job_info.get("is_current", False),
-                                            description=job_info.get("description")
-                                        )
-                                        
-                                        companies_processed.append({
-                                            "company_id": process_result["company_id"],
-                                            "company_name": process_result["company_name"],
-                                            "action": process_result["action"]
-                                        })
-                                    except Exception as e:
-                                        logger.warning(f"Failed to link profile to company: {str(e)}")
-                                        continue
+                                    companies_processed.append({
+                                        "company_id": process_result["company_id"],
+                                        "company_name": process_result["company_name"],
+                                        "action": process_result["action"]  # created/updated
+                                    })
+                            
+                            logger.info(f"Company processing completed: {len(companies_processed)} companies processed")
+                    else:
+                        logger.warning("No companies fetched from Cassidy API")
+                else:
+                    logger.info("No company URLs found in profile")
+                    
             except Exception as e:
-                logger.error(f"Company processing failed: {str(e)}")
-                # Continue with profile creation even if company processing fails
+                error_msg = f"Company processing failed: {str(e)}"
+                logger.warning(error_msg)
+                # Continue with profile processing even if company processing fails
         
         # Step 5: Retrieve the final profile data to return
         stored_profile = await self.db_client.get_profile_by_id(profile_id)
@@ -669,56 +618,6 @@ class ProfileController:
         
         return response
     
-    def _extract_company_urls_from_experience(self, experience_list: List[Dict]) -> List[str]:
-        """Extract unique company LinkedIn URLs from profile experience"""
-        company_urls = []
-        seen_urls = set()
-        
-        for exp in experience_list:
-            company_linkedin_url = exp.get('company_linkedin_url')
-            if company_linkedin_url and company_linkedin_url not in seen_urls:
-                company_urls.append(company_linkedin_url)
-                seen_urls.add(company_linkedin_url)
-        
-        return company_urls[:5]  # Limit to 5 to avoid rate limits
-    
-    def _extract_company_id_from_url(self, linkedin_url: str) -> Optional[str]:
-        """Extract company ID from LinkedIn company URL - handles both numeric IDs and slug names"""
-        if not linkedin_url:
-            return None
-            
-        try:
-            import re
-            # Handle different LinkedIn URL formats:
-            # https://www.linkedin.com/company/5116524
-            # https://www.linkedin.com/company/fortium-partners
-            # https://linkedin.com/company/5116524/
-            
-            match = re.search(r'/company/([^/?]+)', linkedin_url)
-            if match:
-                company_identifier = match.group(1)
-                return company_identifier  # Return both numeric IDs and slug names
-            
-            return None
-            
-        except Exception as e:
-            logger.warning(f"Failed to extract company ID from URL {linkedin_url}: {str(e)}")
-            return None
-    
-    def _find_job_info_for_company(self, experience_list: List[Dict], company_linkedin_url: str) -> Dict[str, Any]:
-        """Find job information for a specific company from experience list"""
-        for exp in experience_list:
-            if exp.get('company_linkedin_url') == company_linkedin_url:
-                return {
-                    "title": exp.get('title'),
-                    "start_date": exp.get('start_date'),
-                    "end_date": exp.get('end_date'),
-                    "duration": exp.get('duration'),
-                    "is_current": exp.get('end_date') is None or exp.get('end_date') == 'Present',
-                    "description": exp.get('description')
-                }
-        
-        return {}
     
     async def batch_create_profiles(self, request: BatchProfileCreateRequest) -> BatchProfileResponse:
         """Batch create profiles using the unified ingestion flow with company processing"""

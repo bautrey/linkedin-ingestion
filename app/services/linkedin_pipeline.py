@@ -484,6 +484,51 @@ class LinkedInDataPipeline(LoggerMixin):
         
         return companies
     
+    def convert_cassidy_to_canonical(self, cassidy_companies: List[CompanyProfile]) -> List[CanonicalCompany]:
+        """Convert Cassidy CompanyProfile objects to CanonicalCompany for database storage
+        
+        Args:
+            cassidy_companies: List of CompanyProfile objects from Cassidy API
+            
+        Returns:
+            List of CanonicalCompany objects ready for database processing
+        """
+        canonical_companies = []
+        
+        for cassidy_company in cassidy_companies:
+            try:
+                # Convert CompanyProfile to CanonicalCompany format
+                canonical_data = {
+                    "company_name": cassidy_company.company_name,
+                    "company_id": cassidy_company.company_id,
+                    "linkedin_url": cassidy_company.linkedin_url,
+                    "description": cassidy_company.description,
+                    "website": cassidy_company.website,
+                    "domain": cassidy_company.domain,
+                    "employee_count": cassidy_company.employee_count,
+                    "employee_range": cassidy_company.employee_range,
+                    "year_founded": cassidy_company.year_founded,
+                    "industries": cassidy_company.industries or [],
+                    "hq_city": cassidy_company.hq_city,
+                    "hq_region": cassidy_company.hq_region,
+                    "hq_country": cassidy_company.hq_country,
+                    "logo_url": cassidy_company.logo_url,
+                }
+                
+                # Filter out None values and create CanonicalCompany
+                filtered_data = {k: v for k, v in canonical_data.items() if v is not None}
+                canonical_company = CanonicalCompany(**filtered_data)
+                canonical_companies.append(canonical_company)
+            except Exception as e:
+                self.logger.warning(
+                    "Failed to convert Cassidy company to canonical format",
+                    company_name=getattr(cassidy_company, 'company_name', 'Unknown'),
+                    error=str(e)
+                )
+                continue
+        
+        return canonical_companies
+    
     # Enhanced Profile Ingestion with Company Processing
     
     async def ingest_profile_with_companies(

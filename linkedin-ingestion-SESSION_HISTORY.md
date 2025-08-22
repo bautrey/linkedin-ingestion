@@ -795,3 +795,18 @@ Session File: ./sessions/linkedin-ingestion-session-2025-08-22-171037.md
 
 ---
 
+## Session 2025-08-22 20:14:37
+
+Session File: ./sessions/linkedin-ingestion-session-2025-08-22-201437.md
+
+**Critical Issue Identified**: Company storage pipeline broken - LinkedIn pipeline successfully fetches companies via Cassidy API but they're not being stored in database during profile ingestion.
+
+**Key Accomplishments**:
+- Fixed multiple missing await statements in company controller methods
+- Confirmed Cassidy API company fetching works (logs show 5 companies fetched successfully)
+- Identified disconnect between LinkedIn pipeline (working) and ProfileController (broken)
+
+**Next Session Priority**: Fix company storage in ProfileController create_profile method
+
+---
+
