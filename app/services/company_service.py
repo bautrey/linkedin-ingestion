@@ -64,8 +64,8 @@ class CompanyService:
                 # Merge new data with existing data
                 merged_company = self._merge_company_data(existing_company, company)
                 
-                # Update existing company
-                result = await self.company_repo.update(existing_company.company_id, merged_company)
+                # Update existing company using database ID
+                result = await self.company_repo.update(existing_company.id, merged_company)
                 logger.info(f"Updated company: {company.company_name} (LinkedIn ID: {company.company_id})")
                 return result
             else:
@@ -177,7 +177,7 @@ class CompanyService:
                 if existing:
                     # Update existing company with new data
                     merged = self._merge_company_data(existing, company)
-                    result = await self.company_repo.update(existing.company_id, merged)
+                    result = await self.company_repo.update(existing.id, merged)
                     
                     results.append({
                         "success": True,

@@ -100,6 +100,7 @@ class CanonicalCompany(BaseModel):
     )
 
     # --- Core Identity ---
+    id: Optional[str] = Field(None, description="The database UUID for this company record.")
     company_id: Optional[str] = Field(None, description="The unique LinkedIn company ID.")
     company_name: str = Field(..., description="The name of the company.")
     linkedin_url: Optional[HttpUrl] = Field(None, description="The full URL of the LinkedIn company page.")

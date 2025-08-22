@@ -447,6 +447,7 @@ class CompanyRepository:
         """
         # Map database columns to model fields
         model_data = {
+            "id": db_row.get("id"),  # Database UUID
             "company_id": db_row.get("linkedin_company_id"),
             "company_name": db_row["company_name"],
             "linkedin_url": db_row.get("linkedin_url"),

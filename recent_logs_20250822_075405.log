@@ -1,0 +1,23 @@
+Starting Container
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8080 (Press CTRL+C to quit)
+INFO:     100.64.0.2:46121 - "GET /api/v1/health HTTP/1.1" 200 OK
+2025-08-22 12:52:46 [info     ] LinkedIn pipeline initialized  has_company_service=False has_database=True has_embeddings=True
+2025-08-22 12:52:46 [info     ] Retrieving profile by LinkedIn URL linkedin_url=https://www.linkedin.com/in/burkeautrey/
+2025-08-22 12:52:46 [info     ] Profile found by URL           linkedin_url=https://www.linkedin.com/in/burkeautrey/
+2025-08-22 12:52:46 [info     ] Deleting profile by ID         profile_id=34908299-28cc-46ac-b7d9-d5c50102b5d5
+2025-08-22 12:52:47 [info     ] Profile deleted                deleted_count=1 profile_id=34908299-28cc-46ac-b7d9-d5c50102b5d5
+2025-08-22 12:52:47 [info     ] Starting enhanced profile ingestion with company processing generate_embeddings=True linkedin_url=https://www.linkedin.com/in/burkeautrey/ pipeline_id=86b7472f-6df0-4943-b635-97c46072d6b9 store_in_db=True
+2025-08-22 12:52:47 [info     ] Fetching profile from Cassidy  pipeline_id=86b7472f-6df0-4943-b635-97c46072d6b9
+2025-08-22 12:52:47 [info     ] Starting profile fetch         linkedin_url=https://www.linkedin.com/in/burkeautrey/
+2025-08-22 12:52:47 [debug    ] Executing profile workflow     payload={'profile': 'https://www.linkedin.com/in/burkeautrey/'} url=https://app.cassidyai.com/api/webhook/workflows/cmbv9eaaz00139pa7krnjmoa0?results=true
+2025-08-22 12:52:52 [info     ] DEBUG: Cassidy profile response structure response_keys=['message', 'description', 'workflowRun'] response_sample={'message': 'Success', 'description': 'Workflow run completed', 'workflowRun': {'status': 'SUCCESS', 'createdAt': '2025-08-22T12:52:47.436Z', 'finishedAt': '2025-08-22T12:52:52.833Z', 'inputFieldValues': {'profile': 'https://www.linkedin.com/in/burkeautrey/'}, 'actionResults': [{'name': 'Get LinkedIn Profile', 'status': 'SUCCESS', 'output': {'value': '{"about":"Burke Autrey is the Chairman and CEO of  Fortium Partners, the world\'s largest and fastest-growing provider of technology leadership se
+2025-08-22 12:52:52 [debug    ] Workflow profile completed     execution_time_seconds=5.828303 status_code=200
+2025-08-22 12:52:52 [info     ] DEBUG: Extracted profile data structure experiences_length=13 experiences_type=list has_educations=True has_experiences=True profile_keys=['about', 'city', 'company', 'company_description', 'company_domain', 'company_employee_count', 'company_employee_range', 'company_industry', 'company_linkedin_url', 'company_logo_url', 'company_website', 'company_year_founded', 'connection_count', 'country', 'current_company_join_month', 'current_company_join_year', 'current_job_duration', 'educations', 'email', 'experiences', 'first_name', 'follower_count', 'full_name', 'headline', 'hq_city', 'hq_country', 'hq_region', 'is_creator', 'is_influencer', 'is_premium', 'is_verified', 'job_title', 'languages', 'last_name', 'linkedin_url', 'location', 'phone', 'profile_id', 'profile_image_url', 'public_id', 'school', 'state', 'urn'] sample_fields={'about': "Burke Autrey is the Chairman and CEO of  Fortium Partners, the world's largest and fastest-growing p...", 'city': 'Dallas', 'company': 'Fortium Partners', 'company_description': 'Fortium Partners is the largest team of operating technology executives in the world serving public,...', 'company_domain': 'fortiumpartners.com'}
+2025-08-22 12:52:52 [info     ] Profile fetch completed successfully experience_count=13 linkedin_url=https://www.linkedin.com/in/burkeautrey/ profile_id=87224
+2025-08-22 12:52:52 [info     ] Processing company data from profile pipeline_id=86b7472f-6df0-4943-b635-97c46072d6b9
+2025-08-22 12:52:52 [debug    ] Extracted company ID: fortiumpartners from URL: https://www.linkedin.com/company/fortiumpartners
+2025-08-22 12:52:52 [debug    ] Extracted company ID: 5116524 from experience URL: https://www.linkedin.com/company/5116524
+2025-08-22 12:52:52 [debug    ] Extr
