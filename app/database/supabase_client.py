@@ -102,7 +102,7 @@ class SupabaseClient(LoggerMixin):
             "followers": profile.follower_count,
             "connections": profile.connection_count,
             "profile_image_url": str(profile.profile_image_url) if profile.profile_image_url else None,
-            "suggested_role": profile.suggested_role.value if profile.suggested_role else None,
+            "suggested_role": None,  # Will be set separately via update_profile_suggested_role
             "experience": [self._serialize_model(exp) for exp in profile.experiences],
             "education": [self._serialize_model(edu) for edu in profile.educations],
             "certifications": [],  # CanonicalProfile doesn't have certifications field
