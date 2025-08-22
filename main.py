@@ -1373,9 +1373,8 @@ class CompanyController:
                     )
                 )
             else:
-                # Get all companies (limited implementation for now)
-                # In a real implementation, you'd want a proper paginated query
-                companies = self.company_repo.search_by_name("", limit) # Get recent companies
+                # Get all companies using the proper get_all method
+                companies = await self.company_repo.get_all(limit=limit, offset=offset)
             
             # Convert to response format
             company_responses = [self._convert_canonical_to_response(company) for company in companies]

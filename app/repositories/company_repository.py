@@ -183,6 +183,32 @@ class CompanyRepository:
             logger.error(f"Failed to get company by LinkedIn ID {linkedin_company_id}: {str(e)}")
             return None
     
+    async def get_all(self, limit: int = 50, offset: int = 0) -> List[CanonicalCompany]:
+        """
+        Get all companies with pagination.
+        
+        Args:
+            limit: Maximum number of results to return
+            offset: Number of records to skip
+            
+        Returns:
+            List of CanonicalCompany instances
+        """
+        try:
+            # Ensure async client is available
+            await self.supabase_client._ensure_client()
+            
+            result = await self.supabase_client.client.table(self.table_name).select("*").order(
+                "created_at", desc=True
+            ).range(offset, offset + limit - 1).execute()
+            
+            logger.info(f"Retrieved {len(result.data)} companies (limit: {limit}, offset: {offset})")
+            return [self._db_to_model_format(row) for row in result.data]
+            
+        except Exception as e:
+            logger.error(f"Failed to get all companies: {str(e)}")
+            return []
+    
     async def search_by_name(self, name_query: str, limit: int = 20) -> List[CanonicalCompany]:
         """
         Search companies by name.
