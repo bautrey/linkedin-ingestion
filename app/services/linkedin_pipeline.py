@@ -47,7 +47,7 @@ class LinkedInDataPipeline(LoggerMixin):
     
     def _has_openai_config(self) -> bool:
         """Check if OpenAI configuration is available"""
-        return bool(settings.OPENAI_API_KEY)
+        return bool(getattr(settings, 'OPENAI_API_KEY', None))
     
     async def _ensure_company_service(self):
         """Lazily initialize company service when needed"""
@@ -663,7 +663,7 @@ class LinkedInDataPipeline(LoggerMixin):
             company_data = {
                 "company_name": profile.company.strip(),
                 "linkedin_url": profile.company_linkedin_url,
-                "domain": profile.company_domain,
+                "domain": self._extract_domain_from_company_data(profile.company_domain, profile.company_website),
                 "employee_count": profile.company_employee_count,
                 "employee_range": profile.company_employee_range,
                 "industries": [profile.company_industry] if profile.company_industry else [],
@@ -705,7 +705,8 @@ class LinkedInDataPipeline(LoggerMixin):
                     exp_company_data = {
                         "company_name": exp.company.strip(),
                         "linkedin_url": exp.company_linkedin_url,
-                        "logo_url": getattr(exp, 'company_logo_url', None)
+                        "logo_url": getattr(exp, 'company_logo_url', None),
+                        "domain": self._extract_domain_from_experience(exp)
                     }
                     
                     # Extract company ID from LinkedIn URL
@@ -729,3 +730,59 @@ class LinkedInDataPipeline(LoggerMixin):
         
         self.logger.debug(f"Extracted {len(companies)} companies from profile")
         return companies
+    
+    def _extract_domain_from_company_data(self, company_domain: str, company_website: str) -> Optional[str]:
+        """
+        Extract domain from company data with fallback logic.
+        
+        Args:
+            company_domain: Direct domain from profile
+            company_website: Website URL to extract domain from
+            
+        Returns:
+            Extracted domain or None if not available
+        """
+        # First, try the direct domain
+        if company_domain and company_domain.strip():
+            return company_domain.strip()
+        
+        # Fallback to extracting from website URL
+        if company_website and company_website.strip():
+            try:
+                from urllib.parse import urlparse
+                parsed = urlparse(company_website.strip())
+                if parsed.netloc:
+                    domain = parsed.netloc.lower()
+                    # Remove www. prefix if present
+                    if domain.startswith('www.'):
+                        domain = domain[4:]
+                    return domain
+            except Exception as e:
+                self.logger.debug(f"Failed to extract domain from website {company_website}: {str(e)}")
+        
+        return None
+    
+    def _extract_domain_from_experience(self, exp) -> Optional[str]:
+        """
+        Extract domain from experience entry if available.
+        
+        Args:
+            exp: Experience entry object
+            
+        Returns:
+            Extracted domain or None
+        """
+        # Check if experience has website or domain info
+        if hasattr(exp, 'company_website') and exp.company_website:
+            try:
+                from urllib.parse import urlparse
+                parsed = urlparse(exp.company_website.strip())
+                if parsed.netloc:
+                    domain = parsed.netloc.lower()
+                    if domain.startswith('www.'):
+                        domain = domain[4:]
+                    return domain
+            except Exception as e:
+                self.logger.debug(f"Failed to extract domain from experience website: {str(e)}")
+        
+        return None

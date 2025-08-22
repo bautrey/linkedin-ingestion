@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
         
         res.render('companies/list', {
             title: 'Companies',
-            companies: response.data.companies || [],
+            companies: response.data.data || [],
             pagination: response.data.pagination || {},
             query: req.query
         });

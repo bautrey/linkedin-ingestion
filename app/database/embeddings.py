@@ -24,6 +24,13 @@ class EmbeddingService(LoggerMixin):
         Args:
             api_key: OpenAI API key (falls back to environment if not provided)
         """
+        # Use provided API key or fall back to settings
+        if api_key is None:
+            api_key = getattr(settings, 'OPENAI_API_KEY', None)
+        
+        if not api_key:
+            raise ValueError("OpenAI API key is required but not provided")
+            
         self.client = AsyncOpenAI(api_key=api_key)
         self.model = "text-embedding-ada-002"  # OpenAI's current embedding model
         self.max_tokens = 8192  # Model token limit

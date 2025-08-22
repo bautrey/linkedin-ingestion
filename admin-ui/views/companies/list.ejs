@@ -86,7 +86,6 @@
                                             <th>Industry</th>
                                             <th>Location</th>
                                             <th>Size</th>
-                                            <th>Profiles Count</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -114,12 +113,12 @@
                                                             <div>
                                                                 <div class="fw-medium">
                                                                     <a href="/companies/<%= company.id %>" class="text-decoration-none text-dark">
-                                                                        <%= company.name || 'Unknown Company' %>
+                                                                        <%= company.company_name || 'Unknown Company' %>
                                                                     </a>
                                                                 </div>
-                                                                <% if (company.url) { %>
+                                                                <% if (company.website) { %>
                                                                     <small class="text-muted">
-                                                                        <a href="<%= company.url %>" target="_blank" class="text-muted text-decoration-none">
+                                                                        <a href="<%= company.website %>" target="_blank" class="text-muted text-decoration-none">
                                                                             <i class="bi bi-globe"></i> Website
                                                                         </a>
                                                                     </small>
@@ -128,10 +127,10 @@
                                                         </div>
                                                     </td>
                                                     <td>
-                                                        <span class="text-muted"><%= company.industry || 'N/A' %></span>
+                                                        <span class="text-muted"><%= (company.industries && company.industries.length > 0) ? company.industries.join(', ') : 'N/A' %></span>
                                                     </td>
                                                     <td>
-                                                        <span class="text-muted"><%= company.location || 'N/A' %></span>
+                                                        <span class="text-muted"><%= [company.hq_city, company.hq_region, company.hq_country].filter(Boolean).join(', ') || 'N/A' %></span>
                                                     </td>
                                                     <td>
                                                         <% if (company.employee_count) { %>
@@ -141,16 +140,13 @@
                                                         <% } %>
                                                     </td>
                                                     <td>
-                                                        <span class="badge bg-primary"><%= company.profiles_count || 0 %></span>
-                                                    </td>
-                                                    <td>
                                                         <div class="btn-group" role="group">
                                                             <a href="/companies/<%= company.id %>" 
                                                                class="btn btn-outline-primary btn-sm" 
                                                                title="View Details">
                                                                 <i class="bi bi-eye"></i>
                                                             </a>
-                                                            <a href="/profiles?company=<%= company.name %>" 
+                                                            <a href="/profiles?company=<%= company.company_name %>"
                                                                class="btn btn-outline-success btn-sm" 
                                                                title="View Profiles">
                                                                 <i class="bi bi-people"></i>
