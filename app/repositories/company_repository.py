@@ -27,17 +27,17 @@ logger = logging.getLogger(__name__)
 class CompanyRepository:
     """Repository class for company database operations."""
     
-    def __init__(self, supabase_client: SupabaseClient):
+    def __init__(self, supabase_client):
         """
         Initialize the company repository.
         
         Args:
-            supabase_client: Supabase client instance for database operations
+            supabase_client: SupabaseClient instance for database operations
         """
-        self.client = supabase_client
+        self.supabase_client = supabase_client
         self.table_name = "companies"
     
-    def create(self, company: CanonicalCompany) -> Dict[str, Any]:
+    async def create(self, company: CanonicalCompany) -> Dict[str, Any]:
         """
         Insert a new company record into the database.
         
@@ -54,8 +54,11 @@ class CompanyRepository:
             # Convert the CanonicalCompany model to database format
             db_data = self._model_to_db_format(company)
             
+            # Ensure async client is available
+            await self.supabase_client._ensure_client()
+            
             # Insert into database
-            result = self.client.table(self.table_name).insert(db_data).execute()
+            result = await self.supabase_client.client.table(self.table_name).insert(db_data).execute()
             
             if result.data:
                 logger.info(f"Created company record: {company.company_name} (ID: {result.data[0]['id']})")
@@ -67,7 +70,7 @@ class CompanyRepository:
             logger.error(f"Failed to create company {company.company_name}: {str(e)}")
             raise
     
-    def update(self, company_id: Union[str, uuid.UUID], company: CanonicalCompany) -> Dict[str, Any]:
+    async def update(self, company_id: Union[str, uuid.UUID], company: CanonicalCompany) -> Dict[str, Any]:
         """
         Update an existing company record.
         
@@ -85,8 +88,11 @@ class CompanyRepository:
             # Convert the CanonicalCompany model to database format
             db_data = self._model_to_db_format(company, is_update=True)
             
+            # Ensure async client is available
+            await self.supabase_client._ensure_client()
+            
             # Update in database
-            result = self.client.table(self.table_name).update(db_data).eq("id", str(company_id)).execute()
+            result = await self.supabase_client.client.table(self.table_name).update(db_data).eq("id", str(company_id)).execute()
             
             if result.data:
                 logger.info(f"Updated company record: {company.company_name} (ID: {company_id})")
@@ -129,7 +135,7 @@ class CompanyRepository:
             logger.error(f"Failed to upsert company {company.company_name}: {str(e)}")
             raise
     
-    def get_by_id(self, company_id: Union[str, uuid.UUID]) -> Optional[CanonicalCompany]:
+    async def get_by_id(self, company_id: Union[str, uuid.UUID]) -> Optional[CanonicalCompany]:
         """
         Get a company by its database ID.
         
@@ -140,7 +146,10 @@ class CompanyRepository:
             CanonicalCompany instance or None if not found
         """
         try:
-            result = self.client.table(self.table_name).select("*").eq("id", str(company_id)).execute()
+            # Ensure async client is available
+            await self.supabase_client._ensure_client()
+            
+            result = await self.supabase_client.client.table(self.table_name).select("*").eq("id", str(company_id)).execute()
             
             if result.data:
                 return self._db_to_model_format(result.data[0])
@@ -150,7 +159,7 @@ class CompanyRepository:
             logger.error(f"Failed to get company by ID {company_id}: {str(e)}")
             return None
     
-    def get_by_linkedin_id(self, linkedin_company_id: str) -> Optional[CanonicalCompany]:
+    async def get_by_linkedin_id(self, linkedin_company_id: str) -> Optional[CanonicalCompany]:
         """
         Get a company by its LinkedIn company ID.
         
@@ -161,7 +170,10 @@ class CompanyRepository:
             CanonicalCompany instance or None if not found
         """
         try:
-            result = self.client.table(self.table_name).select("*").eq("linkedin_company_id", linkedin_company_id).execute()
+            # Ensure async client is available
+            await self.supabase_client._ensure_client()
+            
+            result = await self.supabase_client.client.table(self.table_name).select("*").eq("linkedin_company_id", linkedin_company_id).execute()
             
             if result.data:
                 return self._db_to_model_format(result.data[0])
@@ -171,7 +183,7 @@ class CompanyRepository:
             logger.error(f"Failed to get company by LinkedIn ID {linkedin_company_id}: {str(e)}")
             return None
     
-    def search_by_name(self, name_query: str, limit: int = 20) -> List[CanonicalCompany]:
+    async def search_by_name(self, name_query: str, limit: int = 20) -> List[CanonicalCompany]:
         """
         Search companies by name.
         
@@ -183,7 +195,10 @@ class CompanyRepository:
             List of CanonicalCompany instances
         """
         try:
-            result = self.client.table(self.table_name).select("*").ilike(
+            # Ensure async client is available
+            await self.supabase_client._ensure_client()
+            
+            result = await self.supabase_client.client.table(self.table_name).select("*").ilike(
                 "company_name", f"%{name_query}%"
             ).limit(limit).execute()
             

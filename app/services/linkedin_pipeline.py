@@ -29,7 +29,6 @@ class LinkedInDataPipeline(LoggerMixin):
         
         # Initialize company service for enhanced profile ingestion
         if self.db_client:
-            # Note: CompanyRepository expects raw Supabase client, but we need to initialize it first
             # We'll initialize the company service lazily when needed
             self.company_service = None  # Will be initialized lazily
         else:
@@ -53,11 +52,8 @@ class LinkedInDataPipeline(LoggerMixin):
     async def _ensure_company_service(self):
         """Lazily initialize company service when needed"""
         if self.company_service is None and self.db_client:
-            # Ensure database client is initialized first
-            await self.db_client._ensure_client()
-            
-            # Create company repository with initialized client
-            company_repo = CompanyRepository(self.db_client.client)
+            # Create company repository with SupabaseClient instance
+            company_repo = CompanyRepository(self.db_client)
             self.company_service = CompanyService(company_repo)
     
     async def ingest_profile(
@@ -458,7 +454,7 @@ class LinkedInDataPipeline(LoggerMixin):
                         
                         if company_data_list:
                             # Use CompanyService to process companies (create/update with deduplication)
-                            processing_results = self.company_service.batch_process_companies(company_data_list)
+                            processing_results = await self.company_service.batch_process_companies(company_data_list)
                             
                             # Convert results for response
                             for process_result in processing_results:

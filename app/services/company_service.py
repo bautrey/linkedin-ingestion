@@ -36,7 +36,7 @@ class CompanyService:
         self.company_repo = company_repository
         self.similarity_threshold = 0.85  # Threshold for considering companies similar
 
-    def create_or_update_company(self, company: CanonicalCompany) -> Dict[str, Any]:
+    async def create_or_update_company(self, company: CanonicalCompany) -> Dict[str, Any]:
         """
         Create a new company or update an existing one.
         
@@ -58,19 +58,19 @@ class CompanyService:
             # Check if company already exists
             existing_company = None
             if company.company_id:
-                existing_company = self.company_repo.get_by_linkedin_id(company.company_id)
+                existing_company = await self.company_repo.get_by_linkedin_id(company.company_id)
             
             if existing_company:
                 # Merge new data with existing data
                 merged_company = self._merge_company_data(existing_company, company)
                 
                 # Update existing company
-                result = self.company_repo.update(existing_company.company_id, merged_company)
+                result = await self.company_repo.update(existing_company.company_id, merged_company)
                 logger.info(f"Updated company: {company.company_name} (LinkedIn ID: {company.company_id})")
                 return result
             else:
                 # Create new company
-                result = self.company_repo.create(company)
+                result = await self.company_repo.create(company)
                 logger.info(f"Created new company: {company.company_name}")
                 return result
                 
@@ -81,7 +81,7 @@ class CompanyService:
             logger.error(f"Failed to create/update company {company.company_name}: {str(e)}")
             raise
 
-    def find_company_by_url(self, linkedin_url: str) -> Optional[CanonicalCompany]:
+    async def find_company_by_url(self, linkedin_url: str) -> Optional[CanonicalCompany]:
         """
         Find a company by its LinkedIn URL.
         
@@ -99,14 +99,14 @@ class CompanyService:
                 return None
             
             # Search by LinkedIn company ID
-            company = self.company_repo.get_by_linkedin_id(company_id)
+            company = await self.company_repo.get_by_linkedin_id(company_id)
             return company
             
         except Exception as e:
             logger.error(f"Failed to find company by URL {linkedin_url}: {str(e)}")
             return None
 
-    def deduplicate_company(self, company: CanonicalCompany) -> Optional[CanonicalCompany]:
+    async def deduplicate_company(self, company: CanonicalCompany) -> Optional[CanonicalCompany]:
         """
         Find existing company that matches the given company data.
         
@@ -121,13 +121,13 @@ class CompanyService:
         try:
             # First try LinkedIn ID matching (most reliable)
             if company.company_id:
-                existing = self.company_repo.get_by_linkedin_id(company.company_id)
+                existing = await self.company_repo.get_by_linkedin_id(company.company_id)
                 if existing:
                     logger.info(f"Found existing company by LinkedIn ID: {company.company_name}")
                     return existing
             
             # Try name similarity matching
-            similar_companies = self.company_repo.search_by_name(company.company_name)
+            similar_companies = await self.company_repo.search_by_name(company.company_name)
             if similar_companies:
                 # Find the most similar company
                 best_match = None
@@ -155,7 +155,7 @@ class CompanyService:
             logger.error(f"Error during company deduplication for {company.company_name}: {str(e)}")
             return None
 
-    def batch_process_companies(self, companies: List[CanonicalCompany]) -> List[Dict[str, Any]]:
+    async def batch_process_companies(self, companies: List[CanonicalCompany]) -> List[Dict[str, Any]]:
         """
         Process multiple companies efficiently with error resilience.
         
@@ -172,12 +172,12 @@ class CompanyService:
         for i, company in enumerate(companies):
             try:
                 # Check for duplicates
-                existing = self.deduplicate_company(company)
+                existing = await self.deduplicate_company(company)
                 
                 if existing:
                     # Update existing company with new data
                     merged = self._merge_company_data(existing, company)
-                    result = self.company_repo.update(existing.company_id, merged)
+                    result = await self.company_repo.update(existing.company_id, merged)
                     
                     results.append({
                         "success": True,
@@ -188,7 +188,7 @@ class CompanyService:
                     })
                 else:
                     # Create new company
-                    result = self.company_repo.create(company)
+                    result = await self.company_repo.create(company)
                     
                     results.append({
                         "success": True,
