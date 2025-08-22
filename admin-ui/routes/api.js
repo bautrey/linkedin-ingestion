@@ -222,7 +222,80 @@ router.post('/templates/:id/test', async (req, res) => {
     }
 });
 
-// POST /api/ingestion - Start LinkedIn profile ingestion
+// POST /api/profiles - Add a new LinkedIn profile
+router.post('/profiles', async (req, res) => {
+    try {
+        const { linkedin_url, suggested_role, include_companies } = req.body;
+        
+        if (!linkedin_url) {
+            return res.status(400).json({
+                success: false,
+                message: 'LinkedIn URL is required'
+            });
+        }
+        
+        if (!suggested_role) {
+            return res.status(400).json({
+                success: false,
+                message: 'Suggested role is required'
+            });
+        }
+        
+        // Prepare the profile creation request
+        const profileData = {
+            linkedin_url,
+            suggested_role,
+            include_companies: include_companies || false
+        };
+        
+        // Call the backend API
+        const response = await apiClient.post('/profiles', profileData);
+        
+        // Emit real-time update if socket is available
+        if (req.io) {
+            req.io.emit('profile-added', {
+                profile_id: response.data.id,
+                name: response.data.name,
+                url: response.data.url,
+                timestamp: new Date().toISOString()
+            });
+        }
+        
+        res.status(201).json({
+            success: true,
+            message: 'Profile added successfully',
+            data: response.data
+        });
+    } catch (error) {
+        logger.error('Error adding profile:', error);
+        
+        // Handle different error types
+        let statusCode = 500;
+        let message = 'Failed to add profile';
+        
+        if (error.response) {
+            statusCode = error.response.status;
+            if (error.response.data && error.response.data.message) {
+                message = error.response.data.message;
+            } else if (error.response.data && error.response.data.detail) {
+                // Handle FastAPI error format
+                if (typeof error.response.data.detail === 'string') {
+                    message = error.response.data.detail;
+                } else if (error.response.data.detail.message) {
+                    message = error.response.data.detail.message;
+                }
+            }
+        }
+        
+        res.status(statusCode).json({
+            success: false,
+            message: message,
+            error: error.message
+        });
+    }
+});
+
+// POST /api/ingestion - Start ingestion job
 router.post('/ingestion', async (req, res) => {
     try {
         const { urls } = req.body;

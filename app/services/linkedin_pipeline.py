@@ -439,39 +439,94 @@ class LinkedInDataPipeline(LoggerMixin):
             profile = await self.cassidy_client.fetch_profile(linkedin_url)
             result["profile"] = profile.dict()
             
-            # Step 2: Extract and process company data
+            # Step 2: Fetch company data from Cassidy API and process
             companies_processed = []
             try:
-                if self.db_client:
+                if self.db_client and settings.ENABLE_COMPANY_INGESTION:
                     # Ensure company service is initialized
                     await self._ensure_company_service()
                     
                     if self.company_service:
-                        self.logger.info("Processing company data from profile", pipeline_id=pipeline_id)
+                        self.logger.info("Fetching company data from Cassidy API", pipeline_id=pipeline_id)
                         
-                        # Extract company data from profile
-                        company_data_list = self._extract_company_data_from_profile(profile)
+                        # Extract company URLs from profile experience
+                        company_urls = self._extract_company_urls(profile)
                         
-                        if company_data_list:
-                            # Use CompanyService to process companies (create/update with deduplication)
-                            processing_results = await self.company_service.batch_process_companies(company_data_list)
-                            
-                            # Convert results for response
-                            for process_result in processing_results:
-                                if process_result["success"]:
-                                    companies_processed.append({
-                                        "company_id": process_result["company_id"],
-                                        "company_name": process_result["company_name"],
-                                        "action": process_result["action"]  # created/updated
-                                    })
-                            
+                        if company_urls:
                             self.logger.info(
-                                "Company processing completed",
+                                "Found company URLs to fetch",
                                 pipeline_id=pipeline_id,
-                                companies_processed=len(companies_processed)
+                                company_count=len(company_urls),
+                                company_urls=company_urls[:3]  # Log first 3 for debugging
                             )
+                            
+                            # Fetch detailed company data from Cassidy API
+                            cassidy_companies = await self._fetch_companies(company_urls)
+                            
+                            if cassidy_companies:
+                                self.logger.info(
+                                    "Successfully fetched companies from Cassidy API",
+                                    pipeline_id=pipeline_id,
+                                    companies_fetched=len(cassidy_companies)
+                                )
+                                
+                                # Convert Cassidy CompanyProfile objects to CanonicalCompany for database storage
+                                canonical_companies = []
+                                for cassidy_company in cassidy_companies:
+                                    try:
+                                        # Convert CompanyProfile to CanonicalCompany format
+                                        canonical_data = {
+                                            "company_name": cassidy_company.company_name,
+                                            "company_id": cassidy_company.company_id,
+                                            "linkedin_url": cassidy_company.linkedin_url,
+                                            "description": cassidy_company.description,
+                                            "website": cassidy_company.website,
+                                            "domain": cassidy_company.domain,
+                                            "employee_count": cassidy_company.employee_count,
+                                            "employee_range": cassidy_company.employee_range,
+                                            "year_founded": cassidy_company.year_founded,
+                                            "industries": cassidy_company.industries or [],
+                                            "hq_city": cassidy_company.hq_city,
+                                            "hq_region": cassidy_company.hq_region,
+                                            "hq_country": cassidy_company.hq_country,
+                                            "logo_url": cassidy_company.logo_url,
+                                        }
+                                        
+                                        # Filter out None values and create CanonicalCompany
+                                        filtered_data = {k: v for k, v in canonical_data.items() if v is not None}
+                                        canonical_company = CanonicalCompany(**filtered_data)
+                                        canonical_companies.append(canonical_company)
+                                    except Exception as e:
+                                        self.logger.warning(
+                                            "Failed to convert Cassidy company to canonical format",
+                                            pipeline_id=pipeline_id,
+                                            company_name=getattr(cassidy_company, 'company_name', 'Unknown'),
+                                            error=str(e)
+                                        )
+                                        continue
+                                
+                                # Use CompanyService to process companies (create/update with deduplication)
+                                if canonical_companies:
+                                    processing_results = await self.company_service.batch_process_companies(canonical_companies)
+                                    
+                                    # Convert results for response
+                                    for process_result in processing_results:
+                                        if process_result["success"]:
+                                            companies_processed.append({
+                                                "company_id": process_result["company_id"],
+                                                "company_name": process_result["company_name"],
+                                                "action": process_result["action"]  # created/updated
+                                            })
+                                    
+                                    self.logger.info(
+                                        "Company processing completed with Cassidy data",
+                                        pipeline_id=pipeline_id,
+                                        companies_processed=len(companies_processed)
+                                    )
+                            else:
+                                self.logger.warning("No companies fetched from Cassidy API", pipeline_id=pipeline_id)
                         else:
-                            self.logger.info("No company data found in profile", pipeline_id=pipeline_id)
+                            self.logger.info("No company URLs found in profile", pipeline_id=pipeline_id)
                             
             except Exception as e:
                 error_msg = f"Company processing failed: {str(e)}"

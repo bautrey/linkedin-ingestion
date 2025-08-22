@@ -7,14 +7,13 @@ const router = express.Router();
 // GET /ingestion - Show ingestion dashboard
 router.get('/', async (req, res) => {
     try {
-        // Get recent ingestion jobs
-        const jobsResponse = await apiClient.get('/jobs', { 
-            params: { limit: 20, type: 'ingestion' } 
-        }).catch(() => ({ data: { jobs: [] } }));
+        // For now, just show the dashboard without jobs data
+        // In the future, this would fetch real ingestion job data
+        const jobs = [];
         
         res.render('ingestion/dashboard', {
             title: 'LinkedIn Ingestion',
-            jobs: jobsResponse.data.jobs || []
+            jobs: jobs
         });
     } catch (error) {
         logger.error('Error loading ingestion dashboard:', error);
