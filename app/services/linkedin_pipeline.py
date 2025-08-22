@@ -606,6 +606,45 @@ class LinkedInDataPipeline(LoggerMixin):
         
         return processed_results
     
+    def _extract_company_id_from_linkedin_url(self, linkedin_url: str) -> Optional[str]:
+        """
+        Extract company ID from LinkedIn company URL.
+        
+        Args:
+            linkedin_url: LinkedIn company URL (e.g., "https://www.linkedin.com/company/5116524")
+            
+        Returns:
+            Company ID string or None if not found
+        """
+        if not linkedin_url:
+            return None
+            
+        try:
+            # Handle different LinkedIn URL formats:
+            # https://www.linkedin.com/company/5116524
+            # https://www.linkedin.com/company/fortium-partners
+            # https://linkedin.com/company/5116524/
+            import re
+            
+            # Extract the part after /company/
+            match = re.search(r'/company/([^/?]+)', linkedin_url)
+            if match:
+                company_identifier = match.group(1)
+                
+                # If it's numeric, return it directly (this is the company ID)
+                if company_identifier.isdigit():
+                    return company_identifier
+                else:
+                    # If it's a company name/slug, we can't convert it to ID without API call
+                    # For now, return the slug - this may need enhancement later
+                    return company_identifier
+            
+            return None
+            
+        except Exception as e:
+            self.logger.warning(f"Failed to extract company ID from URL {linkedin_url}: {str(e)}")
+            return None
+
     def _extract_company_data_from_profile(self, profile: LinkedInProfile) -> List[CanonicalCompany]:
         """
         Extract company data from LinkedIn profile and convert to CanonicalCompany models.
@@ -634,6 +673,10 @@ class LinkedInDataPipeline(LoggerMixin):
                 "year_founded": int(profile.company_year_founded) if profile.company_year_founded and profile.company_year_founded.isdigit() else None
             }
             
+            # Extract company ID from LinkedIn URL
+            if company_data["linkedin_url"]:
+                company_data["company_id"] = self._extract_company_id_from_linkedin_url(company_data["linkedin_url"])
+            
             # Only add if we have a LinkedIn URL (required for deduplication)
             if company_data["linkedin_url"]:
                 try:
@@ -655,6 +698,9 @@ class LinkedInDataPipeline(LoggerMixin):
                         "linkedin_url": exp.company_linkedin_url,
                         "logo_url": getattr(exp, 'company_logo_url', None)
                     }
+                    
+                    # Extract company ID from LinkedIn URL
+                    exp_company_data["company_id"] = self._extract_company_id_from_linkedin_url(exp.company_linkedin_url)
                     
                     try:
                         canonical_company = CanonicalCompany(**{k: v for k, v in exp_company_data.items() if v is not None})
