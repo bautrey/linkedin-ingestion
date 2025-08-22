@@ -779,3 +779,19 @@ Session File: ./sessions/linkedin-ingestion-session-20250822-055641.md
 
 ---
 
+## Session 2025-08-22 17:10:37
+
+Session File: ./sessions/linkedin-ingestion-session-2025-08-22-171037.md
+
+**Status**: 🔴 **CRITICAL ISSUE IDENTIFIED** - Cassidy Company Workflow Integration Broken
+**Key Discovery**: Company workflow hasn't been called since 6:24 AM (6+ hours gap)
+**Actions Taken**: 
+- Added domain extraction helpers to linkedin_pipeline.py
+- Established production API access and testing capability
+- Identified root cause of "Domain: <empty>" errors
+- Committed fixes and documented critical issue
+
+**Next Priority**: Fix broken Cassidy company workflow integration
+
+---
+

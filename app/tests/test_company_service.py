@@ -57,21 +57,23 @@ class TestCompanyService:
 
     # Test 3.1: CompanyService creation, deduplication, and relationship management
     
-    def test_create_or_update_company_creates_new_company(self, company_service, mock_company_repo, canonical_company):
+    @pytest.mark.asyncio
+    async def test_create_or_update_company_creates_new_company(self, company_service, mock_company_repo, canonical_company):
         """Test creating a new company when it doesn't exist."""
         # Setup
         mock_company_repo.get_by_linkedin_id.return_value = None
         mock_company_repo.create.return_value = {"id": str(uuid.uuid4()), "company_name": "Test Corporation"}
         
         # Execute
-        result = company_service.create_or_update_company(canonical_company)
+        result = await company_service.create_or_update_company(canonical_company)
         
         # Verify
         mock_company_repo.get_by_linkedin_id.assert_called_once_with("123456")
         mock_company_repo.create.assert_called_once_with(canonical_company)
         assert result["company_name"] == "Test Corporation"
     
-    def test_create_or_update_company_updates_existing_company(self, company_service, mock_company_repo, canonical_company):
+    @pytest.mark.asyncio
+    async def test_create_or_update_company_updates_existing_company(self, company_service, mock_company_repo, canonical_company):
         """Test updating an existing company."""
         # Setup
         existing_company = {"id": str(uuid.uuid4()), "linkedin_company_id": "123456"}
@@ -79,26 +81,28 @@ class TestCompanyService:
         mock_company_repo.update.return_value = existing_company
         
         # Execute  
-        result = company_service.create_or_update_company(canonical_company)
+        result = await company_service.create_or_update_company(canonical_company)
         
         # Verify
         mock_company_repo.get_by_linkedin_id.assert_called_once_with("123456")
         mock_company_repo.update.assert_called_once()
         assert result == existing_company
 
-    def test_find_company_by_url_success(self, company_service, mock_company_repo, canonical_company):
+    @pytest.mark.asyncio
+    async def test_find_company_by_url_success(self, company_service, mock_company_repo, canonical_company):
         """Test finding company by LinkedIn URL."""
         # Setup
         mock_company_repo.get_by_linkedin_id.return_value = canonical_company
         
         # Execute
-        result = company_service.find_company_by_url("https://linkedin.com/company/test-corp")
+        result = await company_service.find_company_by_url("https://linkedin.com/company/test-corp")
         
         # Verify
         mock_company_repo.get_by_linkedin_id.assert_called_once()
         assert result == canonical_company
 
-    def test_find_company_by_url_normalizes_url(self, company_service, mock_company_repo):
+    @pytest.mark.asyncio
+    async def test_find_company_by_url_normalizes_url(self, company_service, mock_company_repo):
         """Test that URL is normalized before lookup."""
         # Setup
         mock_company_repo.get_by_linkedin_id.return_value = None
@@ -111,26 +115,28 @@ class TestCompanyService:
         ]
         
         for url in test_urls:
-            company_service.find_company_by_url(url)
+            await company_service.find_company_by_url(url)
         
         # Verify that all URLs are normalized to extract company ID
         assert mock_company_repo.get_by_linkedin_id.call_count == len(test_urls)
 
     # Test 3.3 & 3.4: Company deduplication logic with URL matching
 
-    def test_deduplicate_companies_by_linkedin_url(self, company_service, mock_company_repo, canonical_company):
+    @pytest.mark.asyncio
+    async def test_deduplicate_companies_by_linkedin_url(self, company_service, mock_company_repo, canonical_company):
         """Test deduplication finds existing company by LinkedIn URL."""
         # Setup
         mock_company_repo.get_by_linkedin_id.return_value = canonical_company
         
         # Execute
-        result = company_service.deduplicate_company(canonical_company)
+        result = await company_service.deduplicate_company(canonical_company)
         
         # Verify
         assert result == canonical_company
         mock_company_repo.get_by_linkedin_id.assert_called_once()
 
-    def test_deduplicate_companies_by_name_similarity(self, company_service, mock_company_repo, sample_company_data):
+    @pytest.mark.asyncio
+    async def test_deduplicate_companies_by_name_similarity(self, company_service, mock_company_repo, sample_company_data):
         """Test deduplication with name similarity matching."""
         # Setup
         canonical_company = CanonicalCompany(**sample_company_data)
@@ -143,27 +149,29 @@ class TestCompanyService:
         mock_company_repo.search_by_name.return_value = similar_companies
         
         # Execute
-        result = company_service.deduplicate_company(canonical_company)
+        result = await company_service.deduplicate_company(canonical_company)
         
         # Verify - should return the most similar company
         assert result == similar_companies[0]  # "Test Corp" is more similar to "Test Corporation"
         mock_company_repo.search_by_name.assert_called_once()
 
-    def test_deduplicate_companies_no_matches(self, company_service, mock_company_repo, canonical_company):
+    @pytest.mark.asyncio
+    async def test_deduplicate_companies_no_matches(self, company_service, mock_company_repo, canonical_company):
         """Test deduplication when no similar companies exist."""
         # Setup
         mock_company_repo.get_by_linkedin_id.return_value = None
         mock_company_repo.search_by_name.return_value = []
         
         # Execute
-        result = company_service.deduplicate_company(canonical_company)
+        result = await company_service.deduplicate_company(canonical_company)
         
         # Verify
         assert result is None
 
     # Test 3.5 & 3.6: Batch company processing with error resilience
 
-    def test_batch_process_companies_success(self, company_service, mock_company_repo, sample_company_data):
+    @pytest.mark.asyncio
+    async def test_batch_process_companies_success(self, company_service, mock_company_repo, sample_company_data):
         """Test successful batch processing of multiple companies."""
         # Setup
         companies = [
@@ -177,14 +185,15 @@ class TestCompanyService:
         ]
         
         # Execute
-        results = company_service.batch_process_companies(companies)
+        results = await company_service.batch_process_companies(companies)
         
         # Verify
         assert len(results) == 3
         assert all(result["success"] for result in results)
         assert mock_company_repo.create.call_count == 3
 
-    def test_batch_process_companies_handles_errors(self, company_service, mock_company_repo, sample_company_data):
+    @pytest.mark.asyncio
+    async def test_batch_process_companies_handles_errors(self, company_service, mock_company_repo, sample_company_data):
         """Test batch processing with some failures."""
         # Setup
         companies = [
@@ -200,7 +209,7 @@ class TestCompanyService:
         ]
         
         # Execute
-        results = company_service.batch_process_companies(companies)
+        results = await company_service.batch_process_companies(companies)
         
         # Verify
         assert len(results) == 3
@@ -275,7 +284,8 @@ class TestCompanyService:
                 employee_count=-1  # Invalid - negative count
             )
 
-    def test_create_or_update_company_handles_database_error(self, company_service, mock_company_repo, canonical_company):
+    @pytest.mark.asyncio
+    async def test_create_or_update_company_handles_database_error(self, company_service, mock_company_repo, canonical_company):
         """Test handling of database errors during company operations."""
         # Setup
         mock_company_repo.get_by_linkedin_id.return_value = None
@@ -283,9 +293,10 @@ class TestCompanyService:
         
         # Execute & Verify
         with pytest.raises(Exception, match="Database connection failed"):
-            company_service.create_or_update_company(canonical_company)
+            await company_service.create_or_update_company(canonical_company)
 
-    def test_batch_process_companies_transaction_rollback(self, company_service, mock_company_repo, sample_company_data):
+    @pytest.mark.asyncio
+    async def test_batch_process_companies_transaction_rollback(self, company_service, mock_company_repo, sample_company_data):
         """Test that batch processing handles transaction failures gracefully."""
         # Setup
         companies = [CanonicalCompany(**sample_company_data) for _ in range(2)]
@@ -293,7 +304,7 @@ class TestCompanyService:
         mock_company_repo.create.side_effect = Exception("Transaction failed")
         
         # Execute
-        results = company_service.batch_process_companies(companies)
+        results = await company_service.batch_process_companies(companies)
         
         # Verify - all should fail but not crash
         assert len(results) == 2

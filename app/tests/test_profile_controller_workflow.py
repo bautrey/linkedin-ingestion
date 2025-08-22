@@ -27,6 +27,8 @@ class TestProfileControllerWorkflowIntegration:
         db_client.get_profile_by_url = AsyncMock()
         db_client.get_profile_by_id = AsyncMock()
         db_client.store_profile = AsyncMock()
+        db_client.update_profile_suggested_role = AsyncMock(return_value=True)
+        db_client.delete_profile = AsyncMock(return_value=True)
         return db_client
     
     @pytest.fixture
@@ -118,8 +120,8 @@ class TestProfileControllerWorkflowIntegration:
         mock_linkedin_workflow.process_profile.assert_called_once()
         workflow_call_args = mock_linkedin_workflow.process_profile.call_args[0][0]
         assert isinstance(workflow_call_args, ProfileIngestionRequest)
-        # The workflow receives the original URL, not normalized (this is the actual behavior)
-        assert str(workflow_call_args.linkedin_url) == "https://linkedin.com/in/testuser"
+        # The workflow receives the normalized URL
+        assert str(workflow_call_args.linkedin_url) == "https://www.linkedin.com/in/testuser/"
         assert workflow_call_args.include_companies is True  # Default should be True
         
         # Verify direct Cassidy client was NOT called

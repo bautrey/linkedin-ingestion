@@ -9,7 +9,7 @@ This test suite covers database operations for the CanonicalCompany model includ
 """
 
 import pytest
-from unittest.mock import Mock, MagicMock, patch, ANY
+from unittest.mock import Mock, MagicMock, patch, ANY, AsyncMock
 from datetime import datetime, timezone
 import uuid
 
@@ -22,10 +22,13 @@ from app.models.canonical.company import CanonicalCompany, CanonicalFundingInfo,
 @pytest.fixture
 def mock_supabase_client():
     """Mock Supabase client for testing."""
+    wrapper = Mock()
     client = Mock()
     client.table = Mock()
     client.rpc = Mock()
-    return client
+    wrapper.client = client
+    wrapper._ensure_client = AsyncMock(return_value=None)
+    return wrapper
 
 @pytest.fixture  
 def company_repository(mock_supabase_client):
@@ -86,53 +89,63 @@ def sample_db_row():
 def test_repository_initialization(mock_supabase_client):
     """Test CompanyRepository initialization."""
     repo = CompanyRepository(mock_supabase_client)
-    assert repo.client == mock_supabase_client
+    assert repo.client == mock_supabase_client.client
+    assert repo.supabase_client == mock_supabase_client
     assert repo.table_name == "companies"
 
 
 # --- CRUD Operation Tests ---
 
-def test_create_company_success(company_repository, sample_company):
+@pytest.mark.asyncio
+async def test_create_company_success(company_repository, sample_company):
     """Test successful company creation."""
     # Mock successful database response
     mock_result = Mock()
     mock_result.data = [{"id": str(uuid.uuid4()), "company_name": "Test Company Inc"}]
     
-    company_repository.client.table.return_value.insert.return_value.execute.return_value = mock_result
+    # Set up async chain - make execute() return a coroutine
+    execute_mock = AsyncMock(return_value=mock_result)
+    company_repository.supabase_client.client.table.return_value.insert.return_value.execute = execute_mock
     
     # Test creation
-    result = company_repository.create(sample_company)
+    result = await company_repository.create(sample_company)
     
     # Verify result
     assert result["company_name"] == "Test Company Inc"
     
     # Verify database calls
-    company_repository.client.table.assert_called_with("companies")
-    company_repository.client.table.return_value.insert.assert_called_once()
+    company_repository.supabase_client.client.table.assert_called_with("companies")
+    company_repository.supabase_client.client.table.return_value.insert.assert_called_once()
 
-def test_create_company_failure(company_repository, sample_company):
+@pytest.mark.asyncio
+async def test_create_company_failure(company_repository, sample_company):
     """Test company creation failure."""
     # Mock failed database response
     mock_result = Mock()
     mock_result.data = None
     
-    company_repository.client.table.return_value.insert.return_value.execute.return_value = mock_result
+    # Set up async execute mock that returns the failed result
+    execute_mock = AsyncMock(return_value=mock_result)
+    company_repository.supabase_client.client.table.return_value.insert.return_value.execute = execute_mock
     
     # Test creation failure
     with pytest.raises(Exception, match="Failed to create company record"):
-        company_repository.create(sample_company)
+        await company_repository.create(sample_company)
 
-def test_get_by_id_success(company_repository, sample_db_row):
+@pytest.mark.asyncio
+async def test_get_by_id_success(company_repository, sample_db_row):
     """Test successful get by ID."""
     # Mock successful database response
     mock_result = Mock()
     mock_result.data = [sample_db_row]
     
-    company_repository.client.table.return_value.select.return_value.eq.return_value.execute.return_value = mock_result
+    # Set up async execute mock
+    execute_mock = AsyncMock(return_value=mock_result)
+    company_repository.client.table.return_value.select.return_value.eq.return_value.execute = execute_mock
     
     # Test get by ID
     company_id = sample_db_row["id"]
-    result = company_repository.get_by_id(company_id)
+    result = await company_repository.get_by_id(company_id)
     
     # Verify result
     assert result is not None
@@ -143,47 +156,56 @@ def test_get_by_id_success(company_repository, sample_db_row):
     company_repository.client.table.return_value.select.assert_called_with("*")
     company_repository.client.table.return_value.select.return_value.eq.assert_called_with("id", company_id)
 
-def test_get_by_id_not_found(company_repository):
+@pytest.mark.asyncio
+async def test_get_by_id_not_found(company_repository):
     """Test get by ID when record not found."""
     # Mock empty database response
     mock_result = Mock()
     mock_result.data = []
     
-    company_repository.client.table.return_value.select.return_value.eq.return_value.execute.return_value = mock_result
+    # Set up async execute mock
+    execute_mock = AsyncMock(return_value=mock_result)
+    company_repository.client.table.return_value.select.return_value.eq.return_value.execute = execute_mock
     
     # Test get by ID
-    result = company_repository.get_by_id("nonexistent-id")
+    result = await company_repository.get_by_id("nonexistent-id")
     
     # Verify result
     assert result is None
 
-def test_get_by_linkedin_id_success(company_repository, sample_db_row):
+@pytest.mark.asyncio
+async def test_get_by_linkedin_id_success(company_repository, sample_db_row):
     """Test successful get by LinkedIn ID."""
     # Mock successful database response
     mock_result = Mock()
     mock_result.data = [sample_db_row]
     
-    company_repository.client.table.return_value.select.return_value.eq.return_value.execute.return_value = mock_result
+    # Set up async execute mock
+    execute_mock = AsyncMock(return_value=mock_result)
+    company_repository.client.table.return_value.select.return_value.eq.return_value.execute = execute_mock
     
     # Test get by LinkedIn ID
-    result = company_repository.get_by_linkedin_id("123456")
+    result = await company_repository.get_by_linkedin_id("123456")
     
     # Verify result
     assert result is not None
     assert isinstance(result, CanonicalCompany)
     assert result.company_id == "123456"
 
-def test_update_company_success(company_repository, sample_company):
+@pytest.mark.asyncio
+async def test_update_company_success(company_repository, sample_company):
     """Test successful company update."""
     # Mock successful database response
     mock_result = Mock()
     mock_result.data = [{"id": str(uuid.uuid4()), "company_name": "Test Company Inc"}]
     
-    company_repository.client.table.return_value.update.return_value.eq.return_value.execute.return_value = mock_result
+    # Set up async execute mock
+    execute_mock = AsyncMock(return_value=mock_result)
+    company_repository.client.table.return_value.update.return_value.eq.return_value.execute = execute_mock
     
     # Test update
     company_id = str(uuid.uuid4())
-    result = company_repository.update(company_id, sample_company)
+    result = await company_repository.update(company_id, sample_company)
     
     # Verify result
     assert result["company_name"] == "Test Company Inc"
@@ -231,16 +253,19 @@ def test_delete_company_success(company_repository):
 
 # --- Search and Query Tests ---
 
-def test_search_by_name_success(company_repository, sample_db_row):
+@pytest.mark.asyncio
+async def test_search_by_name_success(company_repository, sample_db_row):
     """Test successful search by name."""
     # Mock successful database response
     mock_result = Mock()
     mock_result.data = [sample_db_row]
     
-    company_repository.client.table.return_value.select.return_value.ilike.return_value.limit.return_value.execute.return_value = mock_result
+    # Set up async execute mock
+    execute_mock = AsyncMock(return_value=mock_result)
+    company_repository.client.table.return_value.select.return_value.ilike.return_value.limit.return_value.execute = execute_mock
     
     # Test search
-    results = company_repository.search_by_name("Test Company")
+    results = await company_repository.search_by_name("Test Company")
     
     # Verify results
     assert len(results) == 1
@@ -512,13 +537,14 @@ def test_create_company_database_error(company_repository, sample_company):
     with pytest.raises(Exception, match="Database error"):
         company_repository.create(sample_company)
 
-def test_search_by_name_database_error(company_repository):
+@pytest.mark.asyncio
+async def test_search_by_name_database_error(company_repository):
     """Test handling of database errors during search."""
     # Mock database error
     company_repository.client.table.return_value.select.return_value.ilike.return_value.limit.return_value.execute.side_effect = Exception("Database error")
     
     # Test error handling (should return empty list)
-    results = company_repository.search_by_name("Test")
+    results = await company_repository.search_by_name("Test")
     assert results == []
 
 def test_vector_similarity_search_database_error(company_repository):
@@ -533,7 +559,8 @@ def test_vector_similarity_search_database_error(company_repository):
 
 # --- Edge Cases and Boundary Tests ---
 
-def test_empty_search_results(company_repository):
+@pytest.mark.asyncio
+async def test_empty_search_results(company_repository):
     """Test handling of empty search results."""
     # Mock empty database response
     mock_result = Mock()
@@ -542,7 +569,7 @@ def test_empty_search_results(company_repository):
     company_repository.client.table.return_value.select.return_value.ilike.return_value.limit.return_value.execute.return_value = mock_result
     
     # Test empty results
-    results = company_repository.search_by_name("NonexistentCompany")
+    results = await company_repository.search_by_name("NonexistentCompany")
     assert results == []
 
 def test_model_with_minimal_data():

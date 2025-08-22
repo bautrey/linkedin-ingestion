@@ -27,7 +27,7 @@ class LinkedInDataPipeline(LoggerMixin):
         self.db_client = SupabaseClient() if self._has_db_config() else None
         self.embedding_service = EmbeddingService() if self._has_openai_config() else None
         
-        # Initialize company service for enhanced profile ingestion
+        # Initialize company service for profile ingestion with company processing
         if self.db_client:
             # We'll initialize the company service lazily when needed
             self.company_service = None  # Will be initialized lazily
@@ -63,7 +63,7 @@ class LinkedInDataPipeline(LoggerMixin):
         generate_embeddings: bool = True
     ) -> Dict[str, Any]:
         """
-        Complete profile ingestion pipeline
+        Complete unified profile ingestion pipeline with company processing
         
         Args:
             linkedin_url: LinkedIn profile URL
@@ -71,7 +71,7 @@ class LinkedInDataPipeline(LoggerMixin):
             generate_embeddings: Whether to generate vector embeddings
             
         Returns:
-            Pipeline result with profile data and metadata
+            Pipeline result with profile data and processed company information
         """
         pipeline_id = str(uuid.uuid4())
         start_time = datetime.utcnow()
@@ -102,13 +102,106 @@ class LinkedInDataPipeline(LoggerMixin):
             profile = await self.cassidy_client.fetch_profile(linkedin_url)
             result["profile"] = profile.dict()
             
-            # Step 2: Fetch related company data
-            companies = []
-            if settings.ENABLE_COMPANY_INGESTION and profile.experience:
-                self.logger.info("Fetching company data", pipeline_id=pipeline_id)
-                company_urls = self._extract_company_urls(profile)
-                companies = await self._fetch_companies(company_urls)
-                result["companies"] = [c.dict() for c in companies]
+            # Step 2: Process company data using CompanyService
+            companies_processed = []
+            try:
+                if self.db_client and settings.ENABLE_COMPANY_INGESTION:
+                    # Ensure company service is initialized
+                    await self._ensure_company_service()
+                    
+                    if self.company_service:
+                        self.logger.info("Fetching company data", pipeline_id=pipeline_id)
+                        
+                        # Extract company URLs from profile experience
+                        company_urls = self._extract_company_urls(profile)
+                        
+                        if company_urls:
+                            self.logger.info(
+                                "Found company URLs to fetch",
+                                pipeline_id=pipeline_id,
+                                company_count=len(company_urls),
+                                company_urls=company_urls[:3]  # Log first 3 for debugging
+                            )
+                            
+                            # Fetch detailed company data from Cassidy API
+                            cassidy_companies = await self._fetch_companies(company_urls)
+                            
+                            if cassidy_companies:
+                                self.logger.info(
+                                    "Successfully fetched companies from Cassidy API",
+                                    pipeline_id=pipeline_id,
+                                    companies_fetched=len(cassidy_companies)
+                                )
+                                
+                                # Convert Cassidy CompanyProfile objects to CanonicalCompany for database storage
+                                canonical_companies = []
+                                for cassidy_company in cassidy_companies:
+                                    try:
+                                        # Convert CompanyProfile to CanonicalCompany format
+                                        canonical_data = {
+                                            "company_name": cassidy_company.company_name,
+                                            "company_id": cassidy_company.company_id,
+                                            "linkedin_url": cassidy_company.linkedin_url,
+                                            "description": cassidy_company.description,
+                                            "website": cassidy_company.website,
+                                            "domain": cassidy_company.domain,
+                                            "employee_count": cassidy_company.employee_count,
+                                            "employee_range": cassidy_company.employee_range,
+                                            "year_founded": cassidy_company.year_founded,
+                                            "industries": cassidy_company.industries or [],
+                                            "hq_city": cassidy_company.hq_city,
+                                            "hq_region": cassidy_company.hq_region,
+                                            "hq_country": cassidy_company.hq_country,
+                                            "logo_url": cassidy_company.logo_url,
+                                        }
+                                        
+                                        # Filter out None values and create CanonicalCompany
+                                        filtered_data = {k: v for k, v in canonical_data.items() if v is not None}
+                                        canonical_company = CanonicalCompany(**filtered_data)
+                                        canonical_companies.append(canonical_company)
+                                    except Exception as e:
+                                        self.logger.warning(
+                                            "Failed to convert Cassidy company to canonical format",
+                                            pipeline_id=pipeline_id,
+                                            company_name=getattr(cassidy_company, 'company_name', 'Unknown'),
+                                            error=str(e)
+                                        )
+                                        continue
+                                
+                                # Use CompanyService to process companies (create/update with deduplication)
+                                if canonical_companies:
+                                    processing_results = await self.company_service.batch_process_companies(canonical_companies)
+                                    
+                                    # Convert results for response
+                                    for process_result in processing_results:
+                                        if process_result["success"]:
+                                            companies_processed.append({
+                                                "company_id": process_result["company_id"],
+                                                "company_name": process_result["company_name"],
+                                                "action": process_result["action"]  # created/updated
+                                            })
+                                    
+                                    self.logger.info(
+                                        "Company processing completed",
+                                        pipeline_id=pipeline_id,
+                                        companies_processed=len(companies_processed)
+                                    )
+                            else:
+                                self.logger.warning("No companies fetched from Cassidy API", pipeline_id=pipeline_id)
+                        else:
+                            self.logger.info("No company URLs found in profile", pipeline_id=pipeline_id)
+                            
+            except Exception as e:
+                error_msg = f"Company processing failed: {str(e)}"
+                self.logger.warning(error_msg, pipeline_id=pipeline_id)
+                result["errors"].append({
+                    "error": error_msg,
+                    "error_type": type(e).__name__,
+                    "timestamp": datetime.utcnow().isoformat()
+                })
+                # Continue with profile processing even if company processing fails
+            
+            result["companies"] = companies_processed
             
             # Step 3: Generate embeddings if enabled
             if generate_embeddings and self.embedding_service:
@@ -117,19 +210,10 @@ class LinkedInDataPipeline(LoggerMixin):
                 # Profile embedding
                 profile_embedding = await self.embedding_service.embed_profile(profile)
                 result["embeddings"]["profile"] = len(profile_embedding)  # Store dimension, not actual values
-                
-                # Company embeddings
-                company_embeddings = []
-                for company in companies:
-                    embedding = await self.embedding_service.embed_company(company)
-                    company_embeddings.append(embedding)
-                
-                result["embeddings"]["companies"] = len(company_embeddings)
             else:
                 profile_embedding = None
-                company_embeddings = []
             
-            # Step 4: Store in database if enabled
+            # Step 4: Store profile in database if enabled
             if store_in_db and self.db_client:
                 self.logger.info("Storing data in database", pipeline_id=pipeline_id)
                 
@@ -137,14 +221,8 @@ class LinkedInDataPipeline(LoggerMixin):
                 profile_id = await self.db_client.store_profile(profile, profile_embedding)
                 result["storage_ids"]["profile"] = profile_id
                 
-                # Store companies
-                company_ids = []
-                for i, company in enumerate(companies):
-                    embedding = company_embeddings[i] if company_embeddings else None
-                    company_id = await self.db_client.store_company(company, embedding)
-                    company_ids.append(company_id)
-                
-                result["storage_ids"]["companies"] = company_ids
+                # TODO: Link profile to companies in profile_companies junction table
+                # This would be implemented when we add the profile-company linking logic
             
             # Pipeline completed successfully
             result["status"] = "completed"
@@ -153,8 +231,8 @@ class LinkedInDataPipeline(LoggerMixin):
             self.logger.info(
                 "Profile ingestion completed successfully",
                 pipeline_id=pipeline_id,
-                profile_name=profile.name,
-                companies_count=len(companies),
+                profile_name=getattr(profile, 'full_name', getattr(profile, 'name', 'Unknown')),
+                companies_count=len(companies_processed),
                 has_embeddings=generate_embeddings and self.embedding_service is not None,
                 stored_in_db=store_in_db and self.db_client is not None
             )
@@ -350,14 +428,16 @@ class LinkedInDataPipeline(LoggerMixin):
         """Extract company LinkedIn URLs from profile experience"""
         company_urls = []
         
-        # Get from current company
-        if profile.current_company and profile.current_company.get('linkedin_url'):
-            company_urls.append(profile.current_company['linkedin_url'])
+        # Get from current company - using hasattr and attribute access for Pydantic model
+        if hasattr(profile, 'current_company') and profile.current_company:
+            if hasattr(profile.current_company, 'linkedin_url') and profile.current_company.linkedin_url:
+                company_urls.append(profile.current_company.linkedin_url)
         
-        # Get from experience
-        for exp in profile.experience:
-            if exp.get('company_linkedin_url'):
-                company_urls.append(exp['company_linkedin_url'])
+        # Get from experience - using attribute access since ExperienceEntry is a Pydantic model
+        if hasattr(profile, 'experience') and profile.experience:
+            for exp in profile.experience:
+                if hasattr(exp, 'company_linkedin_url') and exp.company_linkedin_url:
+                    company_urls.append(exp.company_linkedin_url)
         
         # Remove duplicates while preserving order
         seen = set()
@@ -400,7 +480,7 @@ class LinkedInDataPipeline(LoggerMixin):
         generate_embeddings: bool = True
     ) -> Dict[str, Any]:
         """
-        Enhanced profile ingestion pipeline with company data extraction and processing.
+        Profile ingestion pipeline with company data extraction and processing.
         
         Args:
             linkedin_url: LinkedIn profile URL
@@ -414,7 +494,7 @@ class LinkedInDataPipeline(LoggerMixin):
         start_time = datetime.utcnow()
         
         self.logger.info(
-            "Starting enhanced profile ingestion with company processing",
+            "Starting profile ingestion with company processing",
             pipeline_id=pipeline_id,
             linkedin_url=linkedin_url,
             store_in_db=store_in_db,
@@ -566,7 +646,7 @@ class LinkedInDataPipeline(LoggerMixin):
             result["completed_at"] = datetime.utcnow().isoformat()
             
             self.logger.info(
-                "Enhanced profile ingestion completed successfully",
+                "Profile ingestion completed successfully",
                 pipeline_id=pipeline_id,
                 profile_name=getattr(profile, 'full_name', getattr(profile, 'name', 'Unknown')),
                 companies_count=len(companies_processed),
@@ -584,7 +664,7 @@ class LinkedInDataPipeline(LoggerMixin):
             })
             
             self.logger.error(
-                "Enhanced profile ingestion failed",
+                "Profile ingestion failed",
                 pipeline_id=pipeline_id,
                 error=str(e),
                 error_type=type(e).__name__
@@ -609,7 +689,7 @@ class LinkedInDataPipeline(LoggerMixin):
             List of pipeline results with company data
         """
         self.logger.info(
-            "Starting batch enhanced profile ingestion",
+            "Starting batch profile ingestion",
             urls_count=len(linkedin_urls),
             max_concurrent=max_concurrent
         )
@@ -623,7 +703,7 @@ class LinkedInDataPipeline(LoggerMixin):
                     return await self.ingest_profile_with_companies(url)
                 except Exception as e:
                     self.logger.error(
-                        "Batch enhanced profile processing failed",
+                        "Batch profile processing failed",
                         linkedin_url=url,
                         error=str(e)
                     )
@@ -653,7 +733,7 @@ class LinkedInDataPipeline(LoggerMixin):
         failed = len(processed_results) - successful
         
         self.logger.info(
-            "Batch enhanced profile ingestion completed",
+            "Batch profile ingestion completed",
             total=len(linkedin_urls),
             successful=successful,
             failed=failed

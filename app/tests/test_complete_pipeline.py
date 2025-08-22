@@ -39,7 +39,7 @@ def mock_external_dependencies():
     mock_tiktoken = Mock()
     mock_tiktoken.get_encoding.return_value = mock_encoding
     
-    return mock_supabase_client, mock_openai, mock_tiktoken
+    return mock_supabase_client, mock_openai_client, mock_tiktoken
 
 # Apply mocks
 mock_supabase_client, mock_openai, mock_tiktoken = mock_external_dependencies()

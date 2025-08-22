@@ -578,6 +578,83 @@ class SupabaseClient(LoggerMixin):
             self.logger.error("Failed to search profiles", error=str(e))
             raise
     
+    async def link_profile_to_company(
+        self,
+        profile_id: str,
+        company_id: str,
+        job_title: Optional[str] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
+        duration_text: Optional[str] = None,
+        is_current_role: bool = False,
+        description: Optional[str] = None
+    ) -> str:
+        """
+        Link a profile to a company with job details in the junction table
+        
+        Args:
+            profile_id: Profile record ID
+            company_id: Company record ID
+            job_title: Job title/position
+            start_date: Job start date
+            end_date: Job end date
+            duration_text: Duration as text (e.g., "2 yrs 3 mos")
+            is_current_role: Whether this is a current role
+            description: Job description
+            
+        Returns:
+            str: Junction table record ID
+        """
+        await self._ensure_client()
+        self.logger.info(
+            "Linking profile to company", 
+            profile_id=profile_id, 
+            company_id=company_id, 
+            job_title=job_title,
+            is_current_role=is_current_role
+        )
+        
+        # Generate a unique record ID
+        record_id = str(uuid.uuid4())
+        
+        # Prepare junction table data
+        junction_data = {
+            "id": record_id,
+            "profile_id": profile_id,
+            "company_id": company_id,
+            "job_title": job_title,
+            "start_date": start_date,
+            "end_date": end_date,
+            "duration_text": duration_text,
+            "is_current_role": is_current_role,
+            "description": description,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        try:
+            # Insert into profile_companies junction table
+            table = self.client.table("profile_companies")
+            result = await table.insert(junction_data).execute()
+            
+            self.logger.info(
+                "Profile-company link created",
+                record_id=record_id,
+                profile_id=profile_id,
+                company_id=company_id
+            )
+            
+            return record_id
+            
+        except Exception as e:
+            self.logger.error(
+                "Failed to link profile to company",
+                profile_id=profile_id,
+                company_id=company_id,
+                error=str(e),
+                error_type=type(e).__name__
+            )
+            raise
+    
     async def health_check(self) -> Dict[str, Any]:
         """
         Check database connectivity and health

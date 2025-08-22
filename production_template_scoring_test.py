@@ -85,7 +85,7 @@ def test_template_based_scoring(cto_template_id):
         "temperature": 0.1
     }
     
-    response = make_request("POST", f"/api/v1/profiles/{TEST_PROFILE_ID}/score-enhanced", data=request_data)
+    response = make_request("POST", f"/api/v1/profiles/{TEST_PROFILE_ID}/score-template", data=request_data)
     
     if response.status_code != 201:
         print(f"❌ Template-based scoring job creation failed: {response.status_code}")
@@ -114,7 +114,7 @@ def test_prompt_based_scoring():
         "temperature": 0.2
     }
     
-    response = make_request("POST", f"/api/v1/profiles/{TEST_PROFILE_ID}/score-enhanced", data=request_data)
+    response = make_request("POST", f"/api/v1/profiles/{TEST_PROFILE_ID}/score-template", data=request_data)
     
     if response.status_code != 201:
         print(f"❌ Prompt-based scoring job creation failed: {response.status_code}")
@@ -225,7 +225,7 @@ def test_enhanced_scoring_validation():
         "model": "gpt-3.5-turbo"
     }
     
-    response = make_request("POST", f"/api/v1/profiles/{TEST_PROFILE_ID}/score-enhanced", data=request_data)
+    response = make_request("POST", f"/api/v1/profiles/{TEST_PROFILE_ID}/score-template", data=request_data)
     
     if response.status_code == 422:
         print("   ✅ Validation correctly rejected request with missing template_id and prompt")
@@ -240,7 +240,7 @@ def test_enhanced_scoring_validation():
         "model": "gpt-3.5-turbo"
     }
     
-    response = make_request("POST", f"/api/v1/profiles/{TEST_PROFILE_ID}/score-enhanced", data=request_data)
+    response = make_request("POST", f"/api/v1/profiles/{TEST_PROFILE_ID}/score-template", data=request_data)
     
     if response.status_code == 422:
         print("   ✅ Validation correctly rejected request with both template_id and prompt")
@@ -254,7 +254,7 @@ def test_enhanced_scoring_validation():
         "model": "gpt-3.5-turbo"
     }
     
-    response = make_request("POST", f"/api/v1/profiles/{TEST_PROFILE_ID}/score-enhanced", data=request_data)
+    response = make_request("POST", f"/api/v1/profiles/{TEST_PROFILE_ID}/score-template", data=request_data)
     
     if response.status_code == 404:
         print("   ✅ Correctly returned 404 for nonexistent template")

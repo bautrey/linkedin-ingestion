@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Test Enhanced Profile Ingestion Pipeline
+Test Profile Ingestion Pipeline
 
-Tests the complete enhanced profile ingestion flow including company extraction
+Tests the complete profile ingestion flow including company extraction
 and processing using the LinkedInDataPipeline.
 """
 
@@ -18,10 +18,10 @@ from app.services.linkedin_pipeline import LinkedInDataPipeline
 from app.cassidy.models import LinkedInProfile, ExperienceEntry
 from app.models.canonical.company import CanonicalCompany
 
-async def test_enhanced_pipeline():
-    """Test the enhanced profile ingestion pipeline."""
+async def test_profile_ingestion_pipeline():
+    """Test the complete profile ingestion pipeline."""
     
-    print("🚀 Testing Enhanced Profile Ingestion Pipeline\n")
+    print("🚀 Testing Profile Ingestion Pipeline\n")
     
     # Create pipeline instance
     pipeline = LinkedInDataPipeline()
@@ -124,7 +124,7 @@ async def test_enhanced_pipeline():
                     print(f"     • {error['error']}")
             
             if result['status'] == 'completed':
-                print("   ✅ Enhanced pipeline test completed successfully")
+                print("   ✅ Pipeline test completed successfully")
             else:
                 print("   ❌ Pipeline test failed")
         
@@ -162,7 +162,7 @@ async def test_enhanced_pipeline():
         print("   ❌ Invalid data not properly filtered")
     print()
     
-    print("🎉 Enhanced Pipeline Testing Complete!")
+    print("🎉 Profile Ingestion Pipeline Testing Complete!")
     print()
     print("📋 Summary:")
     print("   • Company extraction from profiles: ✓")
@@ -170,7 +170,7 @@ async def test_enhanced_pipeline():
     print("   • Error handling: ✓")
     if pipeline.company_service:
         print("   • CompanyService integration: ✓")
-    print("   • Enhanced ingestion pipeline: ✓")
+    print("   • Complete ingestion pipeline: ✓")
 
 if __name__ == "__main__":
-    asyncio.run(test_enhanced_pipeline())
+    asyncio.run(test_profile_ingestion_pipeline())

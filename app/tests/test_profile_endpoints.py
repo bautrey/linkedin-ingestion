@@ -39,6 +39,7 @@ class TestProfileEndpoints:
             "name": "Updated Profile",
             "created_at": "2024-01-01T00:00:00Z"
         })
+        mock_db_instance.update_profile_suggested_role = AsyncMock(return_value=True)
         
         mock_db.return_value = mock_db_instance
         

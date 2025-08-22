@@ -420,7 +420,7 @@ class TestSupabaseClient:
             "experiences": [],
             "educations": [],
             "languages": ["English"],
-            "suggested_role": RoleType.SOFTWARE_ENGINEER
+            "suggested_role": RoleType.CTO
         }
         profile = CanonicalProfile(**mock_data)
         record_id = await mock_supabase_client.store_profile(profile)
@@ -455,7 +455,7 @@ class TestSupabaseClient:
             "experiences": [],
             "educations": [],
             "languages": ["English"],
-            "suggested_role": RoleType.SOFTWARE_ENGINEER
+            "suggested_role": RoleType.CTO
         }
         profile = CanonicalProfile(**mock_data)
         record_id = await mock_supabase_client.store_profile(profile)

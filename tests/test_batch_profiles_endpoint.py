@@ -73,7 +73,7 @@ def create_mock_pipeline_result(profile_id, status="completed"):
 
 @pytest.fixture
 def mock_batch_pipeline():
-    """Fixture for mocking the batch enhanced pipeline"""
+    """Fixture for mocking the batch profile pipeline"""
     with patch("app.services.linkedin_pipeline.LinkedInDataPipeline") as mock_pipeline_class:
         mock_pipeline = mock_pipeline_class.return_value
         mock_batch_method = AsyncMock()
@@ -105,13 +105,13 @@ def client():
     from main import app
     return TestClient(app)
 
-def test_batch_create_profiles_enhanced_success(client, mock_batch_pipeline):
-    """Test successful batch profile creation with enhanced pipeline"""
+def test_batch_create_profiles_success(client, mock_batch_pipeline):
+    """Test successful batch profile creation with company processing"""
     # Mock the get_profile_controller function to return a controller with mocked db_client
     with patch("main.get_profile_controller") as mock_get_controller:
         # Create a mock controller
         mock_controller = MagicMock()
-        mock_controller.batch_create_profiles_enhanced = AsyncMock()
+        mock_controller.batch_create_profiles = AsyncMock()
         
         # Mock successful batch response
         mock_batch_response = {
@@ -152,12 +152,12 @@ def test_batch_create_profiles_enhanced_success(client, mock_batch_pipeline):
         }
         
         # Configure the mock controller to return the batch response
-        mock_controller.batch_create_profiles_enhanced.return_value = mock_batch_response
+        mock_controller.batch_create_profiles.return_value = mock_batch_response
         mock_get_controller.return_value = mock_controller
         
         # Make request to the batch endpoint
         response = client.post(
-            "/api/v1/profiles/batch-enhanced",
+            "/api/v1/profiles/batch",
             json=MOCK_BATCH_REQUEST,
             headers={"X-API-Key": VALID_API_KEY}
         )
@@ -195,7 +195,7 @@ def test_batch_create_profiles_empty_batch(client):
     """Test batch creation with empty profiles list"""
     # Make request with empty profiles list
     response = client.post(
-        "/api/v1/profiles/batch-enhanced",
+        "/api/v1/profiles/batch",
         json={"profiles": [], "max_concurrent": 2},
         headers={"X-API-Key": VALID_API_KEY}
     )
@@ -217,7 +217,7 @@ def test_batch_create_profiles_too_many(client):
     
     # Make request with too many profiles
     response = client.post(
-        "/api/v1/profiles/batch-enhanced",
+        "/api/v1/profiles/batch",
         json=too_many_profiles,
         headers={"X-API-Key": VALID_API_KEY}
     )
@@ -241,7 +241,7 @@ def test_batch_create_profiles_invalid_concurrent(client):
     
     # Make request with invalid max_concurrent
     response = client.post(
-        "/api/v1/profiles/batch-enhanced",
+        "/api/v1/profiles/batch",
         json=invalid_request,
         headers={"X-API-Key": VALID_API_KEY}
     )
@@ -257,7 +257,7 @@ def test_batch_create_profiles_unauthorized(client):
     """Test batch creation with invalid API key"""
     # Make request with invalid API key
     response = client.post(
-        "/api/v1/profiles/batch-enhanced",
+        "/api/v1/profiles/batch",
         json=MOCK_BATCH_REQUEST,
         headers={"X-API-Key": "invalid-key"}
     )

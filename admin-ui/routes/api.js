@@ -23,7 +23,7 @@ router.post('/profiles/:id/score', async (req, res) => {
             });
         }
         
-        const response = await apiClient.post(`/profiles/${profileId}/score-enhanced`, scoringRequest);
+        const response = await apiClient.post(`/profiles/${profileId}/score-template`, scoringRequest);
         
         // Emit real-time update if socket is available
         if (req.io) {

@@ -1,5 +1,5 @@
 """
-Tests for enhanced profile ingestion pipeline with company data extraction.
+Tests for LinkedIn profile ingestion pipeline with company data extraction.
 
 Tests cover:
 - Company data extraction from Cassidy responses
@@ -21,8 +21,8 @@ from app.models.canonical.company import CanonicalCompany
 from app.repositories.company_repository import CompanyRepository
 
 
-class TestEnhancedProfileIngestion:
-    """Test suite for enhanced profile ingestion with company integration."""
+class TestProfileIngestionPipeline:
+    """Test suite for LinkedIn profile ingestion with company integration."""
     
     @pytest.fixture
     def mock_company_service(self):
@@ -225,7 +225,7 @@ class TestEnhancedProfileIngestion:
     @patch('app.services.linkedin_pipeline.LinkedInDataPipeline._has_db_config')
     async def test_profile_ingestion_handles_company_processing_errors(self, mock_db_config,
                                                                      linkedin_pipeline, sample_linkedin_profile,
-                                                                     mock_company_service):
+                                                                     mock_company_service, sample_company_profiles):
         """Test that profile ingestion continues when company processing fails."""
         # Setup
         mock_db_config.return_value = True
@@ -233,6 +233,7 @@ class TestEnhancedProfileIngestion:
         # Mock Cassidy client
         linkedin_pipeline.cassidy_client = AsyncMock()
         linkedin_pipeline.cassidy_client.fetch_profile.return_value = sample_linkedin_profile
+        linkedin_pipeline.cassidy_client.fetch_company.side_effect = sample_company_profiles
         
         # Mock database client
         linkedin_pipeline.db_client = AsyncMock()

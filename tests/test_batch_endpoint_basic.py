@@ -1,4 +1,4 @@
-"""Basic test to verify the batch enhanced profile ingestion endpoint exists."""
+"""Basic test to verify the batch profile ingestion endpoint exists."""
 
 import pytest
 from app.testing.compatibility import TestClient
@@ -15,7 +15,7 @@ def client():
     return TestClient(app)
 
 def test_batch_endpoint_exists(client):
-    """Test that the batch enhanced endpoint exists and accepts requests"""
+    """Test that the batch endpoint exists and accepts requests"""
     # Valid request with one profile
     request_data = {
         "profiles": [
@@ -29,7 +29,7 @@ def test_batch_endpoint_exists(client):
     
     # Make request - we expect it to fail but at least the endpoint should exist
     response = client.post(
-        "/api/v1/profiles/batch-enhanced",
+        "/api/v1/profiles/batch",
         json=request_data,
         headers={"X-API-Key": VALID_API_KEY}
     )
@@ -42,7 +42,7 @@ def test_batch_endpoint_validation_errors(client):
     """Test that the batch endpoint properly validates requests"""
     # Empty profiles list should fail validation
     response = client.post(
-        "/api/v1/profiles/batch-enhanced",
+        "/api/v1/profiles/batch",
         json={"profiles": [], "max_concurrent": 1},
         headers={"X-API-Key": VALID_API_KEY}
     )
@@ -59,7 +59,7 @@ def test_batch_endpoint_validation_errors(client):
     }
     
     response = client.post(
-        "/api/v1/profiles/batch-enhanced",
+        "/api/v1/profiles/batch",
         json=too_many_profiles,
         headers={"X-API-Key": VALID_API_KEY}
     )
@@ -68,7 +68,7 @@ def test_batch_endpoint_validation_errors(client):
     
     # Invalid max_concurrent should fail validation
     response = client.post(
-        "/api/v1/profiles/batch-enhanced",
+        "/api/v1/profiles/batch",
         json={
             "profiles": [{"linkedin_url": "https://www.linkedin.com/in/test/", "suggested_role": "CTO"}],
             "max_concurrent": 10  # Over the limit of 5
@@ -91,7 +91,7 @@ def test_batch_endpoint_unauthorized(client):
     
     # Request without API key
     response = client.post(
-        "/api/v1/profiles/batch-enhanced",
+        "/api/v1/profiles/batch",
         json=request_data
     )
     

@@ -412,7 +412,7 @@ class ProfileResponse(BaseModel):
     created_at: str
     timestamp: Optional[str] = None
     
-    # Enhanced pipeline response fields (only present when using enhanced ingestion)
+    # Company processing response fields (only present when using company ingestion)
     companies_processed: Optional[List[Dict[str, Any]]] = None
     pipeline_metadata: Optional[Dict[str, Any]] = None
 
@@ -439,9 +439,9 @@ class ProfileController:
         self.cassidy_client = cassidy_client
         self.linkedin_workflow = linkedin_workflow
         
-        # Initialize enhanced LinkedIn pipeline for company processing
+        # Initialize LinkedIn pipeline for company processing
         from app.services.linkedin_pipeline import LinkedInDataPipeline
-        self.enhanced_pipeline = LinkedInDataPipeline()
+        self.linkedin_pipeline = LinkedInDataPipeline()
     
     def _convert_db_profile_to_response(self, db_profile: Dict[str, Any]) -> ProfileResponse:
         """Convert database profile to ProfileResponse model"""
@@ -528,148 +528,270 @@ class ProfileController:
         return self._convert_db_profile_to_response(profile)
     
     async def create_profile(self, request: ProfileCreateRequest) -> ProfileResponse:
-        """Create a new profile with smart update behavior - updates existing profiles with fresh data"""
+        """Create a new LinkedIn profile with complete company processing
+        
+        This method:
+        1. Fetches the LinkedIn profile via Cassidy API
+        2. Extracts company URLs from experience section 
+        3. Fetches each company's detailed info via Cassidy Company API
+        4. Stores profile in database
+        5. Stores companies in database with deduplication
+        6. Links profile to companies in junction table
+        """
+        import asyncio
+        from app.services.company_service import CompanyService
+        from app.repositories.company_repository import CompanyRepository
+        from app.models.canonical.company import CanonicalCompany
+        
         # Normalize LinkedIn URL to consistent format
         linkedin_url = normalize_linkedin_url(str(request.linkedin_url))
         
         # Check for existing profile with normalized URL
         existing = await self.db_client.get_profile_by_url(linkedin_url)
-        
         if existing:
             # Smart update behavior: delete existing profile and create fresh one
             await self.db_client.delete_profile(existing["id"])
         
-        # Create workflow request with user's company inclusion preference
+        # Step 1: Fetch profile using LinkedInWorkflow (includes company processing)
+        from app.cassidy.models import ProfileIngestionRequest
         workflow_request = ProfileIngestionRequest(
-            linkedin_url=request.linkedin_url,
+            linkedin_url=linkedin_url,
             include_companies=request.include_companies
         )
-        
-        # Process profile through workflow for complete data
         request_id, enriched_profile = await self.linkedin_workflow.process_profile(workflow_request)
+        profile = enriched_profile.profile
         
-        # Store in database using the enriched profile data
-        record_id = await self.db_client.store_profile(enriched_profile.profile)
+        # Step 2: Store profile in database first
+        profile_id = await self.db_client.store_profile(profile)
         
-        # Update the stored profile with the suggested role
+        # Step 3: Update with suggested role if provided
         if request.suggested_role:
-            await self.db_client.update_profile_suggested_role(record_id, request.suggested_role.value)
+            await self.db_client.update_profile_suggested_role(profile_id, request.suggested_role.value)
         
-        # Retrieve the updated profile to return consistent data
-        stored_profile = await self.db_client.get_profile_by_id(record_id)
-        return self._convert_db_profile_to_response(stored_profile)
-    
-    async def create_profile_enhanced(self, request: ProfileCreateRequest) -> ProfileResponse:
-        """Create a new profile using enhanced pipeline with company processing"""
-        # Normalize LinkedIn URL to consistent format
-        linkedin_url = normalize_linkedin_url(str(request.linkedin_url))
+        companies_processed = []
         
-        # Check for existing profile with normalized URL
-        existing = await self.db_client.get_profile_by_url(linkedin_url)
+        # Step 4: Process companies if requested
+        if request.include_companies and hasattr(profile, 'experience') and profile.experience:
+            try:
+                # Extract unique company LinkedIn URLs from profile experience
+                company_urls = self._extract_company_urls_from_experience(profile.experience)
+                
+                if company_urls:
+                    # Step 4a: Fetch company details from Cassidy API
+                    companies_data = []
+                    for company_url in company_urls:
+                        try:
+                            company_profile = await self.cassidy_client.fetch_company(company_url)
+                            companies_data.append(company_profile)
+                            # Rate limiting to be nice to Cassidy API
+                            await asyncio.sleep(1)
+                        except Exception as e:
+                            logger.warning(f"Failed to fetch company {company_url}: {str(e)}")
+                            continue
+                    
+                    if companies_data:
+                        # Step 4b: Store companies using CompanyService (with deduplication)
+                        company_repo = CompanyRepository(self.db_client)
+                        company_service = CompanyService(company_repo)
+                        
+                        # Convert Cassidy CompanyProfile to CanonicalCompany
+                        canonical_companies = []
+                        for cassidy_company in companies_data:
+                            try:
+                                canonical_data = {
+                                    "company_name": cassidy_company.company_name,
+                                    "company_id": self._extract_company_id_from_url(cassidy_company.linkedin_url),
+                                    "linkedin_url": cassidy_company.linkedin_url,
+                                    "description": cassidy_company.description,
+                                    "website": cassidy_company.website,
+                                    "domain": cassidy_company.domain,
+                                    "employee_count": cassidy_company.employee_count,
+                                    "employee_range": cassidy_company.employee_range,
+                                    "year_founded": cassidy_company.year_founded,
+                                    "industries": cassidy_company.industries or [],
+                                    "hq_city": cassidy_company.hq_city,
+                                    "hq_region": cassidy_company.hq_region,
+                                    "hq_country": cassidy_company.hq_country,
+                                    "logo_url": cassidy_company.logo_url,
+                                }
+                                # Filter out None values
+                                filtered_data = {k: v for k, v in canonical_data.items() if v is not None}
+                                canonical_companies.append(CanonicalCompany(**filtered_data))
+                            except Exception as e:
+                                logger.warning(f"Failed to convert company to canonical format: {str(e)}")
+                                continue
+                        
+                        # Step 4c: Batch process companies (create/update with deduplication)
+                        if canonical_companies:
+                            processing_results = await company_service.batch_process_companies(canonical_companies)
+                            
+                            # Step 4d: Create profile-company junction records
+                            for process_result in processing_results:
+                                if process_result["success"]:
+                                    try:
+                                        # Find matching experience entry to get job details
+                                        job_info = self._find_job_info_for_company(profile.experience, process_result["linkedin_url"])
+                                        
+                                        await self.db_client.link_profile_to_company(
+                                            profile_id=profile_id,
+                                            company_id=process_result["company_id"],
+                                            job_title=job_info.get("title"),
+                                            start_date=job_info.get("start_date"),
+                                            end_date=job_info.get("end_date"),
+                                            duration_text=job_info.get("duration"),
+                                            is_current_role=job_info.get("is_current", False),
+                                            description=job_info.get("description")
+                                        )
+                                        
+                                        companies_processed.append({
+                                            "company_id": process_result["company_id"],
+                                            "company_name": process_result["company_name"],
+                                            "action": process_result["action"]
+                                        })
+                                    except Exception as e:
+                                        logger.warning(f"Failed to link profile to company: {str(e)}")
+                                        continue
+            except Exception as e:
+                logger.error(f"Company processing failed: {str(e)}")
+                # Continue with profile creation even if company processing fails
         
-        if existing:
-            # Smart update behavior: delete existing profile and create fresh one
-            await self.db_client.delete_profile(existing["id"])
-        
-        # Use enhanced pipeline for profile ingestion with company processing
-        pipeline_result = await self.enhanced_pipeline.ingest_profile_with_companies(
-            linkedin_url=linkedin_url,
-            store_in_db=True,
-            generate_embeddings=True
-        )
-        
-        if pipeline_result["status"] != "completed":
-            error_response = ErrorResponse(
-                error_code="PROFILE_INGESTION_FAILED",
-                message="Enhanced profile ingestion failed",
-                details={
-                    "linkedin_url": linkedin_url,
-                    "pipeline_result": pipeline_result
-                }
-            )
-            raise HTTPException(status_code=500, detail=error_response.model_dump())
-        
-        # Get the stored profile ID from pipeline result
-        profile_id = pipeline_result["storage_ids"]["profile"]
-        
-        # Update the stored profile with the suggested role
-        await self.db_client.update_profile_suggested_role(profile_id, request.suggested_role.value)
-        
-        # Retrieve the updated profile
+        # Step 5: Retrieve the final profile data to return
         stored_profile = await self.db_client.get_profile_by_id(profile_id)
-        
-        # Convert to response format and add company information from pipeline result
         response = self._convert_db_profile_to_response(stored_profile)
         
-        # Add enhanced metadata from pipeline result
-        response.companies_processed = pipeline_result.get("companies", [])
-        response.pipeline_metadata = {
-            "pipeline_id": pipeline_result["pipeline_id"],
-            "companies_found": len(pipeline_result.get("companies", [])),
-            "has_embeddings": "profile" in pipeline_result.get("embeddings", {}),
-            "processing_time": pipeline_result.get("completed_at", pipeline_result.get("started_at"))
-        }
+        # Add company processing metadata to response
+        if companies_processed:
+            response.companies_processed = companies_processed
+            response.pipeline_metadata = {
+                "companies_found": len(companies_processed),
+                "companies_fetched_from_cassidy": True
+            }
         
         return response
     
-    async def batch_create_profiles_enhanced(self, request: BatchProfileCreateRequest) -> BatchProfileResponse:
-        """Batch create profiles using enhanced pipeline with company processing"""
+    def _extract_company_urls_from_experience(self, experience_list: List[Dict]) -> List[str]:
+        """Extract unique company LinkedIn URLs from profile experience"""
+        company_urls = []
+        seen_urls = set()
+        
+        for exp in experience_list:
+            company_linkedin_url = exp.get('company_linkedin_url')
+            if company_linkedin_url and company_linkedin_url not in seen_urls:
+                company_urls.append(company_linkedin_url)
+                seen_urls.add(company_linkedin_url)
+        
+        return company_urls[:5]  # Limit to 5 to avoid rate limits
+    
+    def _extract_company_id_from_url(self, linkedin_url: str) -> Optional[str]:
+        """Extract company ID from LinkedIn company URL - handles both numeric IDs and slug names"""
+        if not linkedin_url:
+            return None
+            
+        try:
+            import re
+            # Handle different LinkedIn URL formats:
+            # https://www.linkedin.com/company/5116524
+            # https://www.linkedin.com/company/fortium-partners
+            # https://linkedin.com/company/5116524/
+            
+            match = re.search(r'/company/([^/?]+)', linkedin_url)
+            if match:
+                company_identifier = match.group(1)
+                return company_identifier  # Return both numeric IDs and slug names
+            
+            return None
+            
+        except Exception as e:
+            logger.warning(f"Failed to extract company ID from URL {linkedin_url}: {str(e)}")
+            return None
+    
+    def _find_job_info_for_company(self, experience_list: List[Dict], company_linkedin_url: str) -> Dict[str, Any]:
+        """Find job information for a specific company from experience list"""
+        for exp in experience_list:
+            if exp.get('company_linkedin_url') == company_linkedin_url:
+                return {
+                    "title": exp.get('title'),
+                    "start_date": exp.get('start_date'),
+                    "end_date": exp.get('end_date'),
+                    "duration": exp.get('duration'),
+                    "is_current": exp.get('end_date') is None or exp.get('end_date') == 'Present',
+                    "description": exp.get('description')
+                }
+        
+        return {}
+    
+    async def batch_create_profiles(self, request: BatchProfileCreateRequest) -> BatchProfileResponse:
+        """Batch create profiles using the unified ingestion flow with company processing"""
         import time
+        import asyncio
         from uuid import uuid4
         
         batch_id = str(uuid4())
         start_time = time.time()
         started_at = datetime.now(timezone.utc)
         
-        # Extract LinkedIn URLs from the batch request
-        linkedin_urls = [str(profile_req.linkedin_url) for profile_req in request.profiles]
+        # Process profiles with concurrency control
+        semaphore = asyncio.Semaphore(request.max_concurrent)
         
-        # Use enhanced pipeline for batch processing
-        pipeline_results = await self.enhanced_pipeline.batch_ingest_profiles_with_companies(
-            linkedin_urls=linkedin_urls,
-            max_concurrent=request.max_concurrent
-        )
+        async def process_single_profile(profile_request):
+            async with semaphore:
+                try:
+                    return await self.create_profile(profile_request), None
+                except Exception as e:
+                    return None, str(e)
         
-        # Convert pipeline results to response format
+        # Execute all profile creation tasks
+        tasks = [process_single_profile(profile_req) for profile_req in request.profiles]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        # Process results
         profile_responses = []
         successful_count = 0
         
-        for i, pipeline_result in enumerate(pipeline_results):
-            if pipeline_result.get("status") == "completed":
-                # Get the profile from storage
-                profile_id = pipeline_result["storage_ids"]["profile"]
-                stored_profile = await self.db_client.get_profile_by_id(profile_id)
-                
-                # Convert to response format with enhanced metadata
-                response = self._convert_db_profile_to_response(stored_profile)
-                response.companies_processed = pipeline_result.get("companies", [])
-                response.pipeline_metadata = {
-                    "pipeline_id": pipeline_result["pipeline_id"],
-                    "companies_found": len(pipeline_result.get("companies", [])),
-                    "has_embeddings": "profile" in pipeline_result.get("embeddings", {}),
-                    "processing_time": pipeline_result.get("completed_at", pipeline_result.get("started_at"))
-                }
-                
-                successful_count += 1
-            else:
-                # Create error response for failed profiles
-                response = ProfileResponse(
+        for i, result in enumerate(results):
+            if isinstance(result, Exception):
+                # Handle exceptions from gather
+                error_response = ProfileResponse(
                     id="",
                     name=f"Failed: {request.profiles[i].linkedin_url}",
                     url=str(request.profiles[i].linkedin_url),
                     position="Processing Failed",
-                    about=f"Error: {pipeline_result.get('errors', [{'error': 'Unknown error'}])[0].get('error', 'Unknown error')}",
+                    about=f"Error: {str(result)}",
                     created_at=started_at.isoformat(),
                     experience=[],
                     education=[],
                     certifications=[],
+                    companies_processed=[],
                     pipeline_metadata={
                         "status": "failed",
-                        "errors": pipeline_result.get("errors", [])
+                        "error": str(result)
                     }
                 )
-            
-            profile_responses.append(response)
+                profile_responses.append(error_response)
+            else:
+                profile_response, error = result
+                if profile_response:
+                    profile_responses.append(profile_response)
+                    successful_count += 1
+                else:
+                    # Handle errors from individual profile processing
+                    error_response = ProfileResponse(
+                        id="",
+                        name=f"Failed: {request.profiles[i].linkedin_url}",
+                        url=str(request.profiles[i].linkedin_url),
+                        position="Processing Failed",
+                        about=f"Error: {error}",
+                        created_at=started_at.isoformat(),
+                        experience=[],
+                        education=[],
+                        certifications=[],
+                        companies_processed=[],
+                        pipeline_metadata={
+                            "status": "failed",
+                            "error": error
+                        }
+                    )
+                    profile_responses.append(error_response)
         
         end_time = time.time()
         processing_time = end_time - start_time
@@ -1032,27 +1154,7 @@ async def create_profile(
 
 
 @app.post(
-    "/api/v1/profiles/enhanced", 
-    response_model=ProfileResponse, 
-    status_code=201,
-    responses={
-        403: {"model": ErrorResponse, "description": "Unauthorized - Invalid API key"},
-        409: {"model": ErrorResponse, "description": "Profile already exists - Conflict"},
-        422: {"model": ValidationErrorResponse, "description": "Validation error"},
-        500: {"model": ErrorResponse, "description": "Internal server error"}
-    }
-)
-async def create_profile_enhanced(
-    request: ProfileCreateRequest,
-    api_key: str = Depends(verify_api_key)
-):
-    """Create a new profile using enhanced pipeline with company processing"""
-    controller = get_profile_controller()
-    return await controller.create_profile_enhanced(request)
-
-
-@app.post(
-    "/api/v1/profiles/batch-enhanced", 
+    "/api/v1/profiles/batch", 
     response_model=BatchProfileResponse, 
     status_code=201,
     responses={
@@ -1062,13 +1164,13 @@ async def create_profile_enhanced(
         500: {"model": ErrorResponse, "description": "Internal server error"}
     }
 )
-async def batch_create_profiles_enhanced(
+async def batch_create_profiles(
     request: BatchProfileCreateRequest,
     api_key: str = Depends(verify_api_key)
 ):
-    """Batch create profiles using enhanced pipeline with company processing (max 10 profiles per batch)"""
+    """Batch create profiles using the unified ingestion flow with company processing (max 10 profiles per batch)"""
     controller = get_profile_controller()
-    return await controller.batch_create_profiles_enhanced(request)
+    return await controller.batch_create_profiles(request)
 
 
 @app.delete(
@@ -1948,9 +2050,9 @@ async def retry_scoring_job(
     return await controller.retry_job(job_id, retry_request)
 
 
-# V1.88 Enhanced Template-based Scoring Endpoint
+# V1.88 Template-based Scoring Endpoint
 @app.post(
-    "/api/v1/profiles/{profile_id}/score-enhanced",
+    "/api/v1/profiles/{profile_id}/score-template",
     response_model=ScoringResponse,
     status_code=201,
     responses={
@@ -1961,14 +2063,14 @@ async def retry_scoring_job(
         500: {"model": ErrorResponse, "description": "Internal server error"}
     }
 )
-async def create_enhanced_scoring_job(
+async def create_template_scoring_job(
     profile_id: str,
     request: EnhancedScoringRequest,
     api_key: str = Depends(verify_api_key)
 ):
     """Create LLM scoring job with template-based OR prompt-based evaluation (V1.88)"""
     controller = get_profile_scoring_controller()
-    return await controller.create_enhanced_scoring_job(profile_id, request)
+    return await controller.create_template_scoring_job(profile_id, request)
 
 
 # ============================================================================
