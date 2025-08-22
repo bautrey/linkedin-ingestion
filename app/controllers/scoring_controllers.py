@@ -223,7 +223,7 @@ class ProfileScoringController(LoggerMixin):
             )
             # LLMScoringService will handle marking job as failed
     
-    async def create_enhanced_scoring_job(
+    async def create_template_scoring_job(
         self,
         profile_id: str,
         request: EnhancedScoringRequest
@@ -233,7 +233,7 @@ class ProfileScoringController(LoggerMixin):
         
         Args:
             profile_id: UUID of profile to score
-            request: Enhanced scoring request with template_id OR prompt
+            request: Template/prompt scoring request with template_id OR prompt
             
         Returns:
             ScoringResponse: Job creation response
