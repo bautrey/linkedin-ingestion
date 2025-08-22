@@ -1505,7 +1505,7 @@ class CompanyController:
     
     async def get_company(self, company_id: str) -> CompanyResponse:
         """Get individual company by ID"""
-        company = self.company_repo.get_by_id(company_id)
+        company = await self.company_repo.get_by_id(company_id)
         if not company:
             error_response = ErrorResponse(
                 error_code="COMPANY_NOT_FOUND",
@@ -1550,7 +1550,7 @@ class CompanyController:
             result = self.company_service.create_or_update_company(company)
             
             # Get the created company
-            created_company = self.company_repo.get_by_id(result["id"])
+            created_company = await self.company_repo.get_by_id(result["id"])
             return self._convert_canonical_to_response(created_company)
             
         except Exception as e:
@@ -1570,7 +1570,7 @@ class CompanyController:
         """Update an existing company"""
         try:
             # Get existing company
-            existing_company = self.company_repo.get_by_id(company_id)
+            existing_company = await self.company_repo.get_by_id(company_id)
             if not existing_company:
                 error_response = ErrorResponse(
                     error_code="COMPANY_NOT_FOUND",
@@ -1597,7 +1597,7 @@ class CompanyController:
             result = self.company_repo.update(company_id, updated_company)
             
             # Get the updated company
-            updated_company = self.company_repo.get_by_id(company_id)
+            updated_company = await self.company_repo.get_by_id(company_id)
             return self._convert_canonical_to_response(updated_company)
             
         except HTTPException:
