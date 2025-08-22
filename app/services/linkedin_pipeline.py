@@ -29,8 +29,9 @@ class LinkedInDataPipeline(LoggerMixin):
         
         # Initialize company service for enhanced profile ingestion
         if self.db_client:
-            company_repo = CompanyRepository(self.db_client.client)
-            self.company_service = CompanyService(company_repo)
+            # Note: CompanyRepository expects raw Supabase client, but we need to initialize it first
+            # We'll initialize the company service lazily when needed
+            self.company_service = None  # Will be initialized lazily
         else:
             self.company_service = None
         
@@ -48,6 +49,16 @@ class LinkedInDataPipeline(LoggerMixin):
     def _has_openai_config(self) -> bool:
         """Check if OpenAI configuration is available"""
         return bool(settings.OPENAI_API_KEY)
+    
+    async def _ensure_company_service(self):
+        """Lazily initialize company service when needed"""
+        if self.company_service is None and self.db_client:
+            # Ensure database client is initialized first
+            await self.db_client._ensure_client()
+            
+            # Create company repository with initialized client
+            company_repo = CompanyRepository(self.db_client.client)
+            self.company_service = CompanyService(company_repo)
     
     async def ingest_profile(
         self, 
@@ -435,33 +446,37 @@ class LinkedInDataPipeline(LoggerMixin):
             # Step 2: Extract and process company data
             companies_processed = []
             try:
-                if self.company_service:
-                    self.logger.info("Processing company data from profile", pipeline_id=pipeline_id)
+                if self.db_client:
+                    # Ensure company service is initialized
+                    await self._ensure_company_service()
                     
-                    # Extract company data from profile
-                    company_data_list = self._extract_company_data_from_profile(profile)
-                    
-                    if company_data_list:
-                        # Use CompanyService to process companies (create/update with deduplication)
-                        processing_results = self.company_service.batch_process_companies(company_data_list)
+                    if self.company_service:
+                        self.logger.info("Processing company data from profile", pipeline_id=pipeline_id)
                         
-                        # Convert results for response
-                        for process_result in processing_results:
-                            if process_result["success"]:
-                                companies_processed.append({
-                                    "company_id": process_result["company_id"],
-                                    "company_name": process_result["company_name"],
-                                    "action": process_result["action"]  # created/updated
-                                })
+                        # Extract company data from profile
+                        company_data_list = self._extract_company_data_from_profile(profile)
                         
-                        self.logger.info(
-                            "Company processing completed",
-                            pipeline_id=pipeline_id,
-                            companies_processed=len(companies_processed)
-                        )
-                    else:
-                        self.logger.info("No company data found in profile", pipeline_id=pipeline_id)
-                        
+                        if company_data_list:
+                            # Use CompanyService to process companies (create/update with deduplication)
+                            processing_results = self.company_service.batch_process_companies(company_data_list)
+                            
+                            # Convert results for response
+                            for process_result in processing_results:
+                                if process_result["success"]:
+                                    companies_processed.append({
+                                        "company_id": process_result["company_id"],
+                                        "company_name": process_result["company_name"],
+                                        "action": process_result["action"]  # created/updated
+                                    })
+                            
+                            self.logger.info(
+                                "Company processing completed",
+                                pipeline_id=pipeline_id,
+                                companies_processed=len(companies_processed)
+                            )
+                        else:
+                            self.logger.info("No company data found in profile", pipeline_id=pipeline_id)
+                            
             except Exception as e:
                 error_msg = f"Company processing failed: {str(e)}"
                 self.logger.warning(error_msg, pipeline_id=pipeline_id)
