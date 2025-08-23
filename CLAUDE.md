@@ -96,6 +96,16 @@ When asked to work on this codebase:
 - 🚨 **Don't assume failure**: Railway deployment isn't "broken" just because commit hashes differ
 - 📋 **Example**: 5 commits of only test updates = Railway still runs same version until code changes
 
+### Automatic Version Generation
+**SOLUTION TO BRITTLE VERSIONING** - Auto-generate version files during build
+
+- 🎯 **Problem Solved**: Eliminates manual updates to `VERSION`, `version.json`, and hardcoded versions
+- 🔧 **Implementation**: `scripts/generate_version.py` runs during Railway build process
+- ⚙️ **Build Integration**: Added to Railway `buildCommand` in `railway.toml`
+- 📁 **Git Tracking**: Version files excluded from git via `.gitignore`
+- ✅ **Auto-Updates**: Version info reflects current git state at build time
+- 🏗️ **Build Command**: `python scripts/generate_version.py` generates all version files from git metadata
+
 ### Common Issues & Solutions
 **Recently resolved patterns (stored in memory server)**
 

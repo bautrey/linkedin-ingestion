@@ -90,11 +90,12 @@ class LinkedInDataPipeline(LoggerMixin):
         start_time = datetime.utcnow()
         
         self.logger.info(
-            "Starting profile ingestion",
+            "🚀 PIPELINE_START: Profile ingestion initiated",
             pipeline_id=pipeline_id,
             linkedin_url=linkedin_url,
             store_in_db=store_in_db,
-            generate_embeddings=generate_embeddings
+            generate_embeddings=generate_embeddings,
+            process_type="PROFILE_INGESTION"
         )
         
         result = {
@@ -123,7 +124,11 @@ class LinkedInDataPipeline(LoggerMixin):
                     await self._ensure_company_service()
                     
                     if self.company_service:
-                        self.logger.info("Fetching company data", pipeline_id=pipeline_id)
+                        self.logger.info(
+                            "🏢 COMPANY_START: Initiating company data processing", 
+                            pipeline_id=pipeline_id,
+                            process_type="COMPANY_PROCESSING"
+                        )
                         
                         # Extract company URLs from profile experience
                         company_urls = self._extract_company_urls(profile)
@@ -195,9 +200,11 @@ class LinkedInDataPipeline(LoggerMixin):
                                             })
                                     
                                     self.logger.info(
-                                        "Company processing completed",
+                                        "🏁 COMPANY_COMPLETE: Company data processing finished successfully",
                                         pipeline_id=pipeline_id,
-                                        companies_processed=len(companies_processed)
+                                        companies_processed=len(companies_processed),
+                                        process_type="COMPANY_PROCESSING",
+                                        status="SUCCESS"
                                     )
                             else:
                                 self.logger.warning("No companies fetched from Cassidy API", pipeline_id=pipeline_id)
@@ -242,12 +249,14 @@ class LinkedInDataPipeline(LoggerMixin):
             result["completed_at"] = datetime.utcnow().isoformat()
             
             self.logger.info(
-                "Profile ingestion completed successfully",
+                "🏁 PIPELINE_COMPLETE: Profile ingestion finished successfully",
                 pipeline_id=pipeline_id,
                 profile_name=getattr(profile, 'full_name', getattr(profile, 'name', 'Unknown')),
                 companies_count=len(companies_processed),
                 has_embeddings=generate_embeddings and self.embedding_service is not None,
-                stored_in_db=store_in_db and self.db_client is not None
+                stored_in_db=store_in_db and self.db_client is not None,
+                process_type="PROFILE_INGESTION",
+                status="SUCCESS"
             )
             
         except Exception as e:
