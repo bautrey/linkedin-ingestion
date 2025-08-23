@@ -138,6 +138,17 @@ class SupabaseClient(LoggerMixin):
         await self._ensure_client()
         self.logger.info("Storing LinkedIn profile", profile_id=profile.profile_id, profile_name=profile.full_name)
         
+        # Check if profile with this LinkedIn ID already exists
+        existing_profile = await self.get_profile_by_linkedin_id(profile.profile_id)
+        if existing_profile:
+            self.logger.info(
+                "Profile with LinkedIn ID already exists, deleting existing profile", 
+                linkedin_id=profile.profile_id, 
+                existing_record_id=existing_profile["id"]
+            )
+            # Delete the existing profile
+            await self.delete_profile(existing_profile["id"])
+        
         # Generate a unique record ID
         record_id = str(uuid.uuid4())
         

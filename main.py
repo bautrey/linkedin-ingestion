@@ -547,10 +547,10 @@ class ProfileController:
         linkedin_url = normalize_linkedin_url(str(request.linkedin_url))
         
         # Check for existing profile with normalized URL
-        existing = await self.db_client.get_profile_by_url(linkedin_url)
-        if existing:
+        existing_by_url = await self.db_client.get_profile_by_url(linkedin_url)
+        if existing_by_url:
             # Smart update behavior: delete existing profile and create fresh one
-            await self.db_client.delete_profile(existing["id"])
+            await self.db_client.delete_profile(existing_by_url["id"])
         
         # Use LinkedInDataPipeline for unified processing (now includes storage and suggested role)
         # Note: Company processing is controlled by ENABLE_COMPANY_INGESTION setting
