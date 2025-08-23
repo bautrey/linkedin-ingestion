@@ -626,10 +626,10 @@ class CompanyRepository:
             relationship_data = {
                 "profile_id": profile_id,
                 "company_id": company_id,
-                "position_title": work_experience.get("position_title"),
+                "job_title": work_experience.get("position_title"),
                 "start_date": work_experience.get("start_date"),
                 "end_date": work_experience.get("end_date"),
-                "is_current": work_experience.get("is_current", False),
+                "is_current_role": work_experience.get("is_current", False),
                 "description": work_experience.get("description"),
                 "created_at": datetime.now(timezone.utc).isoformat()
             }
