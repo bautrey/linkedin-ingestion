@@ -17,7 +17,7 @@ healthcheckInterval = 30
 
 [build]
 # Build command to install dependencies and run any build steps
-buildCommand = "pip install -r requirements.txt && python scripts/migrate.py --check-only"
+buildCommand = "pip install -r requirements.txt && python scripts/generate_version.py && python scripts/migrate.py --check-only"
 
 # Cache settings
 watchPatterns = ["**/*.py", "requirements.txt", "alembic.ini", "alembic/**/*.py"]
