@@ -473,6 +473,8 @@ class ProfileController:
         linkedin_url: Optional[str] = None,
         name: Optional[str] = None,
         company: Optional[str] = None,
+        location: Optional[str] = None,
+        score_range: Optional[str] = None,
         limit: int = 50,
         offset: int = 0
     ) -> ProfileListResponse:
@@ -956,6 +958,8 @@ async def list_profiles(
     linkedin_url: Optional[str] = Query(None, description="Exact LinkedIn URL search"),
     name: Optional[str] = Query(None, description="Partial name search (case-insensitive)"),
     company: Optional[str] = Query(None, description="Partial company name search (case-insensitive)"),
+    location: Optional[str] = Query(None, description="Partial location search (case-insensitive)"),
+    score_range: Optional[str] = Query(None, description="Score range filter: 'unscored', 'high' (8-10), 'medium' (5-7), 'low' (1-4)"),
     limit: int = Query(50, ge=1, le=100, description="Number of profiles to return"),
     offset: int = Query(0, ge=0, description="Number of profiles to skip"),
     api_key: str = Depends(verify_api_key)
@@ -966,6 +970,8 @@ async def list_profiles(
         linkedin_url=linkedin_url,
         name=name,
         company=company,
+        location=location,
+        score_range=score_range,
         limit=limit,
         offset=offset
     )
