@@ -555,57 +555,124 @@ class SupabaseClient(LoggerMixin):
         self.logger.info("Searching profiles", name=name, company=company, location=location, score_range=score_range, limit=limit, offset=offset)
         
         try:
-            # Start with base query
-            table = self.client.table("linkedin_profiles")
-            query = table.select("*")
-            
-            # Add name filter if provided (case-insensitive)
-            if name:
-                query = query.ilike("name", f"%{name}%")
-            
-            # Add company filter if provided (search in current_company and experience)
-            if company:
-                # This is a simplified approach - in production you might want more sophisticated JSON searching
-                query = query.or_(f"current_company->>company_name.ilike.%{company}%,position.ilike.%{company}%")
-            
-            # Add location filter if provided (search in city field)
-            if location:
-                query = query.ilike("city", f"%{location}%")
-            
-            # Add score_range filter if provided (requires ai_score field in database)
+            # For score filtering, we need to handle it differently since we need to join with profile_scores
             if score_range:
+                # First, get profile IDs that match the score criteria
+                scored_profile_ids = set()
+                
                 if score_range.lower() == "unscored":
-                    # Filter for profiles without ai_score (null values)
-                    query = query.is_("ai_score", None)
-                elif score_range.lower() == "high":
-                    # High scores: 8-10
-                    query = query.gte("ai_score", 8).lte("ai_score", 10)
-                elif score_range.lower() == "medium":
-                    # Medium scores: 5-7
-                    query = query.gte("ai_score", 5).lte("ai_score", 7)
-                elif score_range.lower() == "low":
-                    # Low scores: 1-4
-                    query = query.gte("ai_score", 1).lte("ai_score", 4)
+                    # Get all profile linkedin_ids from profile_scores
+                    scores_table = self.client.table("profile_scores")
+                    scores_result = await scores_table.select("profile_id").execute()
+                    scored_linkedin_ids = {row["profile_id"] for row in scores_result.data or []}
+                    
+                    # Get all profiles and filter out the scored ones
+                    profiles_table = self.client.table("linkedin_profiles")
+                    query = profiles_table.select("*")
+                    
+                    # Add other filters
+                    if name:
+                        query = query.ilike("name", f"%{name}%")
+                    if company:
+                        query = query.or_(f"current_company->>company_name.ilike.%{company}%,position.ilike.%{company}%")
+                    if location:
+                        query = query.ilike("city", f"%{location}%")
+                    
+                    query = query.order("created_at", desc=True).range(offset, offset + limit - 1)
+                    result = await query.execute()
+                    
+                    # Filter out profiles that have scores
+                    profiles = [p for p in (result.data or []) if p.get("linkedin_id") not in scored_linkedin_ids]
+                    
                 else:
-                    # Handle custom ranges like "7-10"
-                    if "-" in score_range:
-                        try:
-                            min_score, max_score = score_range.split("-")
-                            min_score = float(min_score.strip())
-                            max_score = float(max_score.strip())
-                            query = query.gte("ai_score", min_score).lte("ai_score", max_score)
-                        except (ValueError, IndexError):
-                            # Invalid format, log warning but don't break the query
-                            self.logger.warning(f"Invalid score_range format: {score_range}")
+                    # Get profiles with scores in the specified range
+                    scores_table = self.client.table("profile_scores")
+                    scores_query = scores_table.select("profile_id")
+                    
+                    if score_range.lower() == "high":
+                        scores_query = scores_query.gte("overall_score", 8.0).lte("overall_score", 10.0)
+                    elif score_range.lower() == "medium":
+                        scores_query = scores_query.gte("overall_score", 5.0).lt("overall_score", 8.0)
+                    elif score_range.lower() == "low":
+                        scores_query = scores_query.gte("overall_score", 1.0).lt("overall_score", 5.0)
+                    else:
+                        # Handle custom ranges like "7-10"
+                        if "-" in score_range:
+                            try:
+                                min_score, max_score = score_range.split("-")
+                                min_score = float(min_score.strip())
+                                max_score = float(max_score.strip())
+                                scores_query = scores_query.gte("overall_score", min_score).lte("overall_score", max_score)
+                            except (ValueError, IndexError):
+                                self.logger.warning(f"Invalid score_range format: {score_range}")
+                                # Fall back to no score filtering
+                                scores_query = None
+                        else:
+                            scores_query = None
+                    
+                    if scores_query:
+                        scores_result = await scores_query.execute()
+                        target_linkedin_ids = [row["profile_id"] for row in scores_result.data or []]
+                        
+                        if target_linkedin_ids:
+                            # Get profiles matching these linkedin_ids
+                            profiles_table = self.client.table("linkedin_profiles")
+                            query = profiles_table.select("*").in_("linkedin_id", target_linkedin_ids)
+                            
+                            # Add other filters
+                            if name:
+                                query = query.ilike("name", f"%{name}%")
+                            if company:
+                                query = query.or_(f"current_company->>company_name.ilike.%{company}%,position.ilike.%{company}%")
+                            if location:
+                                query = query.ilike("city", f"%{location}%")
+                            
+                            query = query.order("created_at", desc=True).range(offset, offset + limit - 1)
+                            result = await query.execute()
+                            profiles = result.data or []
+                        else:
+                            profiles = []  # No profiles match the score criteria
+                    else:
+                        # Fall back to regular search without score filtering
+                        profiles_table = self.client.table("linkedin_profiles")
+                        query = profiles_table.select("*")
+                        
+                        if name:
+                            query = query.ilike("name", f"%{name}%")
+                        if company:
+                            query = query.or_(f"current_company->>company_name.ilike.%{company}%,position.ilike.%{company}%")
+                        if location:
+                            query = query.ilike("city", f"%{location}%")
+                        
+                        query = query.order("created_at", desc=True).range(offset, offset + limit - 1)
+                        result = await query.execute()
+                        profiles = result.data or []
+                
+            else:
+                # Regular query without score filtering
+                table = self.client.table("linkedin_profiles")
+                query = table.select("*")
+                
+                # Add name filter if provided (case-insensitive)
+                if name:
+                    query = query.ilike("name", f"%{name}%")
+                
+                # Add company filter if provided (search in current_company and experience)
+                if company:
+                    # This is a simplified approach - in production you might want more sophisticated JSON searching
+                    query = query.or_(f"current_company->>company_name.ilike.%{company}%,position.ilike.%{company}%")
+                
+                # Add location filter if provided (search in city field)
+                if location:
+                    query = query.ilike("city", f"%{location}%")
+                
+                # Add ordering, limit, and offset
+                query = query.order("created_at", desc=True).range(offset, offset + limit - 1)
+                
+                result = await query.execute()
+                profiles = result.data or []
             
-            # Add ordering, limit, and offset
-            query = query.order("created_at", desc=True).range(offset, offset + limit - 1)
-            
-            result = await query.execute()
-            
-            profiles = result.data or []
             self.logger.info("Profile search completed", count=len(profiles))
-            
             return profiles
             
         except Exception as e:

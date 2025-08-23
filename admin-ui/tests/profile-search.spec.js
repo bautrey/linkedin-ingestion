@@ -22,7 +22,7 @@ test.describe('Profile Search and Filter', () => {
 
   test('should perform profile search', async ({ page }) => {
     // Fill in search term
-    await page.fill('input[name="search"]', 'test');
+    await page.fill('input[name="search"]', 'Shelly');
     
     // Submit the search form
     await page.click('button[type="submit"]');
@@ -30,8 +30,8 @@ test.describe('Profile Search and Filter', () => {
     // Wait for response
     await page.waitForLoadState('networkidle');
     
-    // Check URL contains search parameter
-    expect(page.url()).toContain('search=test');
+    // Check URL contains search parameter (case insensitive)
+    expect(page.url().toLowerCase()).toContain('search=shelly');
     
     // Check that some result is shown (either profiles or "no results")
     const hasResults = await page.locator('tbody tr').count() > 0;

@@ -7,6 +7,8 @@ const router = express.Router();
 // GET /profiles - List all profiles
 router.get('/', async (req, res) => {
     try {
+        logger.info('Processing profiles request', { query: req.query, originalUrl: req.originalUrl });
+        
         const { page = 1, limit = 50, search, company, location, score_range, sort_by, sort_order } = req.query;
         
         const params = {
@@ -22,11 +24,24 @@ router.get('/', async (req, res) => {
         if (sort_by) params.sort_by = sort_by;
         if (sort_order) params.sort_order = sort_order;
         
+        logger.info('Making API call with params', { params });
+        
         const response = await apiClient.get('/profiles', { params });
+        
+        logger.info('API response received', { 
+            dataLength: response.data?.data?.length || 0,
+            pagination: response.data?.pagination
+        });
         
         // Build base URL for pagination
         const baseUrl = req.originalUrl.split('?')[0];
         const queryString = new URLSearchParams(req.query);
+        
+        logger.info('Rendering template', { 
+            baseUrl, 
+            queryParams: queryString.toString(),
+            hasProfiles: !!(response.data?.data?.length)
+        });
         
         res.render('profiles/list', {
             title: 'LinkedIn Profiles',
@@ -38,11 +53,32 @@ router.get('/', async (req, res) => {
             queryParams: queryString.toString()
         });
     } catch (error) {
-        logger.error('Error fetching profiles:', error);
-        res.status(500).render('error', {
-            title: 'Error',
-            message: 'Failed to load profiles',
-            error: process.env.NODE_ENV === 'development' ? error : {}
+        logger.error('Error fetching profiles:', {
+            error: error.message,
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data,
+            config: {
+                url: error.config?.url,
+                method: error.config?.method,
+                params: error.config?.params
+            }
+        });
+        
+        // In case of API error, still render the page but with empty results
+        // This prevents losing the URL parameters
+        const baseUrl = req.originalUrl.split('?')[0];
+        const queryString = new URLSearchParams(req.query);
+        
+        res.render('profiles/list', {
+            title: 'LinkedIn Profiles',
+            profiles: [],
+            pagination: {},
+            query: req.query,
+            currentPage: 'profiles',
+            baseUrl: baseUrl,
+            queryParams: queryString.toString(),
+            error: 'Failed to load profiles. Please try again.'
         });
     }
 });
