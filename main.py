@@ -499,6 +499,8 @@ class ProfileController:
         profiles = await self.db_client.search_profiles(
             name=name,
             company=company,
+            location=location,
+            score_range=score_range,
             limit=limit,
             offset=offset
         )

@@ -532,6 +532,8 @@ class SupabaseClient(LoggerMixin):
         self,
         name: Optional[str] = None,
         company: Optional[str] = None,
+        location: Optional[str] = None,
+        score_range: Optional[str] = None,
         limit: int = 50,
         offset: int = 0
     ) -> List[Dict[str, Any]]:
@@ -541,6 +543,8 @@ class SupabaseClient(LoggerMixin):
         Args:
             name: Partial name search (case-insensitive)
             company: Partial company name search (case-insensitive)
+            location: Partial location search (case-insensitive, searches city field)
+            score_range: Score range filter: 'unscored', 'high' (8-10), 'medium' (5-7), 'low' (1-4)
             limit: Maximum number of profiles to return
             offset: Number of profiles to skip
             
@@ -548,7 +552,7 @@ class SupabaseClient(LoggerMixin):
             List of matching profiles
         """
         await self._ensure_client()
-        self.logger.info("Searching profiles", name=name, company=company, limit=limit, offset=offset)
+        self.logger.info("Searching profiles", name=name, company=company, location=location, score_range=score_range, limit=limit, offset=offset)
         
         try:
             # Start with base query
@@ -563,6 +567,36 @@ class SupabaseClient(LoggerMixin):
             if company:
                 # This is a simplified approach - in production you might want more sophisticated JSON searching
                 query = query.or_(f"current_company->>company_name.ilike.%{company}%,position.ilike.%{company}%")
+            
+            # Add location filter if provided (search in city field)
+            if location:
+                query = query.ilike("city", f"%{location}%")
+            
+            # Add score_range filter if provided (requires ai_score field in database)
+            if score_range:
+                if score_range.lower() == "unscored":
+                    # Filter for profiles without ai_score (null values)
+                    query = query.is_("ai_score", None)
+                elif score_range.lower() == "high":
+                    # High scores: 8-10
+                    query = query.gte("ai_score", 8).lte("ai_score", 10)
+                elif score_range.lower() == "medium":
+                    # Medium scores: 5-7
+                    query = query.gte("ai_score", 5).lte("ai_score", 7)
+                elif score_range.lower() == "low":
+                    # Low scores: 1-4
+                    query = query.gte("ai_score", 1).lte("ai_score", 4)
+                else:
+                    # Handle custom ranges like "7-10"
+                    if "-" in score_range:
+                        try:
+                            min_score, max_score = score_range.split("-")
+                            min_score = float(min_score.strip())
+                            max_score = float(max_score.strip())
+                            query = query.gte("ai_score", min_score).lte("ai_score", max_score)
+                        except (ValueError, IndexError):
+                            # Invalid format, log warning but don't break the query
+                            self.logger.warning(f"Invalid score_range format: {score_range}")
             
             # Add ordering, limit, and offset
             query = query.order("created_at", desc=True).range(offset, offset + limit - 1)
