@@ -200,7 +200,7 @@ class SupabaseClient(LoggerMixin):
 
     async def delete_profile(self, profile_id: str) -> bool:
         """
-        Delete profile by record ID
+        Delete profile by record ID and all associated relationships
 
         Args:
             profile_id: Profile record ID
@@ -212,12 +212,30 @@ class SupabaseClient(LoggerMixin):
         self.logger.info("Deleting profile by ID", profile_id=profile_id)
 
         try:
+            # First, delete profile-company relationships
+            profile_companies_table = self.client.table("profile_companies")
+            relationships_result = await profile_companies_table.delete().eq("profile_id", profile_id).execute()
+            
+            relationships_deleted = len(relationships_result.data) if relationships_result.data else 0
+            if relationships_deleted > 0:
+                self.logger.info(
+                    "Profile-company relationships deleted", 
+                    profile_id=profile_id, 
+                    relationships_deleted=relationships_deleted
+                )
+            
+            # Then delete the profile itself
             table = self.client.table("linkedin_profiles")
             result = await table.delete().eq("id", profile_id).execute()
 
             # Check if any rows were deleted (result.data will contain deleted rows)
             if result.data and len(result.data) > 0:
-                self.logger.info("Profile deleted", profile_id=profile_id, deleted_count=len(result.data))
+                self.logger.info(
+                    "Profile deleted successfully", 
+                    profile_id=profile_id, 
+                    profile_deleted=len(result.data),
+                    relationships_deleted=relationships_deleted
+                )
                 return True
             else:
                 self.logger.warning("Profile not found for deletion", profile_id=profile_id)

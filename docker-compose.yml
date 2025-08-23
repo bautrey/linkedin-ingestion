@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # Main LinkedIn Ingestion Service
+  linkedin-ingestion:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      # These should be set in a .env file or passed as environment variables
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - API_KEY=${API_KEY}
+      - CASSIDY_API_KEY=${CASSIDY_API_KEY}
+      - CASSIDY_WORKFLOW_ID=${CASSIDY_WORKFLOW_ID}
+      - CASSIDY_COMPANY_WORKFLOW_ID=${CASSIDY_COMPANY_WORKFLOW_ID}
+      - ENVIRONMENT=development
+      - ENABLE_COMPANY_INGESTION=true
+      - SIMILARITY_THRESHOLD=0.8
+      - VECTOR_DIMENSION=1536
+    volumes:
+      # Mount code for development (optional - remove for production-like testing)
+      - .:/app:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    networks:
+      - linkedin-network
+
+  # Admin UI (if you want to run it alongside)
+  admin-ui:
+    build:
+      context: ./admin-ui
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_BASE_URL=http://linkedin-ingestion:8000
+      - REACT_APP_API_KEY=${API_KEY}
+    depends_on:
+      - linkedin-ingestion
+    networks:
+      - linkedin-network
+
+networks:
+  linkedin-network:
+    driver: bridge
+
+# Optional: Add volumes for persistent data
+volumes:
+  app_data:
+    driver: local
