@@ -530,12 +530,8 @@ class ProfileController:
     async def create_profile(self, request: ProfileCreateRequest) -> ProfileResponse:
         """Create a new LinkedIn profile with complete company processing
         
-        Single unified path for profile creation with company processing.
+        Uses the consolidated LinkedInDataPipeline for all processing.
         """
-        import asyncio
-        from app.services.company_service import CompanyService
-        from app.repositories.company_repository import CompanyRepository
-        from app.models.canonical.company import CanonicalCompany
         
         # Normalize LinkedIn URL to consistent format
         linkedin_url = normalize_linkedin_url(str(request.linkedin_url))
@@ -546,76 +542,40 @@ class ProfileController:
             # Smart update behavior: delete existing profile and create fresh one
             await self.db_client.delete_profile(existing["id"])
         
-        # Step 1: Fetch profile directly from Cassidy API
-        profile = await self.cassidy_client.fetch_profile(linkedin_url)
+        # Use LinkedInDataPipeline for unified processing
+        # Note: Company processing is controlled by ENABLE_COMPANY_INGESTION setting
+        pipeline_result = await self.linkedin_pipeline.ingest_profile(linkedin_url, store_in_db=False)
         
-        # Step 2: Store profile in database first
+        # Extract profile from pipeline result
+        from app.cassidy.models import LinkedInProfile
+        if pipeline_result.get("profile"):
+            # Convert dict back to LinkedInProfile if needed
+            if isinstance(pipeline_result["profile"], dict):
+                profile = LinkedInProfile(**pipeline_result["profile"])
+            else:
+                profile = pipeline_result["profile"]
+        else:
+            raise Exception("No profile data returned from pipeline")
+        
+        # Store profile in database
         profile_id = await self.db_client.store_profile(profile)
         
-        # Step 3: Update with suggested role if provided
+        # Update with suggested role if provided
         if request.suggested_role:
             await self.db_client.update_profile_suggested_role(profile_id, request.suggested_role.value)
         
-        companies_processed = []
-        
-        # Step 4: Process companies if requested (using working logic from LinkedInDataPipeline)
-        if request.include_companies and hasattr(profile, 'experience') and profile.experience:
-            try:
-                # Initialize company service (ensure it's available)
-                company_repo = CompanyRepository(self.db_client)
-                company_service = CompanyService(company_repo)
-                
-                # Extract company URLs from profile experience
-                company_urls = self.linkedin_pipeline._extract_company_urls(profile)
-                
-                if company_urls:
-                    logger.info(f"Found {len(company_urls)} companies to fetch for profile {profile.name}")
-                    
-                    # Fetch detailed company data from Cassidy API
-                    cassidy_companies = await self.linkedin_pipeline._fetch_companies(company_urls)
-                    
-                    if cassidy_companies:
-                        logger.info(f"Successfully fetched {len(cassidy_companies)} companies from Cassidy API")
-                        
-                        # Convert Cassidy CompanyProfile objects to CanonicalCompany for database storage
-                        logger.info(f"DEBUG: Starting conversion of {len(cassidy_companies)} Cassidy companies to canonical format")
-                        canonical_companies = self.linkedin_pipeline.convert_cassidy_to_canonical(cassidy_companies)
-                        logger.info(f"DEBUG: Conversion completed - got {len(canonical_companies)} canonical companies")
-                        
-                        # Use CompanyService to process companies (create/update with deduplication)
-                        if canonical_companies:
-                            processing_results = await company_service.batch_process_companies(canonical_companies)
-                            
-                            # Convert results for response
-                            for process_result in processing_results:
-                                if process_result["success"]:
-                                    companies_processed.append({
-                                        "company_id": process_result["company_id"],
-                                        "company_name": process_result["company_name"],
-                                        "action": process_result["action"]  # created/updated
-                                    })
-                            
-                            logger.info(f"Company processing completed: {len(companies_processed)} companies processed")
-                    else:
-                        logger.warning("No companies fetched from Cassidy API")
-                else:
-                    logger.info("No company URLs found in profile")
-                    
-            except Exception as e:
-                error_msg = f"Company processing failed: {str(e)}"
-                logger.warning(error_msg)
-                # Continue with profile processing even if company processing fails
-        
-        # Step 5: Retrieve the final profile data to return
+        # Retrieve the final profile data to return
         stored_profile = await self.db_client.get_profile_by_id(profile_id)
         response = self._convert_db_profile_to_response(stored_profile)
         
-        # Add company processing metadata to response
-        if companies_processed:
-            response.companies_processed = companies_processed
+        # Add company processing metadata to response from pipeline result
+        if pipeline_result.get("companies"):
+            response.companies_processed = pipeline_result["companies"]
             response.pipeline_metadata = {
-                "companies_found": len(companies_processed),
-                "companies_fetched_from_cassidy": True
+                "companies_found": len(pipeline_result["companies"]),
+                "companies_fetched_from_cassidy": True,
+                "pipeline_status": pipeline_result.get("status"),
+                "pipeline_id": pipeline_result.get("pipeline_id")
             }
         
         return response

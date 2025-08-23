@@ -442,11 +442,12 @@ class LinkedInDataPipeline(LoggerMixin):
         self.logger.info(f"DEBUG: Starting company URL extraction from profile: {getattr(profile, 'full_name', 'Unknown')}")
         company_urls = []
         
-        # Get from current company - using hasattr and attribute access for Pydantic model
+        # Get from current company - current_company is a dictionary property
         if hasattr(profile, 'current_company') and profile.current_company:
-            if hasattr(profile.current_company, 'linkedin_url') and profile.current_company.linkedin_url:
-                self.logger.info(f"DEBUG: Found current company URL: {profile.current_company.linkedin_url}")
-                company_urls.append(profile.current_company.linkedin_url)
+            linkedin_url = profile.current_company.get('linkedin_url')
+            if linkedin_url:
+                self.logger.info(f"DEBUG: Found current company URL: {linkedin_url}")
+                company_urls.append(linkedin_url)
         
         # Get from experience - using attribute access since ExperienceEntry is a Pydantic model
         if hasattr(profile, 'experience') and profile.experience:
@@ -472,7 +473,7 @@ class LinkedInDataPipeline(LoggerMixin):
         
         self.logger.info(f"DEBUG: Unique company URLs after deduplication: {len(unique_urls)}")
         
-        # Apply rate limit filtering
+        # Apply rate limit filtering for now (we'll remove this later after debugging)
         filtered_urls = unique_urls[:5]  # Limit to 5 companies to avoid rate limits
         if len(unique_urls) > 5:
             self.logger.info(f"DEBUG: Rate limiting applied - processing first 5 of {len(unique_urls)} companies")

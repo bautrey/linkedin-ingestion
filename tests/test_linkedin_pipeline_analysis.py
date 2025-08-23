@@ -49,7 +49,7 @@ class TestLinkedInPipelineCompanyMethods:
         
         urls = pipeline._extract_company_urls(sample_profile)
         
-        # Should extract current company + 2 experience companies
+        # Should extract current company (from current_company property) + 2 experience companies
         assert len(urls) == 3
         assert "https://linkedin.com/company/current-corp" in urls
         assert "https://linkedin.com/company/tech-corp" in urls  
@@ -139,7 +139,14 @@ class TestLinkedInPipelineCompanyMethods:
         mock_company1 = CompanyProfile(company_name="Company 1", company_id="1")
         mock_company2 = CompanyProfile(company_name="Company 2", company_id="2")
         
-        pipeline.cassidy_client.fetch_company.side_effect = [mock_company1, mock_company2]
+        # Create async mock for fetch_company
+        async def mock_fetch_company(url):
+            if "company-1" in url:
+                return mock_company1
+            else:
+                return mock_company2
+        
+        pipeline.cassidy_client.fetch_company = Mock(side_effect=mock_fetch_company)
         
         urls = [
             "https://linkedin.com/company/company-1",
@@ -188,7 +195,12 @@ class TestLinkedInPipelineCompanyMethods:
         """Test _fetch_companies includes rate limiting delays"""
         
         mock_company = CompanyProfile(company_name="Test Corp", company_id="1")
-        pipeline.cassidy_client.fetch_company.return_value = mock_company
+        
+        # Create async mock for fetch_company
+        async def mock_fetch_company(url):
+            return mock_company
+        
+        pipeline.cassidy_client.fetch_company = Mock(side_effect=mock_fetch_company)
         
         urls = ["https://linkedin.com/company/test-corp"]
         
