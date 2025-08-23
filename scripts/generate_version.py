@@ -18,21 +18,34 @@ def run_git_command(cmd: str) -> str:
             cmd.split(), 
             capture_output=True, 
             text=True, 
-            check=True
+            check=True,
+            cwd=Path(__file__).parent.parent  # Ensure we're in project root
         )
         return result.stdout.strip()
-    except subprocess.CalledProcessError:
+    except (subprocess.CalledProcessError, FileNotFoundError):
         return "unknown"
 
 def generate_version_info() -> dict:
-    """Generate comprehensive version information from git"""
+    """Generate comprehensive version information from git or Railway environment"""
     
-    # Get git information
+    # Try git first, fallback to Railway environment variables
     commit_hash = run_git_command("git rev-parse HEAD")
     commit_short = run_git_command("git rev-parse --short HEAD")
     branch = run_git_command("git rev-parse --abbrev-ref HEAD")
     author = run_git_command("git log -1 --pretty=format:%an")
     commit_message = run_git_command("git log -1 --pretty=format:%s")
+    
+    # Railway fallbacks if git is not available
+    if commit_hash == "unknown":
+        commit_hash = os.getenv("RAILWAY_GIT_COMMIT_SHA", "unknown")
+    if commit_short == "unknown" and commit_hash != "unknown":
+        commit_short = commit_hash[:7]
+    if branch == "unknown":
+        branch = os.getenv("RAILWAY_GIT_BRANCH", "master")
+    if author == "unknown":
+        author = os.getenv("RAILWAY_GIT_AUTHOR", "Railway Deploy")
+    if commit_message == "unknown":
+        commit_message = os.getenv("RAILWAY_GIT_COMMIT_MESSAGE", "Railway deployment")
     
     # Generate version string
     base_version = "2.1.0"
