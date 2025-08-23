@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     )
 
     # Application
-    VERSION: str = "2.1.0-development+ae6d5ec9"
+    VERSION: str = "2.1.0-development+4629268"
     ENVIRONMENT: str = Field(default="development", description="Environment: development, staging, production")
     DEBUG: bool = Field(default=True, description="Enable debug mode")
     

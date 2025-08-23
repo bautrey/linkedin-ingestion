@@ -1,13 +1,13 @@
 {
-  "version": "2.1.0-development+ae6d5ec9",
+  "version": "2.1.0-development+4629268",
   "base_version": "2.1.0",
-  "build_time": "2025-08-19T21:47:59Z",
+  "build_time": "2025-08-23T11:32:00Z",
   "git": {
-    "commit": "ae6d5ec9ca14b38d1ee6178dab8ba92db21892f9",
-    "commit_short": "ae6d5ec9",
+    "commit": "462926850ce07f59f0945f920285368aa7d14ddc",
+    "commit_short": "4629268",
     "branch": "master",
     "author": "Burke Autrey",
-    "message": "Session hibernation: Complete testing infrastructure established"
+    "message": "deploy: Trigger Railway deployment with comment update"
   },
   "deployment": {
     "service_id": "local",
