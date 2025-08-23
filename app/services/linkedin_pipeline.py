@@ -73,7 +73,8 @@ class LinkedInDataPipeline(LoggerMixin):
         self, 
         linkedin_url: str,
         store_in_db: bool = True,
-        generate_embeddings: bool = True
+        generate_embeddings: bool = True,
+        suggested_role: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Complete unified profile ingestion pipeline with company processing
@@ -240,6 +241,11 @@ class LinkedInDataPipeline(LoggerMixin):
                 # Store profile
                 profile_id = await self.db_client.store_profile(profile, profile_embedding)
                 result["storage_ids"]["profile"] = profile_id
+                
+                # Set suggested role if provided
+                if suggested_role:
+                    self.logger.info("Updating profile suggested role", pipeline_id=pipeline_id, suggested_role=suggested_role)
+                    await self.db_client.update_profile_suggested_role(profile_id, suggested_role)
                 
                 # TODO: Link profile to companies in profile_companies junction table
                 # This would be implemented when we add the profile-company linking logic

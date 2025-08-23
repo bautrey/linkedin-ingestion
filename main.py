@@ -544,27 +544,18 @@ class ProfileController:
             # Smart update behavior: delete existing profile and create fresh one
             await self.db_client.delete_profile(existing["id"])
         
-        # Use LinkedInDataPipeline for unified processing
+        # Use LinkedInDataPipeline for unified processing (now includes storage and suggested role)
         # Note: Company processing is controlled by ENABLE_COMPANY_INGESTION setting
-        pipeline_result = await self.linkedin_pipeline.ingest_profile(linkedin_url, store_in_db=False)
+        pipeline_result = await self.linkedin_pipeline.ingest_profile(
+            linkedin_url, 
+            store_in_db=True,  # Pipeline now handles all storage
+            suggested_role=request.suggested_role.value if request.suggested_role else None
+        )
         
-        # Extract profile from pipeline result
-        from app.cassidy.models import LinkedInProfile
-        if pipeline_result.get("profile"):
-            # Convert dict back to LinkedInProfile if needed
-            if isinstance(pipeline_result["profile"], dict):
-                profile = LinkedInProfile(**pipeline_result["profile"])
-            else:
-                profile = pipeline_result["profile"]
-        else:
-            raise Exception("No profile data returned from pipeline")
-        
-        # Store profile in database
-        profile_id = await self.db_client.store_profile(profile)
-        
-        # Update with suggested role if provided
-        if request.suggested_role:
-            await self.db_client.update_profile_suggested_role(profile_id, request.suggested_role.value)
+        # Get the stored profile ID from pipeline result
+        profile_id = pipeline_result.get("storage_ids", {}).get("profile")
+        if not profile_id:
+            raise Exception("No profile ID returned from pipeline storage")
         
         # Retrieve the final profile data to return
         stored_profile = await self.db_client.get_profile_by_id(profile_id)
