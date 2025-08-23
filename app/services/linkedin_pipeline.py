@@ -247,8 +247,45 @@ class LinkedInDataPipeline(LoggerMixin):
                     self.logger.info("Updating profile suggested role", pipeline_id=pipeline_id, suggested_role=suggested_role)
                     await self.db_client.update_profile_suggested_role(profile_id, suggested_role)
                 
-                # TODO: Link profile to companies in profile_companies junction table
-                # This would be implemented when we add the profile-company linking logic
+                # Link profile to companies in profile_companies junction table
+                if companies_processed and self.company_service:
+                    self.logger.info("Linking profile to companies", pipeline_id=pipeline_id, companies_count=len(companies_processed))
+                    
+                    # Extract work experience from profile to map to companies
+                    company_experiences = self._extract_company_experiences(profile)
+                    
+                    for company_data in companies_processed:
+                        company_id = company_data["company_id"]
+                        company_name = company_data["company_name"]
+                        
+                        # Find matching experience for this company
+                        experience = self._find_experience_for_company(company_experiences, company_name)
+                        
+                        if experience:
+                            try:
+                                self.company_service.link_profile_to_company(profile_id, company_id, experience)
+                                self.logger.debug("Linked profile to company", 
+                                                pipeline_id=pipeline_id, 
+                                                company_name=company_name, 
+                                                position=experience.get("position_title", "Unknown"))
+                            except Exception as e:
+                                self.logger.warning("Failed to link profile to company", 
+                                                  pipeline_id=pipeline_id, 
+                                                  company_name=company_name, 
+                                                  error=str(e))
+                        else:
+                            # Create minimal link if no specific experience found
+                            minimal_experience = {"position_title": "Employee", "is_current": False}
+                            try:
+                                self.company_service.link_profile_to_company(profile_id, company_id, minimal_experience)
+                                self.logger.debug("Created minimal profile-company link", 
+                                                pipeline_id=pipeline_id, 
+                                                company_name=company_name)
+                            except Exception as e:
+                                self.logger.warning("Failed to create minimal profile-company link", 
+                                                  pipeline_id=pipeline_id, 
+                                                  company_name=company_name, 
+                                                  error=str(e))
             
             # Pipeline completed successfully
             result["status"] = "completed"
@@ -1006,6 +1043,77 @@ class LinkedInDataPipeline(LoggerMixin):
                     return domain
             except Exception as e:
                 self.logger.debug(f"Failed to extract domain from website {company_website}: {str(e)}")
+        
+        return None
+    
+    def _extract_company_experiences(self, profile: LinkedInProfile) -> List[Dict[str, Any]]:
+        """
+        Extract work experience data from profile to map to companies.
+        
+        Args:
+            profile: LinkedIn profile from Cassidy
+            
+        Returns:
+            List of experience dictionaries with company mapping info
+        """
+        experiences = []
+        
+        # Add current company experience
+        if hasattr(profile, 'company') and profile.company:
+            current_exp = {
+                "company_name": profile.company,
+                "position_title": getattr(profile, 'job_title', getattr(profile, 'position', 'Employee')),
+                "is_current": True,
+                "start_date": None,  # Current company usually doesn't have explicit start date
+                "end_date": None,
+                "description": None
+            }
+            experiences.append(current_exp)
+        
+        # Add experience entries
+        if hasattr(profile, 'experience') and profile.experience:
+            for exp in profile.experience:
+                if hasattr(exp, 'company') and exp.company:
+                    exp_data = {
+                        "company_name": exp.company,
+                        "position_title": getattr(exp, 'title', getattr(exp, 'position', 'Employee')),
+                        "is_current": getattr(exp, 'is_current', False),
+                        "start_date": getattr(exp, 'start_date', None),
+                        "end_date": getattr(exp, 'end_date', None) if not getattr(exp, 'is_current', False) else None,
+                        "description": getattr(exp, 'description', None)
+                    }
+                    experiences.append(exp_data)
+        
+        return experiences
+    
+    def _find_experience_for_company(self, experiences: List[Dict[str, Any]], company_name: str) -> Optional[Dict[str, Any]]:
+        """
+        Find the matching experience entry for a given company name.
+        
+        Args:
+            experiences: List of experience dictionaries
+            company_name: Company name to match
+            
+        Returns:
+            Matching experience dictionary or None
+        """
+        if not experiences or not company_name:
+            return None
+        
+        # First try exact match
+        for exp in experiences:
+            if exp.get("company_name", "").lower() == company_name.lower():
+                return exp
+        
+        # Try partial matching (company name contained in experience company name or vice versa)
+        normalized_company = company_name.lower().strip()
+        for exp in experiences:
+            exp_company = exp.get("company_name", "").lower().strip()
+            
+            # Check if either name is contained in the other
+            if (normalized_company in exp_company or 
+                exp_company in normalized_company) and len(exp_company) > 2:
+                return exp
         
         return None
     
