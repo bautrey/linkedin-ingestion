@@ -810,3 +810,32 @@ Session File: ./sessions/linkedin-ingestion-session-2025-08-22-201437.md
 
 ---
 
+## Session 2025-08-23 09:42:53
+
+Session File: ./sessions/linkedin-ingestion-session-2025-08-23-094253.md
+
+**Summary**: Admin UI Filter Enhancement - Location and Score Range Implementation
+**Status**: 🟡 DEPLOYMENT IN PROGRESS - Database filtering logic missing
+**Key Work**: 
+- ✅ Added location and score_range filters to admin UI search form
+- ✅ Updated backend API endpoints to accept new filter parameters
+- ✅ Modified ProfileController to handle new parameters
+- ❌ **CRITICAL**: Database search_profiles method missing actual filtering logic
+- 🟡 Railway deployment building latest changes (commit 4d8c512)
+
+**Next**: Implement database filtering in search_profiles method once deployment completes
+
+---
+
+
+## Session 2025-08-23 20:29:54
+
+Session File: ./sessions/linkedin-ingestion-session-2025-08-23-202954.md
+
+**🔴 CRITICAL DISCOVERY**: Backend API sorting completely broken - ignores all sort parameters
+**Status**: Root cause identified, backend API sorting needs implementation
+**Duration**: 2.5 hours of investigation and testing
+**Key Achievement**: Created comprehensive Playwright tests proving admin UI works correctly
+
+---
+
