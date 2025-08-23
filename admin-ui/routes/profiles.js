@@ -7,14 +7,18 @@ const router = express.Router();
 // GET /profiles - List all profiles
 router.get('/', async (req, res) => {
     try {
-        const { page = 1, limit = 50, search, sort_by, sort_order } = req.query;
+        const { page = 1, limit = 50, search, company, location, score_range, sort_by, sort_order } = req.query;
         
         const params = {
             page: parseInt(page),
             limit: parseInt(limit)
         };
         
-        if (search) params.search = search;
+        // Handle search/filter parameters
+        if (search) params.name = search;  // API uses 'name' parameter for search
+        if (company) params.company = company;
+        if (location) params.location = location;
+        if (score_range) params.score_range = score_range;
         if (sort_by) params.sort_by = sort_by;
         if (sort_order) params.sort_order = sort_order;
         

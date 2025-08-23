@@ -1,0 +1,704 @@
+# Page snapshot
+
+```yaml
+- navigation:
+  - text: 
+  - heading "LinkedIn" [level=5]
+  - text: Ingestion Admin
+  - list:
+    - listitem:
+      - link " Dashboard":
+        - /url: /
+    - listitem:
+      - link " Profiles":
+        - /url: /profiles
+    - listitem:
+      - link " Companies":
+        - /url: /companies
+    - listitem:
+      - link " Ingestion":
+        - /url: /ingestion
+    - listitem:
+      - link " Scoring":
+        - /url: /scoring
+    - listitem:
+      - link " Templates":
+        - /url: /templates
+  - separator
+  - text:  v2.1.0-development+ae6d5ec9 
+  - link "ae6d5ec":
+    - /url: https://github.com/bautrey/linkedin-ingestion/commit/ae6d5ec9
+  - text: PROD  8/19/2025  LinkedIn Ingestion Admin Dashboard
+- navigation:
+  - link " LinkedIn Ingestion Admin":
+    - /url: /
+  - list:
+    - listitem:
+      - link " Dashboard":
+        - /url: /
+    - listitem:
+      - link " Profiles":
+        - /url: /profiles
+    - listitem:
+      - link " Companies":
+        - /url: /companies
+  - list:
+    - listitem:  PROD https://smooth-mailbox-production.up.railway.app
+    - listitem: 
+    - listitem:
+      - button " Admin"
+- heading "LinkedIn Profiles" [level=2]
+- paragraph: Showing 1-38 of 38 profiles
+- button " Reset Filters"
+- button " Bulk Actions (0)" [disabled]
+- link " Add Profile":
+  - /url: /ingestion
+- text: 
+- textbox "Search profiles...": test
+- combobox:
+  - option "All Companies" [selected]
+- combobox:
+  - option "All Locations" [selected]
+- combobox:
+  - option "All Scores" [selected]
+  - option "Unscored"
+  - option "High (8-10)"
+  - option "Medium (5-7)"
+  - option "Low (1-4)"
+- button " Filter"
+- button ""
+- table:
+  - rowgroup:
+    - row "Name  Current Position  Company  Location  Score  Added  Actions":
+      - cell:
+        - checkbox
+      - cell "Name "
+      - cell "Current Position "
+      - cell "Company "
+      - cell "Location "
+      - cell "Score "
+      - cell "Added "
+      - cell "Actions"
+  - rowgroup:
+    - row "Shelly Brown photo  Shelly Brown  View LinkedIn Board Member KC Tech Council  Leawood, United States Unscored 8/23/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Shelly Brown photo  Shelly Brown  View LinkedIn":
+        - img "Shelly Brown photo"
+        - text: 
+        - link "Shelly Brown":
+          - /url: /profiles/24ed41b9-e5da-4cee-8005-78374f5e8324
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/shellywbrown/
+      - cell "Board Member"
+      - cell "KC Tech Council"
+      - cell " Leawood, United States"
+      - cell "Unscored"
+      - cell "8/23/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "Michael Torgler photo  Michael Torgler  View LinkedIn Senior Director, Technology Services EVERSANA INTOUCH  Overland Park, United States Unscored 8/23/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Michael Torgler photo  Michael Torgler  View LinkedIn":
+        - img "Michael Torgler photo"
+        - text: 
+        - link "Michael Torgler":
+          - /url: /profiles/5f751638-e2d8-49ec-b61e-95401d08dc3f
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/michaeltorgler/
+      - cell "Senior Director, Technology Services"
+      - cell "EVERSANA INTOUCH"
+      - cell " Overland Park, United States"
+      - cell "Unscored"
+      - cell "8/23/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "Dan Koellhofer photo  Dan Koellhofer  View LinkedIn Senior Vice President of Applications Anaplan  United States Unscored 8/22/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Dan Koellhofer photo  Dan Koellhofer  View LinkedIn":
+        - img "Dan Koellhofer photo"
+        - text: 
+        - link "Dan Koellhofer":
+          - /url: /profiles/466b4157-4fdd-43a5-b17b-1ae065c94e5e
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/dkoellhofer/
+      - cell "Senior Vice President of Applications"
+      - cell "Anaplan"
+      - cell " United States"
+      - cell "Unscored"
+      - cell "8/22/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "Paul Rosner photo  Paul Rosner  View LinkedIn IT Strategy, Governance & Digital Transformation Self Employed  Houston, United States Unscored 8/22/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Paul Rosner photo  Paul Rosner  View LinkedIn":
+        - img "Paul Rosner photo"
+        - text: 
+        - link "Paul Rosner":
+          - /url: /profiles/6c1134a7-8c29-400d-b876-0422b7c46aad
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/paulrosner/
+      - cell "IT Strategy, Governance & Digital Transformation"
+      - cell "Self Employed"
+      - cell " Houston, United States"
+      - cell "Unscored"
+      - cell "8/22/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "John Marty photo  John Marty  View LinkedIn Founder Mindset Reset Podcast  Seattle, United States Unscored 8/22/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "John Marty photo  John Marty  View LinkedIn":
+        - img "John Marty photo"
+        - text: 
+        - link "John Marty":
+          - /url: /profiles/133316c5-4514-4a48-924d-79e14306924d
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/johnrmarty/
+      - cell "Founder"
+      - cell "Mindset Reset Podcast"
+      - cell " Seattle, United States"
+      - cell "Unscored"
+      - cell "8/22/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "Brad Wheeler photo  Brad Wheeler  View LinkedIn Area Managing Partner Fortium Partners LP  Newport Beach, United States Unscored 8/22/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Brad Wheeler photo  Brad Wheeler  View LinkedIn":
+        - img "Brad Wheeler photo"
+        - text: 
+        - link "Brad Wheeler":
+          - /url: /profiles/90c84dc5-4ec0-4335-9f50-87d4335894cf
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/bradfordwheeler/
+      - cell "Area Managing Partner"
+      - cell "Fortium Partners LP"
+      - cell " Newport Beach, United States"
+      - cell "Unscored"
+      - cell "8/22/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " T P.  View LinkedIn — —  Australia Unscored 8/22/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " T P.  View LinkedIn":
+        - text: 
+        - link "T P.":
+          - /url: /profiles/b5470e09-f43d-4398-8e0a-e74f5aec5dc6
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/test-profile/
+      - cell "—"
+      - cell "—"
+      - cell " Australia"
+      - cell "Unscored"
+      - cell "8/22/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "Burke Holland photo  Burke Holland  View LinkedIn Principal Developer Advocate Microsoft  Nashville, United States Unscored 8/22/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Burke Holland photo  Burke Holland  View LinkedIn":
+        - img "Burke Holland photo"
+        - text: 
+        - link "Burke Holland":
+          - /url: /profiles/4af50658-dfce-431e-835c-2d9fb5be5fd2
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/burkeholland/
+      - cell "Principal Developer Advocate"
+      - cell "Microsoft"
+      - cell " Nashville, United States"
+      - cell "Unscored"
+      - cell "8/22/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "Burke Autrey photo  Burke Autrey  View LinkedIn CEO Fortium Partners  Dallas, United States Unscored 8/22/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Burke Autrey photo  Burke Autrey  View LinkedIn":
+        - img "Burke Autrey photo"
+        - text: 
+        - link "Burke Autrey":
+          - /url: /profiles/cc50d7e8-48a1-4e60-9120-dc505298e7a0
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/burkeautrey/
+      - cell "CEO"
+      - cell "Fortium Partners"
+      - cell " Dallas, United States"
+      - cell "Unscored"
+      - cell "8/22/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Ashish J.  View LinkedIn Account Technology Strategist Microsoft  Glen Allen, United States Unscored 8/21/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Ashish J.  View LinkedIn":
+        - text: 
+        - link "Ashish J.":
+          - /url: /profiles/1685a752-6cf6-4312-970a-204c4543a527
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/ashishjainit/
+      - cell "Account Technology Strategist"
+      - cell "Microsoft"
+      - cell " Glen Allen, United States"
+      - cell "Unscored"
+      - cell "8/21/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "Jeffrey Ratter photo  Jeffrey Ratter  View LinkedIn Partner Fortium Partners  Santa Barbara, United States Unscored 8/21/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Jeffrey Ratter photo  Jeffrey Ratter  View LinkedIn":
+        - img "Jeffrey Ratter photo"
+        - text: 
+        - link "Jeffrey Ratter":
+          - /url: /profiles/94d19518-974b-4227-94ca-22c27d81fc33
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/jeffreyratter/
+      - cell "Partner"
+      - cell "Fortium Partners"
+      - cell " Santa Barbara, United States"
+      - cell "Unscored"
+      - cell "8/21/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "Reid Hoffman photo  Reid Hoffman  View LinkedIn Co-Founder, Board Chair Manas AI  United States Unscored 8/21/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Reid Hoffman photo  Reid Hoffman  View LinkedIn":
+        - img "Reid Hoffman photo"
+        - text: 
+        - link "Reid Hoffman":
+          - /url: /profiles/e0a62d4b-fab8-40ac-a62b-18d3a6a86734
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/reidhoffman/
+      - cell "Co-Founder, Board Chair"
+      - cell "Manas AI"
+      - cell " United States"
+      - cell "Unscored"
+      - cell "8/21/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "Richard Harris photo  Richard Harris  View LinkedIn Managing Partner Fortium Partners LP  Boston, United States Unscored 8/19/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Richard Harris photo  Richard Harris  View LinkedIn":
+        - img "Richard Harris photo"
+        - text: 
+        - link "Richard Harris":
+          - /url: /profiles/3d644180-9ae4-4f42-90e3-69d2da27c108
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/richard-harris-9780751/
+      - cell "Managing Partner"
+      - cell "Fortium Partners LP"
+      - cell " Boston, United States"
+      - cell "Unscored"
+      - cell "8/19/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "Aaryan Pokhrel photo  Aaryan Pokhrel  View LinkedIn Python Engineer byterays  Kathmandu, Nepal Unscored 8/19/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Aaryan Pokhrel photo  Aaryan Pokhrel  View LinkedIn":
+        - img "Aaryan Pokhrel photo"
+        - text: 
+        - link "Aaryan Pokhrel":
+          - /url: /profiles/e4a49896-dac1-4b7c-8e82-401859bb4c24
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/test-user/
+      - cell "Python Engineer"
+      - cell "byterays"
+      - cell " Kathmandu, Nepal"
+      - cell "Unscored"
+      - cell "8/19/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Nishant Nagwani  View LinkedIn Chief Product & Technology Officer Brainberg  Mumbai, India Unscored 8/14/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Nishant Nagwani  View LinkedIn":
+        - text: 
+        - link "Nishant Nagwani":
+          - /url: /profiles/b15b9a36-f190-47c3-91eb-b6fd60f4cc64
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/nishantnagwani/
+      - cell "Chief Product & Technology Officer"
+      - cell "Brainberg"
+      - cell " Mumbai, India"
+      - cell "Unscored"
+      - cell "8/14/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Christopher L.  View LinkedIn Chief Information Officer Red 6  United States Unscored 8/12/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Christopher L.  View LinkedIn":
+        - text: 
+        - link "Christopher L.":
+          - /url: /profiles/2472c1d5-69b3-4591-90e1-9175eaf1bef9
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/christopherleslie/
+      - cell "Chief Information Officer"
+      - cell "Red 6"
+      - cell " United States"
+      - cell "Unscored"
+      - cell "8/12/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Frank E. McDonough  View LinkedIn Director of Information Technology National Lutheran Communities & Services  Washington DC, United States Unscored 8/12/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Frank E. McDonough  View LinkedIn":
+        - text: 
+        - link "Frank E. McDonough":
+          - /url: /profiles/b32f196a-d7f6-4507-9c10-5388b759ac98
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/frank-e-mcdonough/
+      - cell "Director of Information Technology"
+      - cell "National Lutheran Communities & Services"
+      - cell " Washington DC, United States"
+      - cell "Unscored"
+      - cell "8/12/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Selva Vinothe Mahimaidas  View LinkedIn Chief Information Officer Houghton Mifflin Harcourt  Boston, United States Unscored 8/12/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Selva Vinothe Mahimaidas  View LinkedIn":
+        - text: 
+        - link "Selva Vinothe Mahimaidas":
+          - /url: /profiles/435ccbf7-6c5e-4e2d-bdc3-052a244d7121
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/selvavmahimaidas/
+      - cell "Chief Information Officer"
+      - cell "Houghton Mifflin Harcourt"
+      - cell " Boston, United States"
+      - cell "Unscored"
+      - cell "8/12/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Paul Cameron  View LinkedIn Founder and CEO of ServiceQUIK & ZING ServiceQUIK  Castle Rock, United States Unscored 8/11/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Paul Cameron  View LinkedIn":
+        - text: 
+        - link "Paul Cameron":
+          - /url: /profiles/f439d55b-3f82-4205-96a8-994d9f377307
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/paul-cameron000/
+      - cell "Founder and CEO of ServiceQUIK & ZING"
+      - cell "ServiceQUIK"
+      - cell " Castle Rock, United States"
+      - cell "Unscored"
+      - cell "8/11/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Matt Williams  View LinkedIn Business Strategy Analyst Intern Bosch USA  Chicago, United States Unscored 8/11/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Matt Williams  View LinkedIn":
+        - text: 
+        - link "Matt Williams":
+          - /url: /profiles/31b87e1a-e04d-47dd-bab9-204aae8df616
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/matt-williams-8839082a2/
+      - cell "Business Strategy Analyst Intern"
+      - cell "Bosch USA"
+      - cell " Chicago, United States"
+      - cell "Unscored"
+      - cell "8/11/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Eric Vanek  View LinkedIn Lieutenant Commander United States Coast Guard  Holtsville, United States Unscored 8/11/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Eric Vanek  View LinkedIn":
+        - text: 
+        - link "Eric Vanek":
+          - /url: /profiles/67588e06-6258-4698-a278-d4caf87b1fcb
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/ericvanek/
+      - cell "Lieutenant Commander"
+      - cell "United States Coast Guard"
+      - cell " Holtsville, United States"
+      - cell "Unscored"
+      - cell "8/11/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Chad Roethler, MBA  View LinkedIn Owner Results CTO  Des Moines, United States Unscored 8/11/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Chad Roethler, MBA  View LinkedIn":
+        - text: 
+        - link "Chad Roethler, MBA":
+          - /url: /profiles/8e708d36-3acb-4fa2-a8c9-022b0a8be6dc
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/chad-roethler/
+      - cell "Owner"
+      - cell "Results CTO"
+      - cell " Des Moines, United States"
+      - cell "Unscored"
+      - cell "8/11/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Arthur E. Baylor Jr. MBA, CISSP, CCSK, CCISO  View LinkedIn Adjunct Associate Professor at University of Maryland Global Campus University of Maryland Global Campus  Waldorf, United States Unscored 8/8/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Arthur E. Baylor Jr. MBA, CISSP, CCSK, CCISO  View LinkedIn":
+        - text: 
+        - link "Arthur E. Baylor Jr. MBA, CISSP, CCSK, CCISO":
+          - /url: /profiles/56cc9e83-4fa4-4106-8012-0d044e1e5a33
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/arthur-e-baylor-jr-mba-cissp-ccsk-cciso-701ba18/
+      - cell "Adjunct Associate Professor at University of Maryland Global Campus"
+      - cell "University of Maryland Global Campus"
+      - cell " Waldorf, United States"
+      - cell "Unscored"
+      - cell "8/8/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Sajid Azmi  View LinkedIn Head of Digital Transformation New Age Granite & Marble Ltd.  Toronto, Canada Unscored 8/7/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Sajid Azmi  View LinkedIn":
+        - text: 
+        - link "Sajid Azmi":
+          - /url: /profiles/cd758079-888e-421d-953b-9762cb346c7c
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/sajidazmi/
+      - cell "Head of Digital Transformation"
+      - cell "New Age Granite & Marble Ltd."
+      - cell " Toronto, Canada"
+      - cell "Unscored"
+      - cell "8/7/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Molly Mae Potter  View LinkedIn Vice President, GreenLake Security and Compliance Hewlett Packard Enterprise  Winston-Salem, United States Unscored 8/7/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Molly Mae Potter  View LinkedIn":
+        - text: 
+        - link "Molly Mae Potter":
+          - /url: /profiles/2385be2c-b45b-4450-b0a5-74b5b95c5250
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/molly-mae-potter/
+      - cell "Vice President, GreenLake Security and Compliance"
+      - cell "Hewlett Packard Enterprise"
+      - cell " Winston-Salem, United States"
+      - cell "Unscored"
+      - cell "8/7/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Eric Ruscheinski  View LinkedIn Chief Information Officer Akima  Fairfax, United States Unscored 8/5/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Eric Ruscheinski  View LinkedIn":
+        - text: 
+        - link "Eric Ruscheinski":
+          - /url: /profiles/ec5fe4f0-e0f7-408c-ba70-06594dcfad2f
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/ericruscheinski/
+      - cell "Chief Information Officer"
+      - cell "Akima"
+      - cell " Fairfax, United States"
+      - cell "Unscored"
+      - cell "8/5/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Todd Rowland, MD, FAAPMR  View LinkedIn Member, Opioid Task Force CHIME  Raleigh, United States Unscored 8/4/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Todd Rowland, MD, FAAPMR  View LinkedIn":
+        - text: 
+        - link "Todd Rowland, MD, FAAPMR":
+          - /url: /profiles/68d0cbc8-e96a-497f-a10c-bfc50cba456c
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/toddrowlandmd/
+      - cell "Member, Opioid Task Force"
+      - cell "CHIME"
+      - cell " Raleigh, United States"
+      - cell "Unscored"
+      - cell "8/4/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Reginald Acloque  View LinkedIn Executive Director, Product Management Amazon  Atlanta, United States Unscored 8/4/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Reginald Acloque  View LinkedIn":
+        - text: 
+        - link "Reginald Acloque":
+          - /url: /profiles/389bdf35-b030-4bc5-bf04-bfdb6a5d9141
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/reginaldacloque/
+      - cell "Executive Director, Product Management"
+      - cell "Amazon"
+      - cell " Atlanta, United States"
+      - cell "Unscored"
+      - cell "8/4/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Dan Rainey  View LinkedIn Information Technology Executive - Detroit Water Department City of Detroit  West Bloomfield Township, United States Unscored 7/31/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Dan Rainey  View LinkedIn":
+        - text: 
+        - link "Dan Rainey":
+          - /url: /profiles/68463c9b-7f66-4ee2-9470-1b5b386ac079
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/danrainey/
+      - cell "Information Technology Executive - Detroit Water Department"
+      - cell "City of Detroit"
+      - cell " West Bloomfield Township, United States"
+      - cell "Unscored"
+      - cell "7/31/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Davy L.  View LinkedIn Cybersecurity & GRC Specialist, Sr., Office of CISO | Business Partner ManTech  Los Angeles, United States Unscored 7/31/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Davy L.  View LinkedIn":
+        - text: 
+        - link "Davy L.":
+          - /url: /profiles/22cc90b5-8df2-4bc3-ac48-af67d2693ec2
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/davydelin/
+      - cell "Cybersecurity & GRC Specialist, Sr., Office of CISO | Business Partner"
+      - cell "ManTech"
+      - cell " Los Angeles, United States"
+      - cell "Unscored"
+      - cell "7/31/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Abhi Padma  View LinkedIn CIO and Head of RevOps Liftoff Mobile  San Francisco, United States Unscored 7/31/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Abhi Padma  View LinkedIn":
+        - text: 
+        - link "Abhi Padma":
+          - /url: /profiles/adf1b459-bbbe-46f0-b8b8-76058a473545
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/abhi-padma/
+      - cell "CIO and Head of RevOps"
+      - cell "Liftoff Mobile"
+      - cell " San Francisco, United States"
+      - cell "Unscored"
+      - cell "7/31/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Andrew Coyne  View LinkedIn Chief Information Security Officer (CISO) Mayo Clinic  Rochester, United States Unscored 7/31/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Andrew Coyne  View LinkedIn":
+        - text: 
+        - link "Andrew Coyne":
+          - /url: /profiles/ad86f417-a2e5-4c58-b173-4c43b95821a9
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/andrewcoyne/
+      - cell "Chief Information Security Officer (CISO)"
+      - cell "Mayo Clinic"
+      - cell " Rochester, United States"
+      - cell "Unscored"
+      - cell "7/31/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Varun Mehta  View LinkedIn Director, Software Engineering | Product Engineering | Tech Strategy Leadership | Robotics Enthusiast Slalom  New York City, United States Unscored 7/30/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Varun Mehta  View LinkedIn":
+        - text: 
+        - link "Varun Mehta":
+          - /url: /profiles/5e23f914-4e15-4187-8508-d672a056ad2c
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/varunrmehta/
+      - cell "Director, Software Engineering | Product Engineering | Tech Strategy Leadership | Robotics Enthusiast"
+      - cell "Slalom"
+      - cell " New York City, United States"
+      - cell "Unscored"
+      - cell "7/30/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Ram Arcot  View LinkedIn SVP Product & Engineering | Rights Management Expert RSG Media  New York, United States Unscored 7/29/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Ram Arcot  View LinkedIn":
+        - text: 
+        - link "Ram Arcot":
+          - /url: /profiles/59bb67b6-cd1a-4034-a528-d972e1c05797
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/ram-arcot-4533a7149/
+      - cell "SVP Product & Engineering | Rights Management Expert"
+      - cell "RSG Media"
+      - cell " New York, United States"
+      - cell "Unscored"
+      - cell "7/29/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " David Decker  View LinkedIn CIO Advisor/Fractional CIO Peerless Consulting  Pleasant Ridge, United States Unscored 7/29/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " David Decker  View LinkedIn":
+        - text: 
+        - link "David Decker":
+          - /url: /profiles/445bd8e6-8b87-498c-bc7e-fcc43efaf047
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/david-decker/
+      - cell "CIO Advisor/Fractional CIO"
+      - cell "Peerless Consulting"
+      - cell " Pleasant Ridge, United States"
+      - cell "Unscored"
+      - cell "7/29/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Anand Kumar  View LinkedIn I partner with B2C startups to unlock up to 15% top-line revenue growth in 90 days by adding up to 40% to their user base, using the UX-to-Revenue System™ | Fractional CTO | Voice AI Expert OptimalSEM, L.L.C  New York, United States Unscored 7/29/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Anand Kumar  View LinkedIn":
+        - text: 
+        - link "Anand Kumar":
+          - /url: /profiles/854c6487-e7c9-46f9-b1c7-f039695f606c
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/ak-cto/
+      - cell "I partner with B2C startups to unlock up to 15% top-line revenue growth in 90 days by adding up to 40% to their user base, using the UX-to-Revenue System™ | Fractional CTO | Voice AI Expert"
+      - cell "OptimalSEM, L.L.C"
+      - cell " New York, United States"
+      - cell "Unscored"
+      - cell "7/29/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Gregory Pascuzzi  View LinkedIn Managing Partner at Fortium Partners LP Fortium Partners LP  Plano, United States Unscored 7/27/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Gregory Pascuzzi  View LinkedIn":
+        - text: 
+        - link "Gregory Pascuzzi":
+          - /url: /profiles/c9b39739-b15a-45f8-842d-b95f4425b9db
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/gregorypascuzzi/
+      - cell "Managing Partner at Fortium Partners LP"
+      - cell "Fortium Partners LP"
+      - cell " Plano, United States"
+      - cell "Unscored"
+      - cell "7/27/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Jessica Criscione  View LinkedIn CTO, Marketing & Sales Intelligence at IBM | Tech Strategist | Change Agent | Collaborator | Innovator | MarTech Stack Specialist IBM  New York, United States Unscored 7/27/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Jessica Criscione  View LinkedIn":
+        - text: 
+        - link "Jessica Criscione":
+          - /url: /profiles/4599c773-98ae-42c1-9053-7c8327dfc5bf
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/jessicacriscione/
+      - cell "CTO, Marketing & Sales Intelligence at IBM | Tech Strategist | Change Agent | Collaborator | Innovator | MarTech Stack Specialist"
+      - cell "IBM"
+      - cell " New York, United States"
+      - cell "Unscored"
+      - cell "7/27/2025"
+      - cell "Actions":
+        - button "Actions"
+- text: Showing 1 to 38 of 38 profiles
+```

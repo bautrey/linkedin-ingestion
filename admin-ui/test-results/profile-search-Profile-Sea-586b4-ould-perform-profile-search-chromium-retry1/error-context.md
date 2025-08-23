@@ -28,7 +28,7 @@
   - text:  v2.1.0-development+ae6d5ec9 
   - link "ae6d5ec":
     - /url: https://github.com/bautrey/linkedin-ingestion/commit/ae6d5ec9
-  - text: development  8/19/2025  LinkedIn Ingestion Admin Dashboard
+  - text: PROD  8/19/2025  LinkedIn Ingestion Admin Dashboard
 - navigation:
   - link " LinkedIn Ingestion Admin":
     - /url: /
@@ -43,17 +43,18 @@
       - link " Companies":
         - /url: /companies
   - list:
+    - listitem:  PROD https://smooth-mailbox-production.up.railway.app
     - listitem: 
     - listitem:
       - button " Admin"
 - heading "LinkedIn Profiles" [level=2]
-- paragraph: Showing 1-29 of 29 profiles
+- paragraph: Showing 1-38 of 38 profiles
 - button " Reset Filters"
 - button " Bulk Actions (0)" [disabled]
 - link " Add Profile":
   - /url: /ingestion
 - text: 
-- textbox "Search profiles..."
+- textbox "Search profiles...": test
 - combobox:
   - option "All Companies" [selected]
 - combobox:
@@ -79,21 +80,206 @@
       - cell "Added "
       - cell "Actions"
   - rowgroup:
-    - row "Reid Hoffman photo  Reid Hoffman  View LinkedIn Co-Founder, Board Chair Manas AI  United States Unscored 8/19/2025 Actions":
+    - row "Shelly Brown photo  Shelly Brown  View LinkedIn Board Member KC Tech Council  Leawood, United States Unscored 8/23/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Shelly Brown photo  Shelly Brown  View LinkedIn":
+        - img "Shelly Brown photo"
+        - text: 
+        - link "Shelly Brown":
+          - /url: /profiles/24ed41b9-e5da-4cee-8005-78374f5e8324
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/shellywbrown/
+      - cell "Board Member"
+      - cell "KC Tech Council"
+      - cell " Leawood, United States"
+      - cell "Unscored"
+      - cell "8/23/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "Michael Torgler photo  Michael Torgler  View LinkedIn Senior Director, Technology Services EVERSANA INTOUCH  Overland Park, United States Unscored 8/23/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Michael Torgler photo  Michael Torgler  View LinkedIn":
+        - img "Michael Torgler photo"
+        - text: 
+        - link "Michael Torgler":
+          - /url: /profiles/5f751638-e2d8-49ec-b61e-95401d08dc3f
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/michaeltorgler/
+      - cell "Senior Director, Technology Services"
+      - cell "EVERSANA INTOUCH"
+      - cell " Overland Park, United States"
+      - cell "Unscored"
+      - cell "8/23/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "Dan Koellhofer photo  Dan Koellhofer  View LinkedIn Senior Vice President of Applications Anaplan  United States Unscored 8/22/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Dan Koellhofer photo  Dan Koellhofer  View LinkedIn":
+        - img "Dan Koellhofer photo"
+        - text: 
+        - link "Dan Koellhofer":
+          - /url: /profiles/466b4157-4fdd-43a5-b17b-1ae065c94e5e
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/dkoellhofer/
+      - cell "Senior Vice President of Applications"
+      - cell "Anaplan"
+      - cell " United States"
+      - cell "Unscored"
+      - cell "8/22/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "Paul Rosner photo  Paul Rosner  View LinkedIn IT Strategy, Governance & Digital Transformation Self Employed  Houston, United States Unscored 8/22/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Paul Rosner photo  Paul Rosner  View LinkedIn":
+        - img "Paul Rosner photo"
+        - text: 
+        - link "Paul Rosner":
+          - /url: /profiles/6c1134a7-8c29-400d-b876-0422b7c46aad
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/paulrosner/
+      - cell "IT Strategy, Governance & Digital Transformation"
+      - cell "Self Employed"
+      - cell " Houston, United States"
+      - cell "Unscored"
+      - cell "8/22/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "John Marty photo  John Marty  View LinkedIn Founder Mindset Reset Podcast  Seattle, United States Unscored 8/22/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "John Marty photo  John Marty  View LinkedIn":
+        - img "John Marty photo"
+        - text: 
+        - link "John Marty":
+          - /url: /profiles/133316c5-4514-4a48-924d-79e14306924d
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/johnrmarty/
+      - cell "Founder"
+      - cell "Mindset Reset Podcast"
+      - cell " Seattle, United States"
+      - cell "Unscored"
+      - cell "8/22/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "Brad Wheeler photo  Brad Wheeler  View LinkedIn Area Managing Partner Fortium Partners LP  Newport Beach, United States Unscored 8/22/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Brad Wheeler photo  Brad Wheeler  View LinkedIn":
+        - img "Brad Wheeler photo"
+        - text: 
+        - link "Brad Wheeler":
+          - /url: /profiles/90c84dc5-4ec0-4335-9f50-87d4335894cf
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/bradfordwheeler/
+      - cell "Area Managing Partner"
+      - cell "Fortium Partners LP"
+      - cell " Newport Beach, United States"
+      - cell "Unscored"
+      - cell "8/22/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " T P.  View LinkedIn — —  Australia Unscored 8/22/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " T P.  View LinkedIn":
+        - text: 
+        - link "T P.":
+          - /url: /profiles/b5470e09-f43d-4398-8e0a-e74f5aec5dc6
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/test-profile/
+      - cell "—"
+      - cell "—"
+      - cell " Australia"
+      - cell "Unscored"
+      - cell "8/22/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "Burke Holland photo  Burke Holland  View LinkedIn Principal Developer Advocate Microsoft  Nashville, United States Unscored 8/22/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Burke Holland photo  Burke Holland  View LinkedIn":
+        - img "Burke Holland photo"
+        - text: 
+        - link "Burke Holland":
+          - /url: /profiles/4af50658-dfce-431e-835c-2d9fb5be5fd2
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/burkeholland/
+      - cell "Principal Developer Advocate"
+      - cell "Microsoft"
+      - cell " Nashville, United States"
+      - cell "Unscored"
+      - cell "8/22/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "Burke Autrey photo  Burke Autrey  View LinkedIn CEO Fortium Partners  Dallas, United States Unscored 8/22/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Burke Autrey photo  Burke Autrey  View LinkedIn":
+        - img "Burke Autrey photo"
+        - text: 
+        - link "Burke Autrey":
+          - /url: /profiles/cc50d7e8-48a1-4e60-9120-dc505298e7a0
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/burkeautrey/
+      - cell "CEO"
+      - cell "Fortium Partners"
+      - cell " Dallas, United States"
+      - cell "Unscored"
+      - cell "8/22/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row " Ashish J.  View LinkedIn Account Technology Strategist Microsoft  Glen Allen, United States Unscored 8/21/2025 Actions":
+      - cell:
+        - checkbox
+      - cell " Ashish J.  View LinkedIn":
+        - text: 
+        - link "Ashish J.":
+          - /url: /profiles/1685a752-6cf6-4312-970a-204c4543a527
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/ashishjainit/
+      - cell "Account Technology Strategist"
+      - cell "Microsoft"
+      - cell " Glen Allen, United States"
+      - cell "Unscored"
+      - cell "8/21/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "Jeffrey Ratter photo  Jeffrey Ratter  View LinkedIn Partner Fortium Partners  Santa Barbara, United States Unscored 8/21/2025 Actions":
+      - cell:
+        - checkbox
+      - cell "Jeffrey Ratter photo  Jeffrey Ratter  View LinkedIn":
+        - img "Jeffrey Ratter photo"
+        - text: 
+        - link "Jeffrey Ratter":
+          - /url: /profiles/94d19518-974b-4227-94ca-22c27d81fc33
+        - link " View LinkedIn":
+          - /url: https://www.linkedin.com/in/jeffreyratter/
+      - cell "Partner"
+      - cell "Fortium Partners"
+      - cell " Santa Barbara, United States"
+      - cell "Unscored"
+      - cell "8/21/2025"
+      - cell "Actions":
+        - button "Actions"
+    - row "Reid Hoffman photo  Reid Hoffman  View LinkedIn Co-Founder, Board Chair Manas AI  United States Unscored 8/21/2025 Actions":
       - cell:
         - checkbox
       - cell "Reid Hoffman photo  Reid Hoffman  View LinkedIn":
         - img "Reid Hoffman photo"
         - text: 
         - link "Reid Hoffman":
-          - /url: /profiles/5ce5de74-33af-4e55-a9d9-1de8593c5103
+          - /url: /profiles/e0a62d4b-fab8-40ac-a62b-18d3a6a86734
         - link " View LinkedIn":
           - /url: https://www.linkedin.com/in/reidhoffman/
       - cell "Co-Founder, Board Chair"
       - cell "Manas AI"
       - cell " United States"
       - cell "Unscored"
-      - cell "8/19/2025"
+      - cell "8/21/2025"
       - cell "Actions":
         - button "Actions"
     - row "Richard Harris photo  Richard Harris  View LinkedIn Managing Partner Fortium Partners LP  Boston, United States Unscored 8/19/2025 Actions":
@@ -128,23 +314,6 @@
       - cell " Kathmandu, Nepal"
       - cell "Unscored"
       - cell "8/19/2025"
-      - cell "Actions":
-        - button "Actions"
-    - row "Satya Nadella photo  Satya Nadella  View LinkedIn Chairman and CEO Microsoft  Redmond, United States Unscored 8/18/2025 Actions":
-      - cell:
-        - checkbox
-      - cell "Satya Nadella photo  Satya Nadella  View LinkedIn":
-        - img "Satya Nadella photo"
-        - text: 
-        - link "Satya Nadella":
-          - /url: /profiles/872e8708-774b-4bf6-b819-f2c1897486a3
-        - link " View LinkedIn":
-          - /url: https://www.linkedin.com/in/satyanadella/
-      - cell "Chairman and CEO"
-      - cell "Microsoft"
-      - cell " Redmond, United States"
-      - cell "Unscored"
-      - cell "8/18/2025"
       - cell "Actions":
         - button "Actions"
     - row " Nishant Nagwani  View LinkedIn Chief Product & Technology Officer Brainberg  Mumbai, India Unscored 8/14/2025 Actions":
@@ -195,7 +364,7 @@
       - cell "8/12/2025"
       - cell "Actions":
         - button "Actions"
-    - row " Selva Vinothe Mahimaidas  View LinkedIn Chief Information Officer Houghton Mifflin Harcourt  Boston, United States Unscored 8/11/2025 Actions":
+    - row " Selva Vinothe Mahimaidas  View LinkedIn Chief Information Officer Houghton Mifflin Harcourt  Boston, United States Unscored 8/12/2025 Actions":
       - cell:
         - checkbox
       - cell " Selva Vinothe Mahimaidas  View LinkedIn":
@@ -208,7 +377,7 @@
       - cell "Houghton Mifflin Harcourt"
       - cell " Boston, United States"
       - cell "Unscored"
-      - cell "8/11/2025"
+      - cell "8/12/2025"
       - cell "Actions":
         - button "Actions"
     - row " Paul Cameron  View LinkedIn Founder and CEO of ServiceQUIK & ZING ServiceQUIK  Castle Rock, United States Unscored 8/11/2025 Actions":
@@ -531,21 +700,5 @@
       - cell "7/27/2025"
       - cell "Actions":
         - button "Actions"
-    - 'row " Burke Autrey  View LinkedIn CEO at Fortium Partners, the #1 Provider of Technology Leadership Fortium Partners  Dallas, United States Unscored 7/26/2025 Actions"':
-      - cell:
-        - checkbox
-      - cell " Burke Autrey  View LinkedIn":
-        - text: 
-        - link "Burke Autrey":
-          - /url: /profiles/d4804005-b4d2-4b56-8363-399a112fe4ee
-        - link " View LinkedIn":
-          - /url: https://www.linkedin.com/in/burkeautrey/
-      - 'cell "CEO at Fortium Partners, the #1 Provider of Technology Leadership"'
-      - cell "Fortium Partners"
-      - cell " Dallas, United States"
-      - cell "Unscored"
-      - cell "7/26/2025"
-      - cell "Actions":
-        - button "Actions"
-- text: Showing 1 to 29 of 29 profiles
+- text: Showing 1 to 38 of 38 profiles
 ```
