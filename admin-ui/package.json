@@ -1,6 +1,6 @@
 {
   "name": "linkedin-ingestion-admin-ui",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple admin UI for LinkedIn Ingestion Service",
   "main": "server.js",
   "scripts": {
