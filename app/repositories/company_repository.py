@@ -732,3 +732,63 @@ class CompanyRepository:
         except Exception as e:
             logger.error(f"Failed to get profiles for company {company_id}: {str(e)}")
             return []
+    
+    def get_profile_count_for_company(self, company_id: str) -> int:
+        """
+        Get the count of profiles associated with a company.
+        
+        Args:
+            company_id: UUID of the company
+            
+        Returns:
+            Number of profiles linked to the company
+        """
+        try:
+            result = self.client.table("profile_companies").select(
+                "id", count="exact"
+            ).eq(
+                "company_id", company_id
+            ).execute()
+            
+            return result.count if result.count is not None else 0
+            
+        except Exception as e:
+            logger.error(f"Failed to get profile count for company {company_id}: {str(e)}")
+            return 0
+    
+    def batch_get_profile_counts(self, company_ids: List[str]) -> Dict[str, int]:
+        """
+        Get profile counts for multiple companies efficiently.
+        
+        Args:
+            company_ids: List of company UUIDs
+            
+        Returns:
+            Dict mapping company_id to profile count
+        """
+        try:
+            if not company_ids:
+                return {}
+            
+            # Get all profile-company relationships for the given companies
+            result = self.client.table("profile_companies").select(
+                "company_id"
+            ).in_(
+                "company_id", company_ids
+            ).execute()
+            
+            # Count occurrences of each company_id
+            counts = {}
+            for company_id in company_ids:
+                counts[company_id] = 0
+            
+            for row in result.data:
+                company_id = row["company_id"]
+                if company_id in counts:
+                    counts[company_id] += 1
+            
+            return counts
+            
+        except Exception as e:
+            logger.error(f"Failed to get batch profile counts: {str(e)}")
+            return {company_id: 0 for company_id in company_ids}

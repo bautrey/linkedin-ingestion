@@ -86,6 +86,7 @@
                                             <th>Industry</th>
                                             <th>Location</th>
                                             <th>Size</th>
+                                            <th>Profiles</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -140,6 +141,19 @@
                                                         <% } %>
                                                     </td>
                                                     <td>
+                                                        <% if (typeof company.profile_count === 'number') { %>
+                                                            <% if (company.profile_count > 0) { %>
+                                                                <a href="/companies/<%= company.id %>" class="text-decoration-none">
+                                                                    <span class="badge bg-success"><%= company.profile_count %></span>
+                                                                </a>
+                                                            <% } else { %>
+                                                                <span class="badge bg-light text-muted">0</span>
+                                                            <% } %>
+                                                        <% } else { %>
+                                                            <span class="text-muted">—</span>
+                                                        <% } %>
+                                                    </td>
+                                                    <td>
                                                         <div class="btn-group" role="group">
                                                             <a href="/companies/<%= company.id %>" 
                                                                class="btn btn-outline-primary btn-sm" 
@@ -157,7 +171,7 @@
                                             <% }) %>
                                         <% } else { %>
                                             <tr>
-                                                <td colspan="6" class="text-center py-5">
+                                                <td colspan="7" class="text-center py-5">
                                                     <div class="text-muted">
                                                         <i class="bi bi-building fs-1 d-block mb-3"></i>
                                                         <h5>No companies found</h5>

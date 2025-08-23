@@ -1140,6 +1140,7 @@ class CompanyResponse(BaseModel):
     locations: List[Dict[str, Any]] = []
     affiliated_companies: List[Dict[str, Any]] = []
     is_startup: bool = False
+    profile_count: Optional[int] = None
     created_at: str
     updated_at: Optional[str] = None
 
@@ -1191,7 +1192,7 @@ class CompanyController:
         self.company_repo = CompanyRepository(db_client)
         self.company_service = CompanyService(self.company_repo)
     
-    def _convert_canonical_to_response(self, company) -> CompanyResponse:
+    def _convert_canonical_to_response(self, company, profile_count=None) -> CompanyResponse:
         """Convert CanonicalCompany to CompanyResponse model"""
         from app.models.canonical.company import CanonicalCompany
         
@@ -1223,6 +1224,7 @@ class CompanyController:
                 locations=company.get("locations", []),
                 affiliated_companies=company.get("affiliated_companies", []),
                 is_startup=False,  # Will be computed
+                profile_count=profile_count or company.get("profile_count"),
                 created_at=company.get("created_at", company.get("timestamp", "")),
                 updated_at=company.get("updated_at")
             )
@@ -1291,7 +1293,7 @@ class CompanyController:
             
             # Apply filters based on parameters
             if name:
-                companies = self.company_repo.search_by_name(name, limit)
+                companies = await self.company_repo.search_by_name(name, limit)
             elif domain:
                 companies = self.company_repo.search_by_domain(domain, exact_match=False)
             elif industry:
@@ -1300,40 +1302,98 @@ class CompanyController:
                 companies = self.company_repo.get_companies_by_location(city, country, limit)
             elif is_startup:
                 startup_companies = self.company_repo.get_startup_companies(limit)
-                # Convert dict results to response format
-                company_responses = []
-                for company_dict in startup_companies:
-                    company_responses.append(self._convert_canonical_to_response(company_dict))
-                return CompanyListResponse(
-                    data=company_responses,
-                    pagination=PaginationMetadata(
-                        limit=limit,
-                        offset=offset,
-                        total=len(company_responses),
-                        has_more=len(company_responses) >= limit
+                # Convert dict results to response format and get profile counts
+                if startup_companies:
+                    company_ids = [c.get("id") for c in startup_companies if c.get("id")]
+                    profile_counts = self.company_repo.batch_get_profile_counts(company_ids)
+                    
+                    company_responses = []
+                    for company_dict in startup_companies:
+                        company_id = company_dict.get("id")
+                        profile_count = profile_counts.get(company_id, 0)
+                        company_responses.append(self._convert_canonical_to_response(company_dict, profile_count))
+                    
+                    return CompanyListResponse(
+                        data=company_responses,
+                        pagination=PaginationMetadata(
+                            limit=limit,
+                            offset=offset,
+                            total=len(company_responses),
+                            has_more=len(company_responses) >= limit
+                        )
                     )
-                )
+                else:
+                    return CompanyListResponse(
+                        data=[],
+                        pagination=PaginationMetadata(
+                            limit=limit,
+                            offset=offset,
+                            total=0,
+                            has_more=False
+                        )
+                    )
             elif size_category:
                 size_companies = self.company_repo.get_companies_by_size_category(size_category, limit)
-                # Convert dict results to response format
-                company_responses = []
-                for company_dict in size_companies:
-                    company_responses.append(self._convert_canonical_to_response(company_dict))
-                return CompanyListResponse(
-                    data=company_responses,
-                    pagination=PaginationMetadata(
-                        limit=limit,
-                        offset=offset,
-                        total=len(company_responses),
-                        has_more=len(company_responses) >= limit
+                # Convert dict results to response format and get profile counts
+                if size_companies:
+                    company_ids = [c.get("id") for c in size_companies if c.get("id")]
+                    profile_counts = self.company_repo.batch_get_profile_counts(company_ids)
+                    
+                    company_responses = []
+                    for company_dict in size_companies:
+                        company_id = company_dict.get("id")
+                        profile_count = profile_counts.get(company_id, 0)
+                        company_responses.append(self._convert_canonical_to_response(company_dict, profile_count))
+                    
+                    return CompanyListResponse(
+                        data=company_responses,
+                        pagination=PaginationMetadata(
+                            limit=limit,
+                            offset=offset,
+                            total=len(company_responses),
+                            has_more=len(company_responses) >= limit
+                        )
                     )
-                )
+                else:
+                    return CompanyListResponse(
+                        data=[],
+                        pagination=PaginationMetadata(
+                            limit=limit,
+                            offset=offset,
+                            total=0,
+                            has_more=False
+                        )
+                    )
             else:
                 # Get all companies using the proper get_all method
                 companies = await self.company_repo.get_all(limit=limit, offset=offset)
             
-            # Convert to response format
-            company_responses = [self._convert_canonical_to_response(company) for company in companies]
+            # For standard company results (CanonicalCompany objects), get profile counts
+            if companies:
+                # Extract company IDs from the company objects
+                company_ids = []
+                for company in companies:
+                    if hasattr(company, 'id'):
+                        company_ids.append(getattr(company, 'id'))
+                    elif isinstance(company, dict) and company.get('id'):
+                        company_ids.append(company['id'])
+                
+                # Get profile counts in batch
+                profile_counts = self.company_repo.batch_get_profile_counts(company_ids) if company_ids else {}
+                
+                # Convert to response format with profile counts
+                company_responses = []
+                for company in companies:
+                    company_id = None
+                    if hasattr(company, 'id'):
+                        company_id = getattr(company, 'id')
+                    elif isinstance(company, dict) and company.get('id'):
+                        company_id = company['id']
+                    
+                    profile_count = profile_counts.get(company_id, 0) if company_id else 0
+                    company_responses.append(self._convert_canonical_to_response(company, profile_count))
+            else:
+                company_responses = []
             
             return CompanyListResponse(
                 data=company_responses,
@@ -1371,7 +1431,10 @@ class CompanyController:
             )
             raise HTTPException(status_code=404, detail=error_response.model_dump())
         
-        return self._convert_canonical_to_response(company)
+        # Get profile count for this company
+        profile_count = self.company_repo.get_profile_count_for_company(company_id)
+        
+        return self._convert_canonical_to_response(company, profile_count)
     
     async def create_company(self, request: CompanyCreateRequest) -> CompanyResponse:
         """Create a new company"""
