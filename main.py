@@ -475,6 +475,8 @@ class ProfileController:
         company: Optional[str] = None,
         location: Optional[str] = None,
         score_range: Optional[str] = None,
+        sort_by: Optional[str] = None,
+        sort_order: Optional[str] = None,
         limit: int = 50,
         offset: int = 0
     ) -> ProfileListResponse:
@@ -501,6 +503,8 @@ class ProfileController:
             company=company,
             location=location,
             score_range=score_range,
+            sort_by=sort_by,
+            sort_order=sort_order,
             limit=limit,
             offset=offset
         )
@@ -962,11 +966,13 @@ async def list_profiles(
     company: Optional[str] = Query(None, description="Partial company name search (case-insensitive)"),
     location: Optional[str] = Query(None, description="Partial location search (case-insensitive)"),
     score_range: Optional[str] = Query(None, description="Score range filter: 'unscored', 'high' (8-10), 'medium' (5-7), 'low' (1-4)"),
+    sort_by: Optional[str] = Query(None, description="Field to sort by: name, position, city, location, company, current_company, created_at, timestamp, followers, connections, country_code, url, about, profile_image_url, suggested_role, linkedin_id"),
+    sort_order: Optional[str] = Query("desc", description="Sort order: 'asc' or 'desc' (default: desc)"),
     limit: int = Query(50, ge=1, le=100, description="Number of profiles to return"),
     offset: int = Query(0, ge=0, description="Number of profiles to skip"),
     api_key: str = Depends(verify_api_key)
 ):
-    """List profiles with optional filtering and pagination"""
+    """List profiles with optional filtering, sorting, and pagination"""
     controller = get_profile_controller()
     return await controller.list_profiles(
         linkedin_url=linkedin_url,
@@ -974,6 +980,8 @@ async def list_profiles(
         company=company,
         location=location,
         score_range=score_range,
+        sort_by=sort_by,
+        sort_order=sort_order,
         limit=limit,
         offset=offset
     )

@@ -68,6 +68,58 @@ class SupabaseClient(LoggerMixin):
         else:
             return obj
     
+    def _apply_sorting(self, query, sort_by: Optional[str] = None, sort_order: Optional[str] = None):
+        """Apply sorting to a Supabase query
+        
+        Args:
+            query: Supabase query object
+            sort_by: Sort field name
+            sort_order: Sort order ('asc' or 'desc')
+            
+        Returns:
+            Query with sorting applied
+        """
+        # Default values
+        if not sort_by:
+            sort_by = "created_at"
+        if not sort_order:
+            sort_order = "desc"
+        
+        # Validate sort_by field (security: only allow known fields)
+        valid_sort_fields = {
+            "name", "created_at", "city", "position", "country_code", 
+            "followers", "connections", "timestamp", "url", "about",
+            "profile_image_url", "suggested_role", "linkedin_id",
+            # JSON field sorting (requires special handling)
+            "current_company", "company", "location"
+        }
+        
+        if sort_by not in valid_sort_fields:
+            self.logger.warning(f"Invalid sort_by field: {sort_by}, defaulting to created_at")
+            sort_by = "created_at"
+        
+        # Validate sort_order
+        if sort_order.lower() not in ["asc", "desc"]:
+            self.logger.warning(f"Invalid sort_order: {sort_order}, defaulting to desc")
+            sort_order = "desc"
+        
+        # Apply sorting with special handling for JSON fields
+        desc = sort_order.lower() == "desc"
+        
+        # Handle special sorting cases
+        if sort_by == "current_company":
+            # Sort by the company name within the JSON field
+            return query.order("current_company->name", desc=desc)
+        elif sort_by == "company":
+            # Alias for current_company sorting
+            return query.order("current_company->name", desc=desc)
+        elif sort_by == "location":
+            # Use city field for location sorting
+            return query.order("city", desc=desc)
+        else:
+            # Standard field sorting
+            return query.order(sort_by, desc=desc)
+    
     async def store_profile(
         self, 
         profile: CanonicalProfile, 
@@ -534,17 +586,21 @@ class SupabaseClient(LoggerMixin):
         company: Optional[str] = None,
         location: Optional[str] = None,
         score_range: Optional[str] = None,
+        sort_by: Optional[str] = None,
+        sort_order: Optional[str] = None,
         limit: int = 50,
         offset: int = 0
     ) -> List[Dict[str, Any]]:
         """
-        Search profiles with optional filters
+        Search profiles with optional filters and sorting
         
         Args:
             name: Partial name search (case-insensitive)
             company: Partial company name search (case-insensitive)
             location: Partial location search (case-insensitive, searches city field)
             score_range: Score range filter: 'unscored', 'high' (8-10), 'medium' (5-7), 'low' (1-4)
+            sort_by: Sort field: 'name', 'created_at', 'city', 'position', default: 'created_at'
+            sort_order: Sort order: 'asc' or 'desc', default: 'desc'
             limit: Maximum number of profiles to return
             offset: Number of profiles to skip
             
@@ -578,7 +634,7 @@ class SupabaseClient(LoggerMixin):
                     if location:
                         query = query.ilike("city", f"%{location}%")
                     
-                    query = query.order("created_at", desc=True).range(offset, offset + limit - 1)
+                    query = self._apply_sorting(query, sort_by, sort_order).range(offset, offset + limit - 1)
                     result = await query.execute()
                     
                     # Filter out profiles that have scores
@@ -627,7 +683,7 @@ class SupabaseClient(LoggerMixin):
                             if location:
                                 query = query.ilike("city", f"%{location}%")
                             
-                            query = query.order("created_at", desc=True).range(offset, offset + limit - 1)
+                            query = self._apply_sorting(query, sort_by, sort_order).range(offset, offset + limit - 1)
                             result = await query.execute()
                             profiles = result.data or []
                         else:
@@ -644,7 +700,7 @@ class SupabaseClient(LoggerMixin):
                         if location:
                             query = query.ilike("city", f"%{location}%")
                         
-                        query = query.order("created_at", desc=True).range(offset, offset + limit - 1)
+                        query = self._apply_sorting(query, sort_by, sort_order).range(offset, offset + limit - 1)
                         result = await query.execute()
                         profiles = result.data or []
                 
@@ -667,7 +723,7 @@ class SupabaseClient(LoggerMixin):
                     query = query.ilike("city", f"%{location}%")
                 
                 # Add ordering, limit, and offset
-                query = query.order("created_at", desc=True).range(offset, offset + limit - 1)
+                query = self._apply_sorting(query, sort_by, sort_order).range(offset, offset + limit - 1)
                 
                 result = await query.execute()
                 profiles = result.data or []

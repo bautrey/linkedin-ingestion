@@ -25,10 +25,10 @@
       - link " Templates":
         - /url: /templates
   - separator
-  - text:  v2.1.0-development+ae6d5ec9 
+  - text:  v2.1.0-development+$RAILWA 
   - link "ae6d5ec":
     - /url: https://github.com/bautrey/linkedin-ingestion/commit/ae6d5ec9
-  - text: PROD  8/19/2025  LinkedIn Ingestion Admin Dashboard
+  - text: PROD  8/23/2025  LinkedIn Ingestion Admin Dashboard
 - navigation:
   - link " LinkedIn Ingestion Admin":
     - /url: /
@@ -54,7 +54,7 @@
 - link " Add Profile":
   - /url: /ingestion
 - text: 
-- textbox "Search profiles...": test
+- textbox "Search profiles..."
 - combobox:
   - option "All Companies" [selected]
 - combobox:
@@ -69,10 +69,10 @@
 - button ""
 - table:
   - rowgroup:
-    - row "Name  Current Position  Company  Location  Score  Added  Actions":
+    - row "Name  Current Position  Company  Location  Score  Added  Actions":
       - cell:
         - checkbox
-      - cell "Name "
+      - cell "Name "
       - cell "Current Position "
       - cell "Company "
       - cell "Location "
