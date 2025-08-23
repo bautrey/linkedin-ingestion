@@ -4,7 +4,7 @@ LinkedIn Ingestion Service
 A FastAPI microservice for ingesting LinkedIn profiles and company data
 using Cassidy AI workflows and storing in Supabase with pgvector.
 
-Updated: Force Railway deployment trigger - database filtering implementation
+Updated: Test Nixpacks build after removing Docker files - build verification
 """
 
 import asyncio
