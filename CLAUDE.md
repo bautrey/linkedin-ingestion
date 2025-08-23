@@ -87,6 +87,15 @@ When asked to work on this codebase:
   - `LinkedIn Ingestion Service` - Project status and progress
   - `Supabase_CLI_Token_Waste_Prevention` - Database operation patterns
 
+### Railway/GitHub Auto-Deployment Behavior
+**CRITICAL UNDERSTANDING** - Railway only rebuilds when production code changes
+
+- ✅ **Triggers rebuild**: Changes to `app/`, `main.py`, `requirements.txt`, `Dockerfile`, etc.
+- ❌ **Does NOT trigger rebuild**: Changes to `docs/`, `tests/`, `sessions/`, `*.md` files, `__pycache__/`, etc.
+- 🔍 **Version comparison**: If local commit ahead of deployed commit, check if commits contain actual production code changes
+- 🚨 **Don't assume failure**: Railway deployment isn't "broken" just because commit hashes differ
+- 📋 **Example**: 5 commits of only test updates = Railway still runs same version until code changes
+
 ### Common Issues & Solutions
 **Recently resolved patterns (stored in memory server)**
 
@@ -94,3 +103,4 @@ When asked to work on this codebase:
 - **Profile names missing**: Enrich data with additional API calls rather than assuming nested response structure
 - **Environment variables**: Fix typos in .env files (e.g., `FASAPI_BASE_URL` → `FASTAPI_BASE_URL`)
 - **API testing**: Always test against production Railway deployment, not localhost assumptions
+- **Deployment version mismatch**: Check if recent commits actually changed production code vs just docs/tests
