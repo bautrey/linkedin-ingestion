@@ -525,16 +525,18 @@ class LinkedInDataPipeline(LoggerMixin):
         
         self.logger.info(f"DEBUG: Unique company URLs after deduplication: {len(unique_urls)}")
         
-        # Apply rate limit filtering for now (we'll remove this later after debugging)
-        filtered_urls = unique_urls[:5]  # Limit to 5 companies to avoid rate limits
-        if len(unique_urls) > 5:
-            self.logger.info(f"DEBUG: Rate limiting applied - processing first 5 of {len(unique_urls)} companies")
+        # Process all companies - no artificial limit
+        # We maintain deduplication but allow all valid companies with LinkedIn URLs
+        if len(unique_urls) > 0:
+            self.logger.info(f"DEBUG: Processing all {len(unique_urls)} companies (no limit applied)")
+        else:
+            self.logger.info("DEBUG: No company URLs found to process")
             
-        self.logger.info(f"DEBUG: Final company URLs to fetch: {len(filtered_urls)}")
-        for i, url in enumerate(filtered_urls):
+        self.logger.info(f"DEBUG: Final company URLs to fetch: {len(unique_urls)}")
+        for i, url in enumerate(unique_urls):
             self.logger.info(f"DEBUG: Company URL {i+1}: {url}")
             
-        return filtered_urls
+        return unique_urls
     
     async def _fetch_companies(self, company_urls: List[str]) -> List[CompanyProfile]:
         """Fetch company profiles from URLs"""

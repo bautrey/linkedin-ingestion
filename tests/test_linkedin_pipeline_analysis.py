@@ -103,8 +103,8 @@ class TestLinkedInPipelineCompanyMethods:
         urls = pipeline._extract_company_urls(profile)
         assert urls == []
 
-    def test_extract_company_urls_limit_five(self, pipeline):
-        """Test _extract_company_urls limits to 5 companies"""
+    def test_extract_company_urls_processes_all_companies(self, pipeline):
+        """Test _extract_company_urls processes all companies (no artificial limit)"""
         
         # Create profile with 7 companies (1 current + 6 experience)
         experience = [
@@ -125,11 +125,16 @@ class TestLinkedInPipelineCompanyMethods:
         
         urls = pipeline._extract_company_urls(profile)
         
-        # Should limit to 5 companies max
-        assert len(urls) == 5
+        # Should process all 7 companies (no limit applied)
+        assert len(urls) == 7
         
         # Should preserve order: current company first
         assert urls[0] == "https://linkedin.com/company/current-corp"
+        
+        # Should include all experience companies
+        for i in range(1, 7):
+            expected_url = f"https://linkedin.com/company/company-{i}"
+            assert expected_url in urls
 
     @pytest.mark.asyncio
     async def test_fetch_companies_success(self, pipeline):
@@ -220,3 +225,90 @@ class TestLinkedInPipelineCompanyMethods:
         
         # Should not call API at all
         assert pipeline.cassidy_client.fetch_company.call_count == 0
+    
+    def test_extract_company_urls_large_profile(self, pipeline):
+        """Test _extract_company_urls with large number of companies (50+)"""
+        
+        # Create profile with 50 experience companies + 1 current = 51 total
+        experience = [
+            ExperienceEntry(
+                title=f"Role {i}",
+                company=f"Company {i}",
+                company_linkedin_url=f"https://linkedin.com/company/company-{i}"
+            ) for i in range(1, 51)  # Creates 50 experience entries
+        ]
+        
+        profile = LinkedInProfile(
+            full_name="Executive User", 
+            profile_id="execuser",
+            company="Current Corp",
+            company_linkedin_url="https://linkedin.com/company/current-corp",
+            experiences=experience
+        )
+        
+        urls = pipeline._extract_company_urls(profile)
+        
+        # Should process all 51 companies (no limit)
+        assert len(urls) == 51
+        
+        # Should preserve order: current company first
+        assert urls[0] == "https://linkedin.com/company/current-corp"
+        
+        # Should include all experience companies
+        for i in range(1, 51):
+            expected_url = f"https://linkedin.com/company/company-{i}"
+            assert expected_url in urls
+    
+    def test_extract_company_urls_skips_missing_linkedin_urls(self, pipeline):
+        """Test _extract_company_urls properly skips companies without LinkedIn URLs"""
+        
+        # Create profile with mix of companies - some with LinkedIn URLs, some without
+        experience = [
+            ExperienceEntry(
+                title="Role 1",
+                company="Company With URL",
+                company_linkedin_url="https://linkedin.com/company/company-with-url"
+            ),
+            ExperienceEntry(
+                title="Role 2",
+                company="Company Without URL",
+                company_linkedin_url=None  # No LinkedIn URL
+            ),
+            ExperienceEntry(
+                title="Role 3",
+                company="Company With Empty URL",
+                company_linkedin_url=""  # Empty LinkedIn URL
+            ),
+            ExperienceEntry(
+                title="Role 4",
+                company="Another Company With URL",
+                company_linkedin_url="https://linkedin.com/company/another-company"
+            )
+        ]
+        
+        profile = LinkedInProfile(
+            full_name="Mixed User", 
+            profile_id="mixeduser",
+            company="Current Corp",
+            company_linkedin_url="https://linkedin.com/company/current-corp",
+            experiences=experience
+        )
+        
+        urls = pipeline._extract_company_urls(profile)
+        
+        # Should only include companies with valid LinkedIn URLs (1 current + 2 with URLs = 3)
+        assert len(urls) == 3
+        
+        expected_urls = [
+            "https://linkedin.com/company/current-corp",
+            "https://linkedin.com/company/company-with-url",
+            "https://linkedin.com/company/another-company"
+        ]
+        
+        for url in expected_urls:
+            assert url in urls
+        
+        # Should not include companies without LinkedIn URLs
+        for url in urls:
+            assert url.startswith("https://linkedin.com/company/")
+            assert len(url) > len("https://linkedin.com/company/")

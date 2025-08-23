@@ -1272,6 +1272,7 @@ class CompanyController:
                 locations=[loc.model_dump() for loc in company.locations] if company.locations else [],
                 affiliated_companies=[ac.model_dump() for ac in company.affiliated_companies] if company.affiliated_companies else [],
                 is_startup=company.is_startup(),
+                profile_count=profile_count,  # Use the profile_count parameter
                 created_at=company.timestamp.isoformat() if company.timestamp else "",
                 updated_at=None  # Not tracked in canonical model
             )
