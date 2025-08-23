@@ -756,7 +756,7 @@ class CompanyRepository:
             logger.error(f"Failed to get profile count for company {company_id}: {str(e)}")
             return 0
     
-    def batch_get_profile_counts(self, company_ids: List[str]) -> Dict[str, int]:
+    async def batch_get_profile_counts(self, company_ids: List[str]) -> Dict[str, int]:
         """
         Get profile counts for multiple companies efficiently.
         
@@ -770,8 +770,11 @@ class CompanyRepository:
             if not company_ids:
                 return {}
             
+            # Ensure async client is available
+            await self.supabase_client._ensure_client()
+            
             # Get all profile-company relationships for the given companies
-            result = self.client.table("profile_companies").select(
+            result = await self.supabase_client.client.table("profile_companies").select(
                 "company_id"
             ).in_(
                 "company_id", company_ids

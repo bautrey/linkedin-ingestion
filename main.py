@@ -1321,7 +1321,7 @@ class CompanyController:
                 # Convert dict results to response format and get profile counts
                 if startup_companies:
                     company_ids = [c.get("id") for c in startup_companies if c.get("id")]
-                    profile_counts = self.company_repo.batch_get_profile_counts(company_ids)
+                    profile_counts = await self.company_repo.batch_get_profile_counts(company_ids)
                     
                     company_responses = []
                     for company_dict in startup_companies:
@@ -1353,7 +1353,7 @@ class CompanyController:
                 # Convert dict results to response format and get profile counts
                 if size_companies:
                     company_ids = [c.get("id") for c in size_companies if c.get("id")]
-                    profile_counts = self.company_repo.batch_get_profile_counts(company_ids)
+                    profile_counts = await self.company_repo.batch_get_profile_counts(company_ids)
                     
                     company_responses = []
                     for company_dict in size_companies:
@@ -1395,7 +1395,7 @@ class CompanyController:
                         company_ids.append(company['id'])
                 
                 # Get profile counts in batch
-                profile_counts = self.company_repo.batch_get_profile_counts(company_ids) if company_ids else {}
+                profile_counts = await self.company_repo.batch_get_profile_counts(company_ids) if company_ids else {}
                 
                 # Convert to response format with profile counts
                 company_responses = []
