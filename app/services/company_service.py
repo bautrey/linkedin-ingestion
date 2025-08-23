@@ -223,7 +223,7 @@ class CompanyService:
         
         return results
 
-    def link_profile_to_company(self, profile_id: str, company_id: str, work_experience: Dict[str, Any]) -> Dict[str, Any]:
+    async def link_profile_to_company(self, profile_id: str, company_id: str, work_experience: Dict[str, Any]) -> Dict[str, Any]:
         """
         Link a profile to a company with work experience details.
         
@@ -242,8 +242,8 @@ class CompanyService:
                 if field not in work_experience:
                     raise ValueError(f"Missing required field: {field}")
             
-            # Create the relationship
-            result = self.company_repo.link_to_profile(profile_id, company_id, work_experience)
+            # Create the relationship (now async)
+            result = await self.company_repo.link_to_profile(profile_id, company_id, work_experience)
             
             logger.info(f"Linked profile {profile_id} to company {company_id} "
                        f"as {work_experience.get('position_title', 'Unknown')}")

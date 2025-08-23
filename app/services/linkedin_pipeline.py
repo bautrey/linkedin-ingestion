@@ -263,7 +263,7 @@ class LinkedInDataPipeline(LoggerMixin):
                         
                         if experience:
                             try:
-                                self.company_service.link_profile_to_company(profile_id, company_id, experience)
+                                await self.company_service.link_profile_to_company(profile_id, company_id, experience)
                                 self.logger.debug("Linked profile to company", 
                                                 pipeline_id=pipeline_id, 
                                                 company_name=company_name, 
@@ -277,7 +277,7 @@ class LinkedInDataPipeline(LoggerMixin):
                             # Create minimal link if no specific experience found
                             minimal_experience = {"position_title": "Employee", "is_current": False}
                             try:
-                                self.company_service.link_profile_to_company(profile_id, company_id, minimal_experience)
+                                await self.company_service.link_profile_to_company(profile_id, company_id, minimal_experience)
                                 self.logger.debug("Created minimal profile-company link", 
                                                 pipeline_id=pipeline_id, 
                                                 company_name=company_name)

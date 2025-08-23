@@ -609,7 +609,7 @@ class CompanyRepository:
             logger.error(f"Fallback startup query failed: {str(e)}")
             return []
     
-    def link_to_profile(self, profile_id: str, company_id: str, work_experience: Dict[str, Any]) -> Dict[str, Any]:
+    async def link_to_profile(self, profile_id: str, company_id: str, work_experience: Dict[str, Any]) -> Dict[str, Any]:
         """
         Link a profile to a company with work experience details.
         
@@ -637,8 +637,11 @@ class CompanyRepository:
             # Remove None values
             relationship_data = {k: v for k, v in relationship_data.items() if v is not None}
             
-            # Insert the relationship
-            result = self.client.table("profile_companies").insert(relationship_data).execute()
+            # Ensure async client is available
+            await self.supabase_client._ensure_client()
+            
+            # Insert the relationship using async client
+            result = await self.supabase_client.client.table("profile_companies").insert(relationship_data).execute()
             
             if result.data:
                 logger.info(f"Linked profile {profile_id} to company {company_id}")
