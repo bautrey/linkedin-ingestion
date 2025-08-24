@@ -418,6 +418,96 @@ Please provide your evaluation in JSON format:"""
             )
             raise ValueError(f"Invalid JSON in LLM response: {e}")
     
+    async def score_profile_with_template(
+        self,
+        profile: CanonicalProfile,
+        template_id: str = None,
+        prompt: str = None,
+        model_override: str = None,
+        max_tokens: int = None,
+        temperature: float = None
+    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+        """
+        Score a profile using template-aware model selection
+        
+        Args:
+            profile: Profile to evaluate
+            template_id: Optional template ID to use (will fetch template and use its preferred model)
+            prompt: Evaluation prompt (used if no template_id provided)
+            model_override: Override model regardless of template preference
+            max_tokens: Maximum response tokens
+            temperature: Sampling temperature
+            
+        Returns:
+            Tuple of (raw_llm_response, parsed_score)
+            
+        Raises:
+            ValueError: For validation errors or API issues
+        """
+        if not profile:
+            raise ValueError("Profile is required for scoring")
+            
+        # Determine prompt and model to use
+        effective_prompt = prompt
+        effective_model = model_override or self.default_model
+        template_used = None
+        
+        if template_id:
+            # Fetch template and use its prompt and preferred model
+            try:
+                from app.services.template_service import TemplateService
+                template_service = TemplateService()
+                template_used = await template_service.get_template(template_id)
+                
+                if not template_used:
+                    raise ValueError(f"Template not found: {template_id}")
+                
+                effective_prompt = template_used.prompt_text
+                
+                # Use stage-based model if template has a stage defined
+                if not model_override and template_used.stage:
+                    if template_used.stage == "stage_2_screening":
+                        effective_model = settings.STAGE_2_MODEL
+                    elif template_used.stage == "stage_3_analysis":
+                        effective_model = settings.STAGE_3_MODEL
+                    else:
+                        # Unknown stage, use default
+                        effective_model = self.default_model
+                    
+                    self.logger.info(
+                        "Using stage-based model selection",
+                        template_id=template_id,
+                        template_name=template_used.name,
+                        template_stage=template_used.stage,
+                        selected_model=effective_model
+                    )
+                
+            except Exception as e:
+                self.logger.error(f"Failed to fetch template {template_id}: {e}")
+                raise ValueError(f"Template fetch failed: {e}")
+        
+        elif not prompt:
+            raise ValueError("Either template_id or prompt must be provided")
+        
+        self.logger.info(
+            "Starting template-aware profile scoring",
+            profile_id=profile.profile_id,
+            profile_name=profile.full_name,
+            template_id=template_id,
+            template_name=template_used.name if template_used else None,
+            effective_model=effective_model,
+            model_source="override" if model_override else ("template" if template_used and template_used.preferred_model else "default"),
+            prompt_length=len(effective_prompt)
+        )
+        
+        return await self.score_profile(
+            profile=profile,
+            prompt=effective_prompt,
+            model=effective_model,
+            max_tokens=max_tokens,
+            temperature=temperature
+        )
+    
     async def score_profile(
         self,
         profile: CanonicalProfile,

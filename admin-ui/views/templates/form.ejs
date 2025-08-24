@@ -122,15 +122,25 @@ Provide your analysis in JSON format with scores and detailed reasoning for each
                                             </div>
                                         </div>
 
-                                        <!-- Model Configuration -->
+                                        <!-- Stage Configuration -->
                                         <div class="row mb-3">
                                             <div class="col-md-6">
-                                                <label for="model" class="form-label">AI Model</label>
-                                                <select class="form-select" id="model" name="model">
-                                                    <option value="gpt-4o" <%= isEdit && template && template.model === 'gpt-4o' ? 'selected' : 'selected' %>>GPT-4o (Recommended)</option>
-                                                    <option value="gpt-4o-mini" <%= isEdit && template && template.model === 'gpt-4o-mini' ? 'selected' : '' %>>GPT-4o Mini (Faster)</option>
-                                                    <option value="gpt-4" <%= isEdit && template && template.model === 'gpt-4' ? 'selected' : '' %>>GPT-4 (Legacy)</option>
+                                                <label for="stage" class="form-label">
+                                                    Evaluation Stage 
+                                                    <button type="button" class="btn btn-link btn-sm p-0 ms-1" data-bs-toggle="tooltip" 
+                                                            title="Stage determines which AI model will be used automatically">
+                                                        <i class="bi bi-question-circle"></i>
+                                                    </button>
+                                                </label>
+                                                <select class="form-select" id="stage" name="stage">
+                                                    <option value="">General Purpose (System Default)</option>
+                                                    <option value="stage_2_screening" <%= isEdit && template && template.stage === 'stage_2_screening' ? 'selected' : '' %>>🏃‍♀️ Stage 2: Quick Screening (GPT-3.5 Turbo - Fast & Cost-Effective)</option>
+                                                    <option value="stage_3_analysis" <%= isEdit && template && template.stage === 'stage_3_analysis' ? 'selected' : '' %>>🎯 Stage 3: Deep Analysis (GPT-4o - Premium Quality)</option>
                                                 </select>
+                                                <div class="form-text">
+                                                    <strong>Stage 2:</strong> Quick filtering to eliminate obvious mismatches (~$0.002/eval)<br>
+                                                    <strong>Stage 3:</strong> Comprehensive evaluation for hiring decisions (~$0.02/eval)
+                                                </div>
                                             </div>
                                             <div class="col-md-6">
                                                 <label for="version" class="form-label">Version</label>

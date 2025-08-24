@@ -30,6 +30,7 @@ class PromptTemplate(BaseModel):
     version: int = Field(default=1, ge=1, description="Version number for template iterations")
     is_active: bool = Field(default=True, description="Whether template is currently active")
     description: Optional[str] = Field(None, description="Optional description of template purpose")
+    stage: Optional[str] = Field(None, description="Evaluation stage (stage_2_screening, stage_3_analysis) - determines which model to use")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional structured data")
     created_at: datetime = Field(..., description="Template creation timestamp")
     updated_at: datetime = Field(..., description="Last modification timestamp")
@@ -71,6 +72,7 @@ class CreateTemplateRequest(BaseModel):
     category: str = Field(..., min_length=1, max_length=100, description="Template category")
     prompt_text: str = Field(..., min_length=1, description="Evaluation prompt content")
     description: Optional[str] = Field(None, description="Optional template description")
+    stage: Optional[str] = Field(None, description="Evaluation stage (stage_2_screening, stage_3_analysis)")
     is_active: bool = Field(default=True, description="Whether template should be active")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional data")
     

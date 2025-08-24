@@ -358,13 +358,14 @@ class RailwayGraphQL:
             end_date = datetime.utcnow()
             start_date = end_date - timedelta(hours=1)
         
+        # Fixed query structure from Claude Code
         query = """
-        query GetDeploymentLogs($deploymentId: String!, $startDate: DateTime, $endDate: DateTime, $limit: Int, $filter: String) {
+        query($id: String!, $limit: Int, $start: DateTime, $end: DateTime, $filter: String) {
             deploymentLogs(
-                deploymentId: $deploymentId,
-                startDate: $startDate,
-                endDate: $endDate,
+                deploymentId: $id,
                 limit: $limit,
+                startDate: $start,
+                endDate: $end,
                 filter: $filter
             ) {
                 timestamp
@@ -375,10 +376,10 @@ class RailwayGraphQL:
         """
         
         variables = {
-            "deploymentId": deployment_id,
-            "startDate": start_date.isoformat() + "Z" if start_date else None,
-            "endDate": end_date.isoformat() + "Z" if end_date else None,
+            "id": deployment_id,
             "limit": limit,
+            "start": start_date.isoformat() + "Z" if start_date else None,
+            "end": end_date.isoformat() + "Z" if end_date else None,
             "filter": log_filter
         }
         
@@ -398,13 +399,14 @@ class RailwayGraphQL:
         if not deployment_id:
             deployment_id = self._get_latest_deployment_id()
         
+        # Fixed query structure from Claude Code
         query = """
-        query GetBuildLogs($deploymentId: String!, $startDate: DateTime, $endDate: DateTime, $limit: Int, $filter: String) {
+        query($id: String!, $limit: Int, $start: DateTime, $end: DateTime, $filter: String) {
             buildLogs(
-                deploymentId: $deploymentId,
-                startDate: $startDate,
-                endDate: $endDate,
+                deploymentId: $id,
                 limit: $limit,
+                startDate: $start,
+                endDate: $end,
                 filter: $filter
             ) {
                 timestamp
@@ -415,10 +417,10 @@ class RailwayGraphQL:
         """
         
         variables = {
-            "deploymentId": deployment_id,
-            "startDate": start_date.isoformat() + "Z" if start_date else None,
-            "endDate": end_date.isoformat() + "Z" if end_date else None,
+            "id": deployment_id,
             "limit": limit,
+            "start": start_date.isoformat() + "Z" if start_date else None,
+            "end": end_date.isoformat() + "Z" if end_date else None,
             "filter": log_filter
         }
         
@@ -469,21 +471,21 @@ class RailwayGraphQL:
         return response.get('data', {}).get('httpLogs', [])
     
     def _get_latest_deployment_id(self) -> str:
-        """Get the ID of the latest deployment"""
+        """Get the ID of the latest deployment using Claude Code's working approach"""
         query = """
-        query GetLatestDeployment($projectId: String!, $environmentId: String!) {
-            project(id: $projectId) {
-                environments(where: { id: $environmentId }) {
-                    edges {
-                        node {
-                            deployments(orderBy: { createdAt: desc }, first: 1) {
-                                edges {
-                                    node {
-                                        id
-                                    }
-                                }
-                            }
-                        }
+        query($projectId: String!, $environmentId: String!) {
+            deployments(
+                first: 1,
+                input: {
+                    projectId: $projectId,
+                    environmentId: $environmentId
+                }
+            ) {
+                edges {
+                    node {
+                        id
+                        status
+                        createdAt
                     }
                 }
             }
@@ -498,11 +500,10 @@ class RailwayGraphQL:
         response = self._make_request(query, variables)
         
         try:
-            deployment = (
-                response['data']['project']['environments']['edges'][0]['node']
-                ['deployments']['edges'][0]['node']
-            )
-            return deployment['id']
+            edges = response['data']['deployments']['edges']
+            if not edges:
+                raise Exception("No deployments found for this environment")
+            return edges[0]['node']['id']
         except (KeyError, IndexError):
             raise Exception("No deployments found for this environment")
 

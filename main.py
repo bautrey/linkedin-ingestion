@@ -43,6 +43,7 @@ from app.controllers.scoring_controllers import ProfileScoringController, Scorin
 from app.services.template_service import TemplateService
 from app.services.template_versioning_service import TemplateVersioningService
 from app.api.routes.profile_verification import router as profile_verification_router
+from app.api.routes.role_compatibility import router as role_compatibility_router
 from app.models.template_models import (
     PromptTemplate,
     CreateTemplateRequest,
@@ -103,6 +104,9 @@ app.add_middleware(
 
 # Include profile verification router
 app.include_router(profile_verification_router)
+
+# Include role compatibility router
+app.include_router(role_compatibility_router)
 
 # Global exception handlers
 @app.exception_handler(RequestValidationError)

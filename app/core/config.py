@@ -60,6 +60,10 @@ class Settings(BaseSettings):
     OPENAI_MAX_TOKENS: int = Field(default=2000, description="Maximum tokens for OpenAI responses")
     OPENAI_TEMPERATURE: float = Field(default=0.1, description="Temperature for OpenAI requests")
     
+    # Stage-Based Model Configuration
+    STAGE_2_MODEL: str = Field(default="gpt-3.5-turbo", description="Model for Stage 2 screening (cost-effective)")
+    STAGE_3_MODEL: str = Field(default="gpt-4o", description="Model for Stage 3 deep analysis (premium quality)")
+    
     # Rate Limiting
     RATE_LIMIT_PER_MINUTE: int = Field(default=60, description="API rate limit per minute")
     CASSIDY_RATE_LIMIT: int = Field(default=10, description="Cassidy API calls per minute")

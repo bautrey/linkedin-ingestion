@@ -127,6 +127,7 @@ app.use('/companies', require('./routes/companies'));
 app.use('/scoring', require('./routes/scoring'));
 app.use('/templates', require('./routes/templates'));
 app.use('/ingestion', require('./routes/ingestion'));
+app.use('/system', require('./routes/system'));
 app.use('/api', require('./routes/api'));
 
 // Environment configuration page

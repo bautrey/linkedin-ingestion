@@ -278,6 +278,7 @@ class TemplateService(LoggerMixin):
             "category": request.category,
             "prompt_text": request.prompt_text,
             "description": request.description,
+            "stage": request.stage,  # Add stage field for model selection
             "is_active": request.is_active,
             "version": 1,  # New templates start at version 1
             "metadata": request.metadata,
@@ -452,6 +453,7 @@ class TemplateService(LoggerMixin):
                 version=db_data["version"],
                 is_active=db_data["is_active"],
                 description=db_data.get("description"),
+                stage=db_data.get("stage"),  # Add stage field
                 metadata=db_data.get("metadata", {}),
                 created_at=created_at,
                 updated_at=updated_at
