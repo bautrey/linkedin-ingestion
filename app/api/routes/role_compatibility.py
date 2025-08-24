@@ -153,7 +153,10 @@ class RoleCompatibilityService(LoggerMixin):
                 is_compatible = exec_role == result.suggested_role and result.is_valid
                 
                 # Get detailed data from AI response if available
-                role_details = result.detailed_role_data.get(target_role.value, {})
+                role_details = {}
+                if result.detailed_role_data is not None:
+                    role_details = result.detailed_role_data.get(target_role.value, {})
+                
                 key_qualifications = role_details.get("key_qualifications", ["No detailed analysis available"])
                 missing_qualifications = role_details.get("missing_qualifications", ["No detailed analysis available"])
                 detailed_reasoning = role_details.get("reasoning", f"Score: {score:.2f}")
