@@ -100,13 +100,35 @@ class AIRoleCompatibilityService:
         validation_errors = []
         
         try:
-            # Use unified template for single AI call that evaluates all roles
-            raw_response, parsed_response = await self.llm_service.score_profile(
-                profile=profile,
-                prompt=settings.ROLE_COMPATIBILITY_TEMPLATE,
-                model=settings.STAGE_3_MODEL,  # Use configured model for Stage 3
-                max_tokens=300,  # Allow more tokens for comprehensive evaluation
-                temperature=0.1   # Low temperature for consistent results
+            # Build profile data string for the user message
+            profile_data = f"""
+Name: {profile.full_name}
+Current Role: {profile.job_title}
+Company: {profile.company}
+LinkedIn: {profile.linkedin_url}
+
+About:
+{profile.about[:1000] if profile.about else "Not provided"}
+
+Experience:
+{self._format_experience(profile.experience[:5])}
+
+Education:
+{self._format_education(profile.education[:3])}
+"""
+            
+            # Replace placeholder in user message template
+            user_message = settings.ROLE_COMPATIBILITY_USER_MESSAGE.replace(
+                "{{profile_data}}", profile_data
+            )
+            
+            # Use proper system/user message structure
+            raw_response, parsed_response = await self._call_ai_with_messages(
+                system_message=settings.ROLE_COMPATIBILITY_SYSTEM_MESSAGE,
+                user_message=user_message,
+                model=settings.STAGE_3_MODEL,
+                max_tokens=300,
+                temperature=0.1
             )
             
             # Extract results from AI response
@@ -235,6 +257,77 @@ class AIRoleCompatibilityService:
                 validation_errors=[f"Compatibility check error: {str(e)}"]
             )
     
+    async def _call_ai_with_messages(
+        self,
+        system_message: str,
+        user_message: str,
+        model: str,
+        max_tokens: int,
+        temperature: float
+    ) -> Tuple[str, Dict[str, Any]]:
+        """Call AI service with proper system/user message structure"""
+        try:
+            response = await self.llm_service.client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": system_message},
+                    {"role": "user", "content": user_message}
+                ],
+                max_tokens=max_tokens,
+                temperature=temperature
+            )
+            
+            raw_response = response.choices[0].message.content
+            
+            # Try to parse JSON response
+            import json
+            try:
+                parsed_response = json.loads(raw_response)
+                return raw_response, parsed_response
+            except json.JSONDecodeError as e:
+                self.logger.warning(f"Failed to parse AI response as JSON: {str(e)}")
+                return raw_response, {}
+                
+        except Exception as e:
+            self.logger.error(f"AI service call failed: {str(e)}")
+            raise
+    
+    def _format_experience(self, experiences: List[Dict]) -> str:
+        """Format experience list for AI prompt"""
+        if not experiences:
+            return "Not provided"
+        
+        formatted = []
+        for i, exp in enumerate(experiences, 1):
+            title = exp.get("title", "Unknown Title")
+            company = exp.get("company", "Unknown Company")
+            duration = exp.get("duration", "")
+            description = exp.get("description", "")[:200]  # Limit description
+            
+            formatted.append(f"{i}. {title} at {company} ({duration})")
+            if description:
+                formatted.append(f"   {description}...")
+        
+        return "\n".join(formatted)
+    
+    def _format_education(self, education: List[Dict]) -> str:
+        """Format education list for AI prompt"""
+        if not education:
+            return "Not provided"
+        
+        formatted = []
+        for edu in education:
+            degree = edu.get("degree", "")
+            school = edu.get("school", "")
+            field = edu.get("field", "")
+            
+            if degree and school:
+                formatted.append(f"- {degree} from {school}")
+                if field:
+                    formatted.append(f"  Field: {field}")
+        
+        return "\n".join(formatted) if formatted else "Not provided"
+    
     async def health_check(self) -> Dict[str, Any]:
         """Check health of AI role compatibility service"""
         try:
@@ -257,7 +350,8 @@ class AIRoleCompatibilityService:
                 "llm_service_available": bool(self.llm_service.client),
                 "test_check_successful": True,
                 "compatibility_threshold": self.minimum_compatibility_score,
-                "template_configured": bool(settings.ROLE_COMPATIBILITY_TEMPLATE),
+                "system_message_configured": bool(settings.ROLE_COMPATIBILITY_SYSTEM_MESSAGE),
+                "user_message_configured": bool(settings.ROLE_COMPATIBILITY_USER_MESSAGE),
                 "timestamp": datetime.now(timezone.utc).isoformat()
             }
             
@@ -267,6 +361,7 @@ class AIRoleCompatibilityService:
                 "status": "unhealthy", 
                 "error": str(e),
                 "llm_service_available": bool(self.llm_service.client),
-                "template_configured": bool(settings.ROLE_COMPATIBILITY_TEMPLATE),
+                "system_message_configured": bool(settings.ROLE_COMPATIBILITY_SYSTEM_MESSAGE),
+                "user_message_configured": bool(settings.ROLE_COMPATIBILITY_USER_MESSAGE),
                 "timestamp": datetime.now(timezone.utc).isoformat()
             }

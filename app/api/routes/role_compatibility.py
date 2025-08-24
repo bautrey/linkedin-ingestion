@@ -233,7 +233,8 @@ role_compatibility_service = RoleCompatibilityService()
 
 class TemplateViewResponse(BaseModel):
     """Response model for viewing role compatibility template"""
-    template: str = Field(..., description="Current role compatibility template")
+    system_message: str = Field(..., description="System message for AI role compatibility")
+    user_message_template: str = Field(..., description="User message template with placeholder")
     model: str = Field(..., description="AI model used for role compatibility")
     minimum_threshold: float = Field(..., description="Minimum compatibility score to pass gate")
     template_source: str = Field(..., description="Source of the template (config/environment)")
@@ -245,11 +246,12 @@ async def get_role_compatibility_template() -> TemplateViewResponse:
     """
     **View Current Role Compatibility Template**
     
-    Returns the current template used for Stage 3 role compatibility checks.
+    Returns the current system and user message templates used for Stage 3 role compatibility checks.
     This allows you to see exactly what criteria and format the AI is using
     to evaluate candidates.
     
-    - **Template**: The actual prompt template sent to AI
+    - **System Message**: The system instructions defining the AI's role and behavior
+    - **User Message Template**: The user message template with {{profile_data}} placeholder
     - **Model**: AI model used for evaluation  
     - **Threshold**: Minimum score required to pass the compatibility gate
     - **Source**: Whether template comes from config file or environment variable
@@ -257,7 +259,8 @@ async def get_role_compatibility_template() -> TemplateViewResponse:
     service = AIRoleCompatibilityService()
     
     return TemplateViewResponse(
-        template=settings.ROLE_COMPATIBILITY_TEMPLATE,
+        system_message=settings.ROLE_COMPATIBILITY_SYSTEM_MESSAGE,
+        user_message_template=settings.ROLE_COMPATIBILITY_USER_MESSAGE,
         model=settings.STAGE_3_MODEL,
         minimum_threshold=service.minimum_compatibility_score,
         template_source="configuration",
