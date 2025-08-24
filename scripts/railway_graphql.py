@@ -89,10 +89,33 @@ class RailwayGraphQL:
         environment_id = os.getenv("RAILWAY_ENVIRONMENT_ID")
         service_id = os.getenv("RAILWAY_SERVICE_ID")
         
+        # If environment variables are missing, try multiple approaches
+        if not all([project_id, environment_id, service_id]):
+            # First try Railway CLI
+            try:
+                project_info = self._get_project_info_from_cli()
+                project_id = project_info.get('project_id') or project_id
+                environment_id = project_info.get('environment_id') or environment_id
+                service_id = project_info.get('service_id') or service_id
+            except Exception as e:
+                print(f"Warning: Could not get project info from Railway CLI: {e}")
+            
+            # If still missing, try to discover via API
+            if not all([project_id, environment_id, service_id]):
+                try:
+                    discovered_info = self._discover_project_info(api_token)
+                    project_id = discovered_info.get('project_id') or project_id
+                    environment_id = discovered_info.get('environment_id') or environment_id
+                    service_id = discovered_info.get('service_id') or service_id
+                    print(f"✅ Auto-discovered project: {discovered_info.get('project_name', 'unknown')}")
+                except Exception as e:
+                    print(f"Warning: Could not auto-discover project info: {e}")
+        
         if not all([project_id, environment_id, service_id]):
             raise ValueError(
-                "Missing Railway configuration. Ensure you're in a Railway project directory "
-                "or set RAILWAY_PROJECT_ID, RAILWAY_ENVIRONMENT_ID, and RAILWAY_SERVICE_ID"
+                "Missing Railway configuration. Please ensure you're in a Railway project directory, "
+                "set RAILWAY_PROJECT_ID/RAILWAY_ENVIRONMENT_ID/RAILWAY_SERVICE_ID environment variables, "
+                "or use a project-scoped token."
             )
         
         return RailwayConfig(
@@ -114,6 +137,150 @@ class RailwayGraphQL:
         except Exception:
             pass
         return None
+    
+    def _get_project_info_from_cli(self) -> Dict[str, str]:
+        """Try to get project info from Railway CLI"""
+        import subprocess
+        
+        try:
+            # Run railway variables to get project info
+            result = subprocess.run(
+                ['railway', 'variables'], 
+                capture_output=True, 
+                text=True, 
+                timeout=10
+            )
+            
+            if result.returncode != 0:
+                raise Exception(f"Railway CLI error: {result.stderr}")
+            
+            # Parse the output to extract Railway environment variables
+            project_info = {}
+            for line in result.stdout.split('\n'):
+                line = line.strip()
+                if 'RAILWAY_PROJECT_ID' in line:
+                    parts = line.split('│')
+                    if len(parts) >= 2:
+                        project_info['project_id'] = parts[1].strip()
+                elif 'RAILWAY_ENVIRONMENT_ID' in line:
+                    parts = line.split('│')
+                    if len(parts) >= 2:
+                        project_info['environment_id'] = parts[1].strip()
+                elif 'RAILWAY_SERVICE_ID' in line:
+                    parts = line.split('│')
+                    if len(parts) >= 2:
+                        project_info['service_id'] = parts[1].strip()
+            
+            return project_info
+        
+        except subprocess.TimeoutExpired:
+            raise Exception("Railway CLI command timed out")
+        except subprocess.CalledProcessError as e:
+            raise Exception(f"Railway CLI command failed: {e}")
+        except Exception as e:
+            raise Exception(f"Error getting project info from Railway CLI: {e}")
+    
+    def _discover_project_info(self, api_token: str) -> Dict[str, str]:
+        """Discover project info via Railway GraphQL API"""
+        # Make a simple API call to discover what projects this token has access to
+        headers = {
+            'Authorization': f'Bearer {api_token}',
+            'Content-Type': 'application/json',
+        }
+        
+        # Query to get projects and their environments/services
+        query = """
+        query GetProjects {
+            projects(first: 10) {
+                edges {
+                    node {
+                        id
+                        name
+                        environments(first: 5) {
+                            edges {
+                                node {
+                                    id
+                                    name
+                                    services(first: 10) {
+                                        edges {
+                                            node {
+                                                id
+                                                name
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        """
+        
+        response = requests.post(
+            "https://backboard.railway.app/graphql/v2",
+            json={'query': query},
+            headers=headers,
+            timeout=10
+        )
+        
+        if response.status_code != 200:
+            print(f"Debug: API Response Status: {response.status_code}")
+            print(f"Debug: API Response: {response.text[:500]}")
+            response.raise_for_status()
+        
+        data = response.json()
+        
+        if 'errors' in data:
+            print(f"Debug: GraphQL Errors: {data['errors']}")
+            raise Exception(f"GraphQL errors: {data['errors']}")
+        
+        projects = data.get('data', {}).get('projects', {}).get('edges', [])
+        
+        if not projects:
+            raise Exception("No projects found for this token")
+        
+        # Use the first project found (most common case for project tokens)
+        project = projects[0]['node']
+        project_id = project['id']
+        project_name = project['name']
+        
+        environments = project.get('environments', {}).get('edges', [])
+        if not environments:
+            raise Exception(f"No environments found in project {project_name}")
+        
+        # Use production environment if available, otherwise first one
+        environment = None
+        for env_edge in environments:
+            env_node = env_edge['node']
+            if env_node['name'].lower() == 'production':
+                environment = env_node
+                break
+        
+        if not environment:
+            environment = environments[0]['node']
+        
+        environment_id = environment['id']
+        environment_name = environment['name']
+        
+        services = environment.get('services', {}).get('edges', [])
+        if not services:
+            raise Exception(f"No services found in environment {environment_name}")
+        
+        # Use the first service (most common case)
+        service = services[0]['node']
+        service_id = service['id']
+        service_name = service['name']
+        
+        return {
+            'project_id': project_id,
+            'project_name': project_name,
+            'environment_id': environment_id,
+            'environment_name': environment_name,
+            'service_id': service_id,
+            'service_name': service_name
+        }
     
     def _validate_config(self):
         """Validate configuration values"""

@@ -96,13 +96,9 @@
                                             <% if (profile.current_company && profile.current_company.name) { %>
                                                 <p class="text-muted mb-2">
                                                     <i class="bi bi-building"></i> 
-                                                    <% if (companyMapping && companyMapping[profile.current_company.name]) { %>
-                                                        <a href="<%= companyMapping[profile.current_company.name].url %>" class="text-decoration-none">
-                                                            <%= profile.current_company.name %>
-                                                        </a>
-                                                    <% } else { %>
+                                                    <span data-company="<%= profile.current_company.name %>">
                                                         <%= profile.current_company.name %>
-                                                    <% } %>
+                                                    </span>
                                                 </p>
                                             <% } %>
                                             <% if (profile.city || profile.country_code) { %>
@@ -173,16 +169,14 @@
                                                 <div class="flex-grow-1">
                                                     <h6 class="fw-bold mb-1"><%= exp.title %></h6>
                                                     <div class="text-primary fw-medium mb-1">
-                                                        <% if (companyMapping && companyMapping[exp.company]) { %>
-                                                            <a href="<%= companyMapping[exp.company].url %>" class="text-decoration-none">
-                                                                <%= exp.company %>
-                                                            </a>
-                                                        <% } else if (exp.company_linkedin_url) { %>
-                                                            <a href="<%= exp.company_linkedin_url %>" target="_blank" class="text-decoration-none">
+                                                        <% if (exp.company_linkedin_url) { %>
+                                                            <a href="<%= exp.company_linkedin_url %>" target="_blank" class="text-decoration-none" data-company="<%= exp.company %>">
                                                                 <%= exp.company %>
                                                             </a>
                                                         <% } else { %>
-                                                            <%= exp.company %>
+                                                            <span data-company="<%= exp.company %>">
+                                                                <%= exp.company %>
+                                                            </span>
                                                         <% } %>
                                                     </div>
                                                     <% if (exp.date_range || exp.duration) { %>
@@ -548,11 +542,11 @@
                 });
         }
 
-        // Load profile scoring information if available
+        // Load profile scoring information and company mappings asynchronously
         document.addEventListener('DOMContentLoaded', function() {
             const profileId = '<%= profile.id %>';
             
-            // Load current profile score
+            // Load current profile score (with proper endpoint)
             fetch(`/api/profiles/${profileId}/score`)
                 .then(response => response.json())
                 .then(result => {
@@ -569,11 +563,18 @@
                         } else {
                             progressBar.className = 'progress-bar bg-danger';
                         }
+                        
+                        console.log(`Profile score loaded: ${result.score} (job: ${result.job_id})`);
+                    } else {
+                        console.log('No scoring data available for this profile yet');
                     }
                 })
                 .catch(error => {
-                    console.log('No scoring data available yet');
+                    console.log('Error fetching score:', error);
                 });
+            
+            // Company mapping temporarily disabled for performance testing
+            console.log('Company mapping disabled for performance optimization');
         });
     </script>
 </body>

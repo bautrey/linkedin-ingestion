@@ -48,6 +48,54 @@ router.post('/profiles/:id/score', async (req, res) => {
     }
 });
 
+// GET /api/profiles/:id/score - Get latest score for a profile
+router.get('/profiles/:id/score', async (req, res) => {
+    try {
+        const profileId = req.params.id;
+        
+        // Get all scoring jobs and find the latest completed one for this profile
+        const response = await apiClient.get('/scoring-jobs', {
+            params: { limit: 100 } // Get more jobs to find profile's latest score
+        });
+        
+        // Filter jobs for this profile and find the latest completed one
+        const profileJobs = response.data.jobs.filter(job => 
+            job.profile_id === profileId && 
+            job.status === 'completed' && 
+            job.score !== null
+        );
+        
+        if (profileJobs.length === 0) {
+            return res.json({
+                score: null,
+                message: 'No completed scoring jobs found for this profile'
+            });
+        }
+        
+        // Get the most recent completed job
+        const latestJob = profileJobs.reduce((latest, job) => {
+            const latestDate = new Date(latest.completed_at);
+            const jobDate = new Date(job.completed_at);
+            return jobDate > latestDate ? job : latest;
+        });
+        
+        res.json({
+            score: latestJob.score,
+            job_id: latestJob.id,
+            completed_at: latestJob.completed_at,
+            model_name: latestJob.model_name
+        });
+        
+    } catch (error) {
+        logger.error(`Error fetching score for profile ${req.params.id}:`, error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch profile score',
+            error: error.message
+        });
+    }
+});
+
 // GET /api/profiles/:id/scoring-results - Get scoring results
 router.get('/profiles/:id/scoring-results', async (req, res) => {
     try {

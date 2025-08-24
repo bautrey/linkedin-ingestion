@@ -85,61 +85,32 @@ router.get('/', async (req, res) => {
 
 // GET /profiles/:id - View single profile
 router.get('/:id', async (req, res) => {
+    const startTime = Date.now();
     try {
+        logger.info(`Starting profile detail request for ${req.params.id}`);
+        
+        const apiCallStart = Date.now();
         const response = await apiClient.get(`/profiles/${req.params.id}`);
+        const apiCallTime = Date.now() - apiCallStart;
+        
+        logger.info(`API call completed in ${apiCallTime}ms`);
+        
         const profile = response.data;
         
-        // Extract company names from profile experience
-        const companyNames = new Set();
-        
-        // Add current company
-        if (profile.current_company && profile.current_company.name) {
-            companyNames.add(profile.current_company.name);
-        }
-        
-        // Add companies from experience
-        if (profile.experience && profile.experience.length > 0) {
-            profile.experience.forEach(exp => {
-                if (exp.company) {
-                    companyNames.add(exp.company);
-                }
-            });
-        }
-        
-        // Map company names to our internal company records
+        // Skip company mapping for faster page load - will be loaded asynchronously
         const companyMapping = {};
         
-        // Search for each company in our database
-        for (const companyName of companyNames) {
-            try {
-                const companyResponse = await apiClient.get('/companies', {
-                    params: { name: companyName, limit: 1 }
-                });
-                
-                if (companyResponse.data.data && companyResponse.data.data.length > 0) {
-                    const company = companyResponse.data.data[0];
-                    // Only map if the company name is a close match
-                    if (company.company_name.toLowerCase().includes(companyName.toLowerCase()) || 
-                        companyName.toLowerCase().includes(company.company_name.toLowerCase())) {
-                        companyMapping[companyName] = {
-                            id: company.id,
-                            name: company.company_name,
-                            url: `/companies/${company.id}`
-                        };
-                    }
-                }
-            } catch (companyError) {
-                // If company search fails, continue without mapping
-                logger.debug(`Company search failed for ${companyName}:`, companyError.message);
-            }
-        }
-        
+        const renderStart = Date.now();
         res.render('profiles/detail', {
             title: `Profile: ${profile.name}`,
             profile: profile,
             companyMapping: companyMapping,
             currentPage: 'profiles'
         });
+        
+        const totalTime = Date.now() - startTime;
+        const renderTime = Date.now() - renderStart;
+        logger.info(`Profile detail page completed - API: ${apiCallTime}ms, Render: ${renderTime}ms, Total: ${totalTime}ms`);
     } catch (error) {
         logger.error(`Error fetching profile ${req.params.id}:`, error);
         if (error.response && error.response.status === 404) {
@@ -194,6 +165,76 @@ router.get('/:id/scoring-history', async (req, res) => {
                 error: process.env.NODE_ENV === 'development' ? error : {}
             });
         }
+    }
+});
+
+// GET /profiles/:id/company-mapping - Get company mappings for profile (async)
+router.get('/:id/company-mapping', async (req, res) => {
+    try {
+        const response = await apiClient.get(`/profiles/${req.params.id}`);
+        const profile = response.data;
+        
+        // Extract company names from profile experience
+        const companyNames = new Set();
+        
+        // Add current company
+        if (profile.current_company && profile.current_company.name) {
+            companyNames.add(profile.current_company.name);
+        }
+        
+        // Add companies from experience
+        if (profile.experience && profile.experience.length > 0) {
+            profile.experience.forEach(exp => {
+                if (exp.company) {
+                    companyNames.add(exp.company);
+                }
+            });
+        }
+        
+        // Search for all companies in parallel
+        const companySearchPromises = Array.from(companyNames).map(async (companyName) => {
+            try {
+                const companyResponse = await apiClient.get('/companies', {
+                    params: { name: companyName, limit: 1 }
+                });
+                
+                if (companyResponse.data.data && companyResponse.data.data.length > 0) {
+                    const company = companyResponse.data.data[0];
+                    // Only map if the company name is a close match
+                    if (company.company_name.toLowerCase().includes(companyName.toLowerCase()) || 
+                        companyName.toLowerCase().includes(company.company_name.toLowerCase())) {
+                        return {
+                            originalName: companyName,
+                            mapping: {
+                                id: company.id,
+                                name: company.company_name,
+                                url: `/companies/${company.id}`
+                            }
+                        };
+                    }
+                }
+                return null;
+            } catch (companyError) {
+                logger.debug(`Company search failed for ${companyName}:`, companyError.message);
+                return null;
+            }
+        });
+        
+        // Wait for all company searches to complete
+        const companyResults = await Promise.allSettled(companySearchPromises);
+        
+        // Build the mapping from results
+        const companyMapping = {};
+        companyResults.forEach(result => {
+            if (result.status === 'fulfilled' && result.value) {
+                companyMapping[result.value.originalName] = result.value.mapping;
+            }
+        });
+        
+        res.json({ companyMapping });
+    } catch (error) {
+        logger.error(`Error fetching company mapping for profile ${req.params.id}:`, error);
+        res.status(500).json({ error: 'Failed to load company mapping' });
     }
 });
 
