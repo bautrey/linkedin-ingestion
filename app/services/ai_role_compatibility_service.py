@@ -287,6 +287,13 @@ Education:
             
             raw_response = response.choices[0].message.content
             
+            # Log raw response for debugging
+            self.logger.info(f"Raw AI response length: {len(raw_response) if raw_response else 0}")
+            if raw_response:
+                self.logger.info(f"Raw AI response preview: {raw_response[:200]}...")
+            else:
+                self.logger.warning("AI returned empty response")
+            
             # Try to parse JSON response
             import json
             try:
@@ -294,6 +301,7 @@ Education:
                 return raw_response, parsed_response
             except json.JSONDecodeError as e:
                 self.logger.warning(f"Failed to parse AI response as JSON: {str(e)}")
+                self.logger.warning(f"Full raw response: {repr(raw_response)}")
                 return raw_response, {}
                 
         except Exception as e:
