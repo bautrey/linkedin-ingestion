@@ -9,6 +9,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, HttpUrl, Field
 from typing import Dict, Any, Optional
 import asyncio
+import urllib.parse
 from datetime import datetime
 
 from app.core.logging import LoggerMixin
@@ -17,6 +18,56 @@ from app.cassidy.exceptions import CassidyAPIError, CassidyTimeoutError, Cassidy
 from app.cassidy.models import ProfileIngestionRequest
 
 router = APIRouter(prefix="/api/v1/profiles", tags=["Profile Verification"])
+
+
+def normalize_and_clean_linkedin_url(url: str) -> str:
+    """
+    Normalize and clean LinkedIn profile URLs to consistent format.
+    Handles encoding issues, BOMs, and malformed URLs.
+    
+    Args:
+        url: Raw LinkedIn URL (possibly malformed)
+        
+    Returns:
+        Cleaned and normalized LinkedIn URL
+    """
+    # Strip whitespace
+    url = url.strip()
+    
+    # Remove any trailing encoded BOM sequences like %EF%BB%BF BEFORE URL decoding
+    bom_sequences = ['%EF%BB%BF', '%FEFF', '%200B', '%200C', '%200D']
+    for bom_seq in bom_sequences:
+        if bom_seq.lower() in url.lower():
+            url = url.replace(bom_seq, '').replace(bom_seq.lower(), '')
+    
+    # URL decode any percent-encoded characters
+    try:
+        url = urllib.parse.unquote(url, errors='ignore')
+    except Exception:
+        # If URL decoding fails, continue with original
+        pass
+    
+    # Remove BOM characters (after decoding)
+    bom_chars = ['\ufeff', '\u200b', '\u200c', '\u200d', '\ufffe', '\uffff']
+    for bom_char in bom_chars:
+        url = url.replace(bom_char, '')
+    
+    # Strip again after cleaning
+    url = url.strip()
+    
+    # Ensure https protocol
+    if not url.startswith('http'):
+        url = 'https://' + url
+    
+    # Ensure www subdomain for linkedin.com
+    if '://linkedin.com' in url:
+        url = url.replace('://linkedin.com', '://www.linkedin.com')
+    
+    # Ensure trailing slash
+    if not url.endswith('/'):
+        url += '/'
+    
+    return url
 
 
 class ProfileVerificationRequest(BaseModel):
@@ -267,8 +318,12 @@ async def verify_linkedin_profile(request: ProfileVerificationRequest) -> Profil
     - If `false`, stop the evaluation process
     """
     try:
-        # Use Pydantic URL validation from ProfileIngestionRequest
-        validated_request = ProfileIngestionRequest(linkedin_url=request.linkedin_url)
+        # Clean and normalize URL first to handle BOM and encoding issues
+        raw_url = str(request.linkedin_url)
+        cleaned_url = normalize_and_clean_linkedin_url(raw_url)
+        
+        # Use Pydantic URL validation with cleaned URL
+        validated_request = ProfileIngestionRequest(linkedin_url=cleaned_url)
         normalized_url = str(validated_request.linkedin_url)
         
         result = await verification_service.verify_profile(normalized_url)
@@ -280,9 +335,11 @@ async def verify_linkedin_profile(request: ProfileVerificationRequest) -> Profil
             detail={
                 "error": "Invalid LinkedIn URL format",
                 "message": str(e),
+                "raw_url": str(request.linkedin_url),
                 "suggestions": [
                     "Use the modern LinkedIn URL format: https://www.linkedin.com/in/username",
                     "Ensure the LinkedIn URL is publicly accessible",
+                    "Remove any invisible characters or encoding artifacts from the URL",
                     "Avoid old LinkedIn URL formats like /pub/ which are no longer supported"
                 ]
             }
