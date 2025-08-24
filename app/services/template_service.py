@@ -425,6 +425,43 @@ class TemplateService(LoggerMixin):
         """
         return await self.list_templates(category=category, include_inactive=False)
     
+    def _parse_datetime(self, datetime_str: str) -> datetime:
+        """
+        Parse datetime string with flexible microsecond precision
+        
+        Args:
+            datetime_str: ISO format datetime string
+            
+        Returns:
+            datetime object
+        """
+        try:
+            # First try standard parsing
+            clean_str = datetime_str.replace('Z', '+00:00')
+            return datetime.fromisoformat(clean_str)
+        except ValueError:
+            # Handle non-standard microsecond precision
+            import re
+            # Extract the microsecond part and normalize it to 6 digits
+            match = re.match(r'([^.]+)(?:\.([0-9]+))?([+-][0-9:]+|Z)$', datetime_str)
+            if match:
+                date_part, microsec_part, tz_part = match.groups()
+                
+                if microsec_part:
+                    # Pad or truncate to 6 digits
+                    microsec_part = microsec_part.ljust(6, '0')[:6]
+                    normalized_str = f"{date_part}.{microsec_part}{tz_part}"
+                else:
+                    normalized_str = f"{date_part}{tz_part}"
+                
+                # Replace Z with +00:00
+                normalized_str = normalized_str.replace('Z', '+00:00')
+                return datetime.fromisoformat(normalized_str)
+            else:
+                # Fallback: just replace Z and try again
+                clean_str = datetime_str.replace('Z', '+00:00')
+                return datetime.fromisoformat(clean_str)
+    
     def _convert_db_to_model(self, db_data: Dict[str, Any]) -> PromptTemplate:
         """
         Convert database record to PromptTemplate model
@@ -441,9 +478,9 @@ class TemplateService(LoggerMixin):
             updated_at = db_data["updated_at"]
             
             if isinstance(created_at, str):
-                created_at = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                created_at = self._parse_datetime(created_at)
             if isinstance(updated_at, str):
-                updated_at = datetime.fromisoformat(updated_at.replace('Z', '+00:00'))
+                updated_at = self._parse_datetime(updated_at)
             
             return PromptTemplate(
                 id=db_data["id"],
