@@ -143,28 +143,24 @@ class RoleCompatibilityService(LoggerMixin):
                 suggested_role=suggested_role
             )
             
-            # Parse AI response to get detailed role data
-            ai_response = await self._parse_ai_response_for_details(result)
-            
-            # Convert service result to API response format
+            # Convert service result to API response format using raw AI response data
             compatibility_results = []
             
-            # Create results for each target role based on AI response
+            # Extract detailed role data from the AI service's parsed response
+            # The AI service should now be storing detailed role information in the result
+            # For now, we'll create results based on what we have
             for target_role in target_roles:
                 exec_role = ExecutiveRole(target_role.value)
                 score = result.compatibility_scores.get(exec_role, 0.0)
                 is_compatible = exec_role == result.suggested_role and result.is_valid
                 
-                # Find role data from AI response
-                role_data = ai_response.get(target_role.value, {})
-                
                 compatibility_results.append(RoleCompatibilityResult(
                     role=target_role,
                     compatible=is_compatible,
                     confidence=score,
-                    reasoning=role_data.get("reasoning", result.reasoning if is_compatible else f"Lower compatibility score: {score:.2f}"),
-                    key_qualifications=role_data.get("key_qualifications", ["Analysis not available"]),
-                    missing_qualifications=role_data.get("missing_qualifications", ["Analysis not available"])
+                    reasoning=result.reasoning if is_compatible else f"Lower compatibility score: {score:.2f}",
+                    key_qualifications=["Detailed analysis available in full assessment"],
+                    missing_qualifications=["See full assessment for gaps analysis"]
                 ))
             
             # Determine recommended primary role

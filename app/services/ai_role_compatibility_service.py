@@ -297,7 +297,21 @@ Education:
             # Try to parse JSON response
             import json
             try:
-                parsed_response = json.loads(raw_response)
+                # Strip markdown code blocks if present (common with GPT-4o)
+                json_content = raw_response.strip()
+                if json_content.startswith('```json'):
+                    # Remove ```json from start and ``` from end
+                    json_content = json_content[7:]  # Remove ```json
+                    if json_content.endswith('```'):
+                        json_content = json_content[:-3]  # Remove ```
+                elif json_content.startswith('```'):
+                    # Remove ``` from start and end
+                    json_content = json_content[3:]  # Remove ```
+                    if json_content.endswith('```'):
+                        json_content = json_content[:-3]  # Remove ```
+                
+                json_content = json_content.strip()
+                parsed_response = json.loads(json_content)
                 return raw_response, parsed_response
             except json.JSONDecodeError as e:
                 self.logger.warning(f"Failed to parse AI response as JSON: {str(e)}")
