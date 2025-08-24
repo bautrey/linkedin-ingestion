@@ -498,7 +498,7 @@ Please provide your evaluation in JSON format:"""
             template_id=template_id,
             template_name=template_used.name if template_used else None,
             effective_model=effective_model,
-            model_source="override" if model_override else ("template" if template_used and template_used.preferred_model else "default"),
+            model_source="override" if model_override else ("template_stage" if template_used and template_used.stage else "default"),
             prompt_length=len(effective_prompt)
         )
         
