@@ -310,6 +310,61 @@ class ProfileScoringController(LoggerMixin):
                     detail=error_response.model_dump()
                 )
         
+        elif request.role:
+            self.logger.info(
+                "Creating role-based scoring job",
+                profile_id=profile_id,
+                role=request.role
+            )
+            
+            # Find default template for the role
+            try:
+                template = await self.template_service.get_default_template_for_role(request.role)
+                if not template:
+                    error_response = ErrorResponse(
+                        error_code="TEMPLATE_NOT_FOUND",
+                        message=f"No active template found for role {request.role}",
+                        details={"role": request.role}
+                    )
+                    raise HTTPException(
+                        status_code=404,
+                        detail=error_response.model_dump()
+                    )
+                
+                template_id = str(template.id)
+                prompt = template.prompt_text
+                
+                self.logger.info(
+                    "Role-based template resolved successfully",
+                    template_id=template_id,
+                    template_name=template.name,
+                    template_category=template.category,
+                    role=request.role,
+                    prompt_length=len(prompt)
+                )
+                
+            except HTTPException:
+                raise
+            except Exception as e:
+                self.logger.error(
+                    "Failed to resolve role-based template",
+                    role=request.role,
+                    error=str(e),
+                    error_type=type(e).__name__
+                )
+                error_response = ErrorResponse(
+                    error_code="ROLE_TEMPLATE_RESOLUTION_ERROR",
+                    message=f"Failed to find template for role {request.role}",
+                    details={
+                        "role": request.role,
+                        "error": str(e)
+                    }
+                )
+                raise HTTPException(
+                    status_code=500,
+                    detail=error_response.model_dump()
+                )
+        
         else:
             # Prompt-based scoring (backward compatibility)
             prompt = request.prompt

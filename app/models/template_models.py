@@ -178,7 +178,7 @@ class TemplateListSummaryResponse(BaseModel):
 
 class EnhancedScoringRequest(BaseModel):
     """
-    Enhanced scoring request supporting both template_id and raw prompt
+    Enhanced scoring request supporting template_id, role-based lookup, or raw prompt
     
     Used in POST /api/v1/profiles/{id}/score
     Maintains backward compatibility while adding template support
@@ -189,6 +189,7 @@ class EnhancedScoringRequest(BaseModel):
     )
     
     template_id: Optional[UUID] = Field(None, description="ID of template to use for scoring")
+    role: Optional[str] = Field(None, description="Role category to automatically select template (CTO, CIO, CISO)")
     prompt: Optional[str] = Field(None, min_length=1, description="Raw prompt text (backward compatibility)")
     
     @field_validator('template_id', 'prompt')
@@ -199,11 +200,22 @@ class EnhancedScoringRequest(BaseModel):
         return v
     
     def model_post_init(self, __context) -> None:
-        """Post-init validation to ensure exactly one of template_id or prompt is provided"""
-        if not self.template_id and not self.prompt:
-            raise ValueError("Either 'template_id' or 'prompt' must be provided")
-        if self.template_id and self.prompt:
-            raise ValueError("Cannot provide both 'template_id' and 'prompt' - choose one")
+        """Post-init validation to ensure exactly one of template_id, role, or prompt is provided"""
+        provided_fields = sum([bool(self.template_id), bool(self.role), bool(self.prompt)])
+        
+        if provided_fields == 0:
+            raise ValueError("One of 'template_id', 'role', or 'prompt' must be provided")
+        if provided_fields > 1:
+            raise ValueError("Only one of 'template_id', 'role', or 'prompt' can be provided")
+        
+        if self.role:
+            # Validate role is one of the expected values
+            valid_roles = {"CTO", "CIO", "CISO"}
+            role_upper = self.role.upper()
+            if role_upper not in valid_roles:
+                raise ValueError(f"Role must be one of: {', '.join(valid_roles)}")
+            # Normalize the role value
+            self.role = role_upper
 
 
 class ScoringJobResponse(BaseModel):
