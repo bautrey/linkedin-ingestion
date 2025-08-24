@@ -1858,7 +1858,7 @@ async def get_profiles_for_company(
     """Get all profiles associated with a company"""
     try:
         controller = get_company_controller()
-        profiles_data = controller.company_repo.get_profiles_for_company(company_id)
+        profiles_data = await controller.company_repo.get_profiles_for_company(company_id)
         
         # Transform data to flatten profile information with work experience
         transformed_profiles = []

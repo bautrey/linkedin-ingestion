@@ -712,7 +712,7 @@ class CompanyRepository:
             logger.error(f"Failed to get companies for profile {profile_id}: {str(e)}")
             return []
     
-    def get_profiles_for_company(self, company_id: str) -> List[Dict[str, Any]]:
+    async def get_profiles_for_company(self, company_id: str) -> List[Dict[str, Any]]:
         """
         Get all profiles associated with a company.
         
@@ -723,8 +723,11 @@ class CompanyRepository:
             List of profile data with work experience details
         """
         try:
+            # Ensure async client is available
+            await self.supabase_client._ensure_client()
+            
             # Join profile_companies and linkedin_profiles tables
-            result = self.client.table("profile_companies").select(
+            result = await self.supabase_client.client.table("profile_companies").select(
                 "*, linkedin_profiles(id, name, linkedin_id, url, position, about, city, country_code, profile_image_url, current_company)"
             ).eq(
                 "company_id", company_id
