@@ -43,6 +43,7 @@ class RoleCompatibilityResult(BaseModel):
     processing_time_ms: float
     tokens_used: int
     validation_errors: List[str] = []
+    detailed_role_data: Dict[str, Dict[str, Any]] = {}  # Raw role data from AI response
 
 
 class AIRoleCompatibilityService:
@@ -195,6 +196,19 @@ Education:
             # Determine if role changed
             role_changed = recommended_role != suggested_role
             
+            # Store detailed role information from AI response
+            detailed_role_data = {}
+            for role_data in compatible_roles_data:
+                role_str = role_data.get("role", "")
+                if role_str in ["CTO", "CIO", "CISO"]:
+                    detailed_role_data[role_str] = {
+                        "key_qualifications": role_data.get("key_qualifications", []),
+                        "missing_qualifications": role_data.get("missing_qualifications", []),
+                        "reasoning": role_data.get("reasoning", ""),
+                        "compatible": role_data.get("compatible", False),
+                        "confidence": role_data.get("confidence", 0.0)
+                    }
+            
             # Log result
             if proceed_with_scoring:
                 if role_changed:
@@ -237,7 +251,8 @@ Education:
                 reasoning=overall_assessment,
                 processing_time_ms=processing_time,
                 tokens_used=tokens_used,
-                validation_errors=validation_errors
+                validation_errors=validation_errors,
+                detailed_role_data=detailed_role_data
             )
             
         except Exception as e:
@@ -262,7 +277,8 @@ Education:
                 reasoning=f"Role compatibility check failed: {str(e)}",
                 processing_time_ms=processing_time,
                 tokens_used=0,
-                validation_errors=[f"Compatibility check error: {str(e)}"]
+                validation_errors=[f"Compatibility check error: {str(e)}"],
+                detailed_role_data={}
             )
     
     async def _call_ai_with_messages(

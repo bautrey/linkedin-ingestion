@@ -146,21 +146,25 @@ class RoleCompatibilityService(LoggerMixin):
             # Convert service result to API response format using raw AI response data
             compatibility_results = []
             
-            # Extract detailed role data from the AI service's parsed response
-            # The AI service should now be storing detailed role information in the result
-            # For now, we'll create results based on what we have
+            # Extract detailed role data from the AI service's stored response
             for target_role in target_roles:
                 exec_role = ExecutiveRole(target_role.value)
                 score = result.compatibility_scores.get(exec_role, 0.0)
                 is_compatible = exec_role == result.suggested_role and result.is_valid
                 
+                # Get detailed data from AI response if available
+                role_details = result.detailed_role_data.get(target_role.value, {})
+                key_qualifications = role_details.get("key_qualifications", ["No detailed analysis available"])
+                missing_qualifications = role_details.get("missing_qualifications", ["No detailed analysis available"])
+                detailed_reasoning = role_details.get("reasoning", f"Score: {score:.2f}")
+                
                 compatibility_results.append(RoleCompatibilityResult(
                     role=target_role,
                     compatible=is_compatible,
                     confidence=score,
-                    reasoning=result.reasoning if is_compatible else f"Lower compatibility score: {score:.2f}",
-                    key_qualifications=["Detailed analysis available in full assessment"],
-                    missing_qualifications=["See full assessment for gaps analysis"]
+                    reasoning=detailed_reasoning if detailed_reasoning else (result.reasoning if is_compatible else f"Lower compatibility score: {score:.2f}"),
+                    key_qualifications=key_qualifications,
+                    missing_qualifications=missing_qualifications
                 ))
             
             # Determine recommended primary role
@@ -228,17 +232,6 @@ class RoleCompatibilityService(LoggerMixin):
                 model_used="error"
             )
 
-
-    async def _parse_ai_response_for_details(self, result: ServiceResult) -> Dict[str, Dict[str, Any]]:
-        """Parse raw AI response to extract detailed role information"""
-        # This is a placeholder - in the actual implementation, we would need
-        # to store the raw AI response in the ServiceResult to parse it here
-        # For now, return empty details
-        return {
-            "CTO": {"key_qualifications": ["Analysis pending"], "missing_qualifications": ["Analysis pending"], "reasoning": "Details not available"},
-            "CIO": {"key_qualifications": ["Analysis pending"], "missing_qualifications": ["Analysis pending"], "reasoning": "Details not available"},
-            "CISO": {"key_qualifications": ["Analysis pending"], "missing_qualifications": ["Analysis pending"], "reasoning": "Details not available"}
-        }
 
 
 # Initialize the service
