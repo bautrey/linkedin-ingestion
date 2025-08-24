@@ -1863,8 +1863,8 @@ async def get_profiles_for_company(
         # Transform data to flatten profile information with work experience
         transformed_profiles = []
         for item in profiles_data:
-            if item.get("profiles"):
-                profile = item["profiles"]
+            if item.get("linkedin_profiles"):
+                profile = item["linkedin_profiles"]
                 
                 # Calculate experience years from start/end dates
                 experience_years = None

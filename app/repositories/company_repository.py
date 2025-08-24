@@ -723,9 +723,9 @@ class CompanyRepository:
             List of profile data with work experience details
         """
         try:
-            # Join profile_companies and profiles tables
+            # Join profile_companies and linkedin_profiles tables
             result = self.client.table("profile_companies").select(
-                "*, profiles(id, first_name, last_name, full_name, linkedin_url, headline, job_title, company, location, profile_image_url)"
+                "*, linkedin_profiles(id, name, linkedin_id, url, position, about, city, country_code, profile_image_url, current_company)"
             ).eq(
                 "company_id", company_id
             ).execute()
