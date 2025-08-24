@@ -100,6 +100,30 @@ class AIRoleCompatibilityService:
         
         validation_errors = []
         
+        # Check if LLM service is properly initialized
+        if not self.llm_service or not self.llm_service.client:
+            error_msg = f"LLM service not properly initialized: client={bool(self.llm_service.client) if self.llm_service else 'no_service'}"
+            self.logger.error(
+                f"❌ LLM_SERVICE_ERROR: {error_msg}",
+                compatibility_id=compatibility_id,
+                has_llm_service=bool(self.llm_service),
+                has_client=bool(self.llm_service.client) if self.llm_service else False,
+                api_key_configured=bool(settings.OPENAI_API_KEY)
+            )
+            return RoleCompatibilityResult(
+                is_valid=False,
+                suggested_role=suggested_role,
+                original_role=suggested_role,
+                role_changed=False,
+                compatibility_scores={suggested_role: 0.0},
+                confidence=0.0,
+                reasoning=error_msg,
+                processing_time_ms=0.0,
+                tokens_used=0,
+                validation_errors=[error_msg],
+                detailed_role_data={}
+            )
+        
         try:
             # Build profile data string for the user message
             profile_data = f"""
@@ -258,12 +282,19 @@ Education:
         except Exception as e:
             processing_time = (datetime.now() - start_time).total_seconds() * 1000
             
+            # Get full traceback for debugging
+            import traceback
+            full_traceback = traceback.format_exc()
+            
             self.logger.error(
                 f"❌ ROLE_COMPATIBILITY_ERROR: Unexpected error during unified role compatibility check",
                 compatibility_id=compatibility_id,
                 error=str(e),
                 error_type=type(e).__name__,
-                stage="STAGE_3_AI_ROLE_COMPATIBILITY"
+                stage="STAGE_3_AI_ROLE_COMPATIBILITY",
+                full_traceback=full_traceback,
+                profile_name=profile.full_name if profile else "unknown",
+                suggested_role=suggested_role.value if suggested_role else "unknown"
             )
             
             # Return fallback result
