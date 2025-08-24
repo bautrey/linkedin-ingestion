@@ -376,10 +376,17 @@ Education:
         
         formatted = []
         for i, exp in enumerate(experiences, 1):
-            title = exp.get("title", "Unknown Title")
-            company = exp.get("company", "Unknown Company")
-            duration = exp.get("duration", "")
-            description = exp.get("description", "")[:200]  # Limit description
+            # Handle None values properly
+            title = exp.get("title") or "Unknown Title"
+            company = exp.get("company") or "Unknown Company"
+            duration = exp.get("duration") or ""
+            description = exp.get("description") or ""
+            
+            # Safely slice description (only if it's a string)
+            if description and isinstance(description, str):
+                description = description[:200]
+            else:
+                description = ""
             
             formatted.append(f"{i}. {title} at {company} ({duration})")
             if description:
@@ -394,9 +401,10 @@ Education:
         
         formatted = []
         for edu in education:
-            degree = edu.get("degree", "")
-            school = edu.get("school", "")
-            field = edu.get("field", "")
+            # Handle None values properly
+            degree = edu.get("degree") or ""
+            school = edu.get("school") or ""
+            field = edu.get("field") or ""
             
             if degree and school:
                 formatted.append(f"- {degree} from {school}")
