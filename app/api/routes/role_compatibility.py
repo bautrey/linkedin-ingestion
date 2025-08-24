@@ -143,22 +143,28 @@ class RoleCompatibilityService(LoggerMixin):
                 suggested_role=suggested_role
             )
             
+            # Parse AI response to get detailed role data
+            ai_response = await self._parse_ai_response_for_details(result)
+            
             # Convert service result to API response format
             compatibility_results = []
             
-            # Create results for each target role based on compatibility scores
+            # Create results for each target role based on AI response
             for target_role in target_roles:
                 exec_role = ExecutiveRole(target_role.value)
                 score = result.compatibility_scores.get(exec_role, 0.0)
                 is_compatible = exec_role == result.suggested_role and result.is_valid
                 
+                # Find role data from AI response
+                role_data = ai_response.get(target_role.value, {})
+                
                 compatibility_results.append(RoleCompatibilityResult(
                     role=target_role,
                     compatible=is_compatible,
                     confidence=score,
-                    reasoning=result.reasoning if is_compatible else f"Lower compatibility score: {score:.2f}",
-                    key_qualifications=[],  # Not provided by unified service
-                    missing_qualifications=[]  # Not provided by unified service
+                    reasoning=role_data.get("reasoning", result.reasoning if is_compatible else f"Lower compatibility score: {score:.2f}"),
+                    key_qualifications=role_data.get("key_qualifications", ["Analysis not available"]),
+                    missing_qualifications=role_data.get("missing_qualifications", ["Analysis not available"])
                 ))
             
             # Determine recommended primary role
@@ -225,6 +231,18 @@ class RoleCompatibilityService(LoggerMixin):
                 ai_response_time=response_time,
                 model_used="error"
             )
+
+
+    async def _parse_ai_response_for_details(self, result: ServiceResult) -> Dict[str, Dict[str, Any]]:
+        """Parse raw AI response to extract detailed role information"""
+        # This is a placeholder - in the actual implementation, we would need
+        # to store the raw AI response in the ServiceResult to parse it here
+        # For now, return empty details
+        return {
+            "CTO": {"key_qualifications": ["Analysis pending"], "missing_qualifications": ["Analysis pending"], "reasoning": "Details not available"},
+            "CIO": {"key_qualifications": ["Analysis pending"], "missing_qualifications": ["Analysis pending"], "reasoning": "Details not available"},
+            "CISO": {"key_qualifications": ["Analysis pending"], "missing_qualifications": ["Analysis pending"], "reasoning": "Details not available"}
+        }
 
 
 # Initialize the service

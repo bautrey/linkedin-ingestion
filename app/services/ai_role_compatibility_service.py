@@ -127,30 +127,39 @@ Education:
                 system_message=settings.ROLE_COMPATIBILITY_SYSTEM_MESSAGE,
                 user_message=user_message,
                 model=settings.STAGE_3_MODEL,
-                max_tokens=300,
-                temperature=0.1
+                max_tokens=800,  # Increased for more detailed response
+                temperature=0.2   # ChatGPT recommended 0.2 for determinism
             )
             
-            # Extract results from AI response
-            recommended_role_str = parsed_response.get("recommended_role", "NONE")
-            passes_gate = parsed_response.get("passes_gate", False)
-            compatibility_scores_raw = parsed_response.get("compatibility_scores", {})
-            confidence = min(1.0, max(0.0, float(parsed_response.get("confidence", 0.0))))
-            key_factors = parsed_response.get("key_factors", [])
-            reasoning = parsed_response.get("reasoning", "No reasoning provided")
+            # Extract results from AI response (new format)
+            recommended_role_str = parsed_response.get("recommended_primary_role", "NONE")
+            proceed_with_scoring = parsed_response.get("proceed_with_scoring", False)
+            compatible_roles_data = parsed_response.get("compatible_roles", [])
+            overall_assessment = parsed_response.get("overall_assessment", "No assessment provided")
             
-            # Convert compatibility scores to proper format
+            # Extract compatibility scores and find highest scoring role
             compatibility_scores = {}
-            for role_str, score in compatibility_scores_raw.items():
+            best_score = 0.0
+            best_role = None
+            
+            for role_data in compatible_roles_data:
+                role_str = role_data.get("role", "")
+                confidence = role_data.get("confidence", 0.0)
+                
                 try:
                     role_enum = ExecutiveRole(role_str)
-                    compatibility_scores[role_enum] = min(1.0, max(0.0, float(score)))
+                    compatibility_scores[role_enum] = min(1.0, max(0.0, float(confidence)))
+                    
+                    if confidence > best_score:
+                        best_score = confidence
+                        best_role = role_enum
+                        
                 except (ValueError, TypeError) as e:
                     self.logger.warning(
                         f"Invalid role or score in AI response",
                         compatibility_id=compatibility_id,
                         role=role_str,
-                        score=score,
+                        score=confidence,
                         error=str(e)
                     )
             
@@ -166,19 +175,18 @@ Education:
                     )
                     recommended_role = None
             
-            # If no valid recommended role, find the best scoring role
-            if not recommended_role and compatibility_scores:
-                recommended_role = max(compatibility_scores, key=compatibility_scores.get)
-                passes_gate = compatibility_scores[recommended_role] >= self.minimum_compatibility_score
+            # If no valid recommended role, use the best scoring role
+            if not recommended_role:
+                recommended_role = best_role if best_role else suggested_role
             
             # Fallback if everything failed
-            if not recommended_role:
+            if not compatibility_scores:
                 recommended_role = suggested_role  # Fall back to original
-                passes_gate = False
+                proceed_with_scoring = False
                 compatibility_scores = {suggested_role: 0.0}
-                confidence = 0.0
-                reasoning = "Failed to determine role compatibility"
-                validation_errors.append("AI response did not contain valid role recommendation")
+                best_score = 0.0
+                overall_assessment = "Failed to determine role compatibility"
+                validation_errors.append("AI response did not contain valid role data")
             
             # Calculate processing metrics
             processing_time = (datetime.now() - start_time).total_seconds() * 1000
@@ -188,14 +196,14 @@ Education:
             role_changed = recommended_role != suggested_role
             
             # Log result
-            if passes_gate:
+            if proceed_with_scoring:
                 if role_changed:
                     self.logger.info(
                         f"🔄 ROLE_CHANGED: Profile passed gate with different role",
                         compatibility_id=compatibility_id,
                         original_role=suggested_role.value,
                         recommended_role=recommended_role.value,
-                        confidence=confidence,
+                        confidence=best_score,
                         stage="STAGE_3_AI_ROLE_COMPATIBILITY",
                         status="PASSED_WITH_CHANGE"
                     )
@@ -204,7 +212,7 @@ Education:
                         f"✅ ORIGINAL_ROLE_CONFIRMED: Profile passed gate with original role",
                         compatibility_id=compatibility_id,
                         role=suggested_role.value,
-                        confidence=confidence,
+                        confidence=best_score,
                         stage="STAGE_3_AI_ROLE_COMPATIBILITY",
                         status="PASSED_ORIGINAL"
                     )
@@ -213,20 +221,20 @@ Education:
                     f"❌ GATE_FAILED: Profile failed compatibility gate",
                     compatibility_id=compatibility_id,
                     recommended_role=recommended_role.value if recommended_role else "NONE",
-                    confidence=confidence,
+                    confidence=best_score,
                     threshold=self.minimum_compatibility_score,
                     stage="STAGE_3_AI_ROLE_COMPATIBILITY",
                     status="FAILED"
                 )
             
             return RoleCompatibilityResult(
-                is_valid=passes_gate,
+                is_valid=proceed_with_scoring,
                 suggested_role=recommended_role,
                 original_role=suggested_role,
                 role_changed=role_changed,
                 compatibility_scores=compatibility_scores,
-                confidence=confidence,
-                reasoning=reasoning,
+                confidence=best_score,
+                reasoning=overall_assessment,
                 processing_time_ms=processing_time,
                 tokens_used=tokens_used,
                 validation_errors=validation_errors
