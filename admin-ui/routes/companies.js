@@ -39,13 +39,13 @@ router.get('/:id', async (req, res) => {
     try {
         const [companyResponse, profilesResponse] = await Promise.all([
             apiClient.get(`/companies/${req.params.id}`),
-            apiClient.get(`/profiles`, { params: { company_id: req.params.id } })
+            apiClient.get(`/companies/${req.params.id}/profiles`)
         ]);
         
         res.render('companies/detail', {
             title: `Company: ${companyResponse.data.name}`,
             company: companyResponse.data,
-            profiles: profilesResponse.data.profiles || []
+            profiles: profilesResponse.data.data || []
         });
     } catch (error) {
         logger.error(`Error fetching company ${req.params.id}:`, error);

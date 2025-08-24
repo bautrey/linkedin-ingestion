@@ -725,7 +725,7 @@ class CompanyRepository:
         try:
             # Join profile_companies and profiles tables
             result = self.client.table("profile_companies").select(
-                "*, profiles(id, full_name, linkedin_url)"
+                "*, profiles(id, first_name, last_name, full_name, linkedin_url, headline, job_title, company, location, profile_image_url)"
             ).eq(
                 "company_id", company_id
             ).execute()

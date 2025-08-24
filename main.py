@@ -1858,14 +1858,53 @@ async def get_profiles_for_company(
     """Get all profiles associated with a company"""
     try:
         controller = get_company_controller()
-        profiles = controller.company_repo.get_profiles_for_company(company_id)
+        profiles_data = controller.company_repo.get_profiles_for_company(company_id)
+        
+        # Transform data to flatten profile information with work experience
+        transformed_profiles = []
+        for item in profiles_data:
+            if item.get("profiles"):
+                profile = item["profiles"]
+                
+                # Calculate experience years from start/end dates
+                experience_years = None
+                start_date = item.get("start_date")
+                end_date = item.get("end_date")
+                if start_date:
+                    try:
+                        from datetime import datetime
+                        start = datetime.fromisoformat(start_date.replace('Z', '+00:00')) if isinstance(start_date, str) else start_date
+                        end = datetime.fromisoformat(end_date.replace('Z', '+00:00')) if end_date and isinstance(end_date, str) else datetime.now(timezone.utc)
+                        experience_years = round((end - start).days / 365.25, 1)
+                    except Exception:
+                        experience_years = None
+                
+                # Merge profile data with work experience from the relationship
+                transformed_profile = {
+                    "id": profile.get("id"),
+                    "first_name": profile.get("first_name"),
+                    "last_name": profile.get("last_name"),
+                    "full_name": profile.get("full_name"),
+                    "linkedin_url": profile.get("linkedin_url"),
+                    "headline": profile.get("headline"),
+                    "current_title": item.get("job_title") or profile.get("job_title"),
+                    "location": profile.get("location"),
+                    "profile_image_url": profile.get("profile_image_url"),
+                    "job_title": item.get("job_title"),
+                    "start_date": item.get("start_date"),
+                    "end_date": item.get("end_date"),
+                    "is_current_role": item.get("is_current_role"),
+                    "description": item.get("description"),
+                    "experience_years": experience_years
+                }
+                transformed_profiles.append(transformed_profile)
         
         return {
-            "data": profiles,
+            "data": transformed_profiles,
             "pagination": {
-                "limit": len(profiles),
+                "limit": len(transformed_profiles),
                 "offset": 0,
-                "total": len(profiles),
+                "total": len(transformed_profiles),
                 "has_more": False
             }
         }
