@@ -87,10 +87,57 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const response = await apiClient.get(`/profiles/${req.params.id}`);
+        const profile = response.data;
+        
+        // Extract company names from profile experience
+        const companyNames = new Set();
+        
+        // Add current company
+        if (profile.current_company && profile.current_company.name) {
+            companyNames.add(profile.current_company.name);
+        }
+        
+        // Add companies from experience
+        if (profile.experience && profile.experience.length > 0) {
+            profile.experience.forEach(exp => {
+                if (exp.company) {
+                    companyNames.add(exp.company);
+                }
+            });
+        }
+        
+        // Map company names to our internal company records
+        const companyMapping = {};
+        
+        // Search for each company in our database
+        for (const companyName of companyNames) {
+            try {
+                const companyResponse = await apiClient.get('/companies', {
+                    params: { name: companyName, limit: 1 }
+                });
+                
+                if (companyResponse.data.data && companyResponse.data.data.length > 0) {
+                    const company = companyResponse.data.data[0];
+                    // Only map if the company name is a close match
+                    if (company.company_name.toLowerCase().includes(companyName.toLowerCase()) || 
+                        companyName.toLowerCase().includes(company.company_name.toLowerCase())) {
+                        companyMapping[companyName] = {
+                            id: company.id,
+                            name: company.company_name,
+                            url: `/companies/${company.id}`
+                        };
+                    }
+                }
+            } catch (companyError) {
+                // If company search fails, continue without mapping
+                logger.debug(`Company search failed for ${companyName}:`, companyError.message);
+            }
+        }
         
         res.render('profiles/detail', {
-            title: `Profile: ${response.data.name}`,
-            profile: response.data,
+            title: `Profile: ${profile.name}`,
+            profile: profile,
+            companyMapping: companyMapping,
             currentPage: 'profiles'
         });
     } catch (error) {

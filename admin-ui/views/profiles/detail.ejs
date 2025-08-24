@@ -95,7 +95,14 @@
                                             <% } %>
                                             <% if (profile.current_company && profile.current_company.name) { %>
                                                 <p class="text-muted mb-2">
-                                                    <i class="bi bi-building"></i> <%= profile.current_company.name %>
+                                                    <i class="bi bi-building"></i> 
+                                                    <% if (companyMapping && companyMapping[profile.current_company.name]) { %>
+                                                        <a href="<%= companyMapping[profile.current_company.name].url %>" class="text-decoration-none">
+                                                            <%= profile.current_company.name %>
+                                                        </a>
+                                                    <% } else { %>
+                                                        <%= profile.current_company.name %>
+                                                    <% } %>
                                                 </p>
                                             <% } %>
                                             <% if (profile.city || profile.country_code) { %>
@@ -166,7 +173,11 @@
                                                 <div class="flex-grow-1">
                                                     <h6 class="fw-bold mb-1"><%= exp.title %></h6>
                                                     <div class="text-primary fw-medium mb-1">
-                                                        <% if (exp.company_linkedin_url) { %>
+                                                        <% if (companyMapping && companyMapping[exp.company]) { %>
+                                                            <a href="<%= companyMapping[exp.company].url %>" class="text-decoration-none">
+                                                                <%= exp.company %>
+                                                            </a>
+                                                        <% } else if (exp.company_linkedin_url) { %>
                                                             <a href="<%= exp.company_linkedin_url %>" target="_blank" class="text-decoration-none">
                                                                 <%= exp.company %>
                                                             </a>
