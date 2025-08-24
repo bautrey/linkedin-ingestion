@@ -300,8 +300,8 @@ class ProfileVerificationService(LoggerMixin):
 verification_service = ProfileVerificationService()
 
 
-@router.post("/verify", response_model=ProfileVerificationResponse, summary="Verify LinkedIn Profile")
-async def verify_linkedin_profile(request: ProfileVerificationRequest) -> ProfileVerificationResponse:
+@router.post("/verify", summary="Verify LinkedIn Profile")
+async def verify_linkedin_profile(request: ProfileVerificationRequest):
     """
     **Stage 1: Profile Verification**
     
@@ -327,6 +327,8 @@ async def verify_linkedin_profile(request: ProfileVerificationRequest) -> Profil
         normalized_url = str(validated_request.linkedin_url)
         
         result = await verification_service.verify_profile(normalized_url)
+        
+        # Return the Pydantic model directly - FastAPI will serialize it properly
         return result
         
     except Exception as e:
@@ -344,3 +346,75 @@ async def verify_linkedin_profile(request: ProfileVerificationRequest) -> Profil
                 ]
             }
         )
+
+
+@router.post("/verify-webhook", summary="Verify LinkedIn Profile (Webhook-Optimized)")
+async def verify_linkedin_profile_webhook(request: ProfileVerificationRequest):
+    """
+    **Stage 1: Profile Verification (Webhook/Make Optimized)**
+    
+    Same as /verify but with a flattened response structure optimized for webhooks and automation tools like Make.
+    All nested data is flattened to top-level fields for easier access.
+    """
+    try:
+        # Clean and normalize URL first to handle BOM and encoding issues
+        raw_url = str(request.linkedin_url)
+        cleaned_url = normalize_and_clean_linkedin_url(raw_url)
+        
+        # Use Pydantic URL validation with cleaned URL
+        validated_request = ProfileIngestionRequest(linkedin_url=cleaned_url)
+        normalized_url = str(validated_request.linkedin_url)
+        
+        result = await verification_service.verify_profile(normalized_url)
+        
+        # Flatten the response for webhook/Make compatibility
+        flattened_response = {
+            "verified": result.verified,
+            "linkedin_url": result.linkedin_url,
+            "data_completeness": result.data_completeness,
+            "executive_indicators": result.executive_indicators,
+            "proceed_to_sanity_check": result.proceed_to_sanity_check,
+            "cassidy_response_time": result.cassidy_response_time,
+            "error": result.error,
+            "error_type": result.error_type,
+            "cassidy_error": result.cassidy_error
+        }
+        
+        # Flatten profile_data fields to top level with profile_ prefix
+        if result.profile_data:
+            flattened_response.update({
+                "profile_name": result.profile_data.get("name"),
+                "profile_headline": result.profile_data.get("headline"),
+                "profile_about": result.profile_data.get("about"),
+                "profile_experience_count": result.profile_data.get("experience_count"),
+                "profile_education_count": result.profile_data.get("education_count"),
+                "profile_city": result.profile_data.get("city"),
+                "profile_country": result.profile_data.get("country"),
+                "profile_company": result.profile_data.get("company"),
+                "profile_job_title": result.profile_data.get("job_title")
+            })
+        
+        return flattened_response
+        
+    except Exception as e:
+        return {
+            "verified": False,
+            "linkedin_url": str(request.linkedin_url),
+            "error": "Invalid LinkedIn URL format",
+            "error_message": str(e),
+            "data_completeness": None,
+            "executive_indicators": None,
+            "proceed_to_sanity_check": False,
+            "cassidy_response_time": None,
+            "error_type": "ValidationError",
+            "cassidy_error": None,
+            "profile_name": None,
+            "profile_headline": None,
+            "profile_about": None,
+            "profile_experience_count": None,
+            "profile_education_count": None,
+            "profile_city": None,
+            "profile_country": None,
+            "profile_company": None,
+            "profile_job_title": None
+        }
