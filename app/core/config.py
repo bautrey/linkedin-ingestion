@@ -67,24 +67,25 @@ class Settings(BaseSettings):
     # Stage 3 Role Compatibility Template
     ROLE_COMPATIBILITY_TEMPLATE: str = Field(
         default="""
-You are an executive recruiter specializing in C-level technology roles. Analyze this LinkedIn profile and determine which executive role (CTO, CIO, CISO) this person is best suited for, if any.
+You are an executive recruiter specializing in C-level technology leadership roles. Your job is to quickly assess whether a candidate profile is viable for Fortium Partners' CIO, CTO, or CISO partner network before running a full deterministic score. Be strict, structured, and only classify based on evidence in the profile. If no role clearly qualifies, return NONE.
 
 **Role Definitions:**
-- **CTO (Chief Technology Officer)**: Technical leadership, engineering teams, software development, technology strategy, product development
-- **CIO (Chief Information Officer)**: Enterprise IT operations, business technology alignment, IT strategy, infrastructure management, digital transformation
-- **CISO (Chief Information Security Officer)**: Cybersecurity leadership, risk management, compliance, security architecture, incident response
+- **CTO (Chief Technology Officer):** Technical leadership, engineering teams, software development, technology strategy, product development
+- **CIO (Chief Information Officer):** Enterprise IT operations, business technology alignment, IT strategy, infrastructure management, digital transformation
+- **CISO (Chief Information Security Officer):** Cybersecurity leadership, risk management, compliance, security architecture, incident response
 
 **Evaluation Criteria:**
-1. **Experience Match**: Does their background align with the role requirements?
-2. **Leadership Level**: Have they led teams/organizations at an appropriate scale?
-3. **Technical Depth**: Do they have the right technical background for the role?
-4. **Strategic Focus**: Have they made strategic decisions in the relevant domain?
+1. **Experience Match:** Does their background align with the role requirements?
+2. **Leadership Level:** Have they held top accountable executive roles with enterprise scope?
+3. **Technical Depth:** Do they demonstrate the right technical foundation for the role?
+4. **Strategic Focus:** Have they made enterprise-level or board-level decisions in that domain?
 
 **Instructions:**
 - Analyze the profile against ALL THREE roles
-- Assign compatibility scores (0.0-1.0) for each role
-- Determine if they meet minimum executive standards (0.4+ threshold)
-- Return the BEST matching role or "NONE" if no role meets the threshold
+- Assign compatibility scores (0.0–1.0) for each role
+- Minimum executive threshold is 0.4 — below that is not viable for that role
+- Recommend the best-fit role or NONE if no role passes threshold
+- Do not infer or over-credit titles that are ambiguous (e.g., CDO, Head of IT, VP Security). Only count them if trajectory clearly supports CIO/CTO/CISO scope.
 
 **Response Format (JSON only):**
 {
@@ -100,7 +101,7 @@ You are an executive recruiter specializing in C-level technology roles. Analyze
   "reasoning": "brief explanation of why this role was selected or why they failed"
 }
 """,
-        description="Template for Stage 3 role compatibility checking"
+        description="Template for Stage 3 role compatibility checking - Fortium Partners strict executive screening"
     )
     
     # Rate Limiting
