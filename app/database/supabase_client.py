@@ -625,7 +625,7 @@ class SupabaseClient(LoggerMixin):
         
         Args:
             name: Partial name search (case-insensitive)
-            company: Partial company name search (case-insensitive)
+            company: Partial company name search (case-insensitive) - searches both junction table relationships and text fields
             location: Partial location search (case-insensitive, searches city field)
             score_range: Score range filter: 'unscored', 'high' (8-10), 'medium' (5-7), 'low' (1-4)
             sort_by: Sort field: 'name', 'created_at', 'city', 'position', default: 'created_at'
@@ -640,6 +640,22 @@ class SupabaseClient(LoggerMixin):
         self.logger.info("Searching profiles", name=name, company=company, location=location, score_range=score_range, limit=limit, offset=offset)
         
         try:
+            # First, handle company filtering if provided - use junction table relationships
+            company_filtered_profile_ids = None
+            if company:
+                # Get profile IDs that are linked to companies matching the search term
+                companies_table = self.client.table("companies")
+                companies_result = await companies_table.select("id").ilike("company_name", f"%{company}%").execute()
+                company_ids = [row["id"] for row in companies_result.data or []]
+                
+                if company_ids:
+                    # Get profile IDs linked to these companies via junction table
+                    junction_table = self.client.table("profile_companies")
+                    junction_result = await junction_table.select("profile_id").in_("company_id", company_ids).execute()
+                    company_filtered_profile_ids = [row["profile_id"] for row in junction_result.data or []]
+                else:
+                    company_filtered_profile_ids = []  # No companies match the search term
+            
             # For score filtering, we need to handle it differently since we need to join with profile_scores
             if score_range:
                 # First, get profile IDs that match the score criteria
@@ -658,8 +674,11 @@ class SupabaseClient(LoggerMixin):
                     # Add other filters
                     if name:
                         query = query.ilike("name", f"%{name}%")
-                    if company:
-                        query = query.or_(f"current_company->>company_name.ilike.%{company}%,position.ilike.%{company}%")
+                    if company and company_filtered_profile_ids is not None:
+                        if company_filtered_profile_ids:  # Only filter if we found matching profiles
+                            query = query.in_("id", company_filtered_profile_ids)
+                        else:  # No profiles match company filter, return empty result
+                            return []
                     if location:
                         query = query.ilike("city", f"%{location}%")
                     
@@ -707,8 +726,11 @@ class SupabaseClient(LoggerMixin):
                             # Add other filters
                             if name:
                                 query = query.ilike("name", f"%{name}%")
-                            if company:
-                                query = query.or_(f"current_company->>company_name.ilike.%{company}%,position.ilike.%{company}%")
+                            if company and company_filtered_profile_ids is not None:
+                                if company_filtered_profile_ids:  # Only filter if we found matching profiles
+                                    query = query.in_("id", company_filtered_profile_ids)
+                                else:  # No profiles match company filter, return empty result
+                                    return []
                             if location:
                                 query = query.ilike("city", f"%{location}%")
                             
@@ -724,8 +746,11 @@ class SupabaseClient(LoggerMixin):
                         
                         if name:
                             query = query.ilike("name", f"%{name}%")
-                        if company:
-                            query = query.or_(f"current_company->>company_name.ilike.%{company}%,position.ilike.%{company}%")
+                        if company and company_filtered_profile_ids is not None:
+                            if company_filtered_profile_ids:  # Only filter if we found matching profiles
+                                query = query.in_("id", company_filtered_profile_ids)
+                            else:  # No profiles match company filter, return empty result
+                                return []
                         if location:
                             query = query.ilike("city", f"%{location}%")
                         
@@ -742,10 +767,12 @@ class SupabaseClient(LoggerMixin):
                 if name:
                     query = query.ilike("name", f"%{name}%")
                 
-                # Add company filter if provided (search in current_company and experience)
-                if company:
-                    # This is a simplified approach - in production you might want more sophisticated JSON searching
-                    query = query.or_(f"current_company->>company_name.ilike.%{company}%,position.ilike.%{company}%")
+                # Add company filter if provided (use junction table relationships)
+                if company and company_filtered_profile_ids is not None:
+                    if company_filtered_profile_ids:  # Only filter if we found matching profiles
+                        query = query.in_("id", company_filtered_profile_ids)
+                    else:  # No profiles match company filter, return empty result
+                        return []
                 
                 # Add location filter if provided (search in city field)
                 if location:
