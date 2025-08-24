@@ -456,8 +456,10 @@ Please provide your evaluation in JSON format:"""
             # Fetch template and use its prompt and preferred model
             try:
                 from app.services.template_service import TemplateService
-                template_service = TemplateService()
-                template_used = await template_service.get_template(template_id)
+                from app.database.supabase_client import SupabaseClient
+                db_client = SupabaseClient()
+                template_service = TemplateService(supabase_client=db_client)
+                template_used = await template_service.get_template_by_id(template_id)
                 
                 if not template_used:
                     raise ValueError(f"Template not found: {template_id}")
@@ -667,15 +669,40 @@ Please provide your evaluation in JSON format:"""
                 education_count=len(profile.educations)
             )
             
-            # Score the profile
-            self.logger.info("STEP 5: Starting LLM scoring", job_id=job_id, model=job.model_name)
-            raw_response, parsed_score = await self.score_profile(
-                profile=profile,
-                prompt=job.prompt,
+            # Score the profile - use template-aware scoring if job has template_id
+            self.logger.info(
+                "STEP 5: Starting LLM scoring", 
+                job_id=job_id, 
                 model=job.model_name,
-                max_tokens=max_tokens,
-                temperature=temperature
+                has_template_id=bool(getattr(job, 'template_id', None))
             )
+            
+            if hasattr(job, 'template_id') and job.template_id:
+                # Use template-aware scoring for proper model selection
+                self.logger.info(
+                    "Using template-aware scoring",
+                    job_id=job_id,
+                    template_id=job.template_id
+                )
+                raw_response, parsed_score = await self.score_profile_with_template(
+                    profile=profile,
+                    template_id=job.template_id,
+                    max_tokens=max_tokens,
+                    temperature=temperature
+                )
+            else:
+                # Use basic scoring with job's model and prompt
+                self.logger.info(
+                    "Using basic scoring (no template)",
+                    job_id=job_id
+                )
+                raw_response, parsed_score = await self.score_profile(
+                    profile=profile,
+                    prompt=job.prompt,
+                    model=job.model_name,
+                    max_tokens=max_tokens,
+                    temperature=temperature
+                )
             self.logger.info(
                 "STEP 5 SUCCESS: LLM scoring completed", 
                 job_id=job_id, 
