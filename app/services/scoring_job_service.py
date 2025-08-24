@@ -234,14 +234,23 @@ class ScoringJobService(LoggerMixin):
         """
         await self._ensure_client()
         
-        completion_time = datetime.now(timezone.utc).isoformat()
+        completion_time = datetime.now(timezone.utc)
+        completion_time_iso = completion_time.isoformat()
+        
+        # Extract the actual model used from LLM response
+        actual_model = llm_response.get("model") if llm_response else None
+        
         update_data = {
             "status": JobStatus.COMPLETED.value,
             "llm_response": llm_response,
             "parsed_score": parsed_score,
-            "completed_at": completion_time,
-            "updated_at": completion_time
+            "completed_at": completion_time_iso,
+            "updated_at": completion_time_iso
         }
+        
+        # Update model_name with the actual model used if available
+        if actual_model:
+            update_data["model_name"] = actual_model
         
         try:
             table = self.client.table("scoring_jobs")

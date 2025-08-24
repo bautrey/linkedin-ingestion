@@ -539,6 +539,11 @@ class ScoringJobController(LoggerMixin):
                         tokens_used=job.llm_response.get("usage", {}).get("total_tokens", 0)
                     )
                 response_data["completed_at"] = job.completed_at
+                
+                # Calculate processing time if both started_at and completed_at are available
+                if job.started_at and job.completed_at:
+                    processing_time = (job.completed_at - job.started_at).total_seconds()
+                    response_data["processing_time_seconds"] = round(processing_time, 2)
             
             elif job.status == JobStatus.FAILED:
                 response_data["error"] = ScoringErrorData(
