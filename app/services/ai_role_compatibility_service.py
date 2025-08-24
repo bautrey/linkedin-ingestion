@@ -18,6 +18,7 @@ import uuid
 from enum import Enum
 
 from app.core.logging import get_logger
+from app.core.config import settings
 from app.services.llm_scoring_service import LLMScoringService
 from app.models.canonical.profile import CanonicalProfile
 from pydantic import BaseModel
@@ -65,79 +66,7 @@ class AIRoleCompatibilityService:
         # Compatibility thresholds
         self.minimum_compatibility_score = 0.4  # Minimum score to pass quick check
         self.good_compatibility_score = 0.65  # Score considered a good match
-        
-        # Lightweight prompts for quick role compatibility checking
-        self._compatibility_prompts = {
-            ExecutiveRole.CTO: self._get_cto_compatibility_prompt(),
-            ExecutiveRole.CIO: self._get_cio_compatibility_prompt(), 
-            ExecutiveRole.CISO: self._get_ciso_compatibility_prompt()
-        }
     
-    def _get_cto_compatibility_prompt(self) -> str:
-        """Lightweight prompt for CTO role compatibility"""
-        return """
-Perform a QUICK high-level assessment of whether this profile is compatible with a Chief Technology Officer (CTO) role.
-
-A CTO typically:
-- Has significant technical leadership experience
-- Led engineering teams or technical organizations
-- Has hands-on software/technology development background
-- Makes technology strategy decisions
-- Often has titles like: VP Engineering, Head of Engineering, Technical Director, Lead Architect
-
-Rate compatibility on scale 0.0-1.0 and provide brief reasoning.
-
-Respond in JSON format:
-{
-  "compatibility_score": 0.0-1.0,
-  "key_indicators": ["list of 2-3 key factors that support or hurt the match"],
-  "reasoning": "brief 1-2 sentence explanation of why this profile fits/doesn't fit CTO role"
-}
-"""
-    
-    def _get_cio_compatibility_prompt(self) -> str:
-        """Lightweight prompt for CIO role compatibility"""
-        return """
-Perform a QUICK high-level assessment of whether this profile is compatible with a Chief Information Officer (CIO) role.
-
-A CIO typically:
-- Has enterprise IT leadership experience
-- Led IT operations, infrastructure, or information systems
-- Focuses on business technology alignment and IT strategy
-- Manages IT budgets, vendors, and enterprise systems
-- Often has titles like: VP Information Technology, IT Director, Head of IT Operations
-
-Rate compatibility on scale 0.0-1.0 and provide brief reasoning.
-
-Respond in JSON format:
-{
-  "compatibility_score": 0.0-1.0,
-  "key_indicators": ["list of 2-3 key factors that support or hurt the match"],
-  "reasoning": "brief 1-2 sentence explanation of why this profile fits/doesn't fit CIO role"
-}
-"""
-    
-    def _get_ciso_compatibility_prompt(self) -> str:
-        """Lightweight prompt for CISO role compatibility"""
-        return """
-Perform a QUICK high-level assessment of whether this profile is compatible with a Chief Information Security Officer (CISO) role.
-
-A CISO typically:
-- Has cybersecurity and information security leadership experience
-- Led security teams, risk management, or compliance programs
-- Has background in security architecture, incident response, or governance
-- Manages security strategy, policies, and regulatory compliance
-- Often has titles like: VP Security, Security Director, Head of Information Security
-
-Rate compatibility on scale 0.0-1.0 and provide brief reasoning.
-
-Respond in JSON format:
-{
-  "compatibility_score": 0.0-1.0,
-  "key_indicators": ["list of 2-3 key factors that support or hurt the match"],
-  "reasoning": "brief 1-2 sentence explanation of why this profile fits/doesn't fit CISO role"
-}
-"""
     
     async def check_role_compatibility(
         self,
@@ -145,12 +74,10 @@ Respond in JSON format:
         suggested_role: ExecutiveRole
     ) -> RoleCompatibilityResult:
         """
-        Check if profile is compatible with suggested role, and find best role if not
+        Check role compatibility using unified template approach
         
-        This is the main Stage 3 quality gate that:
-        1. First checks compatibility with the suggested role
-        2. If suggested role scores below threshold, checks other roles
-        3. Returns pass/fail gate result and best matching role
+        This performs a single AI call that evaluates all roles at once using the
+        configurable template from settings.ROLE_COMPATIBILITY_TEMPLATE.
         
         Args:
             profile: Profile data from Cassidy validation (Stage 2)
@@ -163,7 +90,7 @@ Respond in JSON format:
         compatibility_id = str(uuid.uuid4())[:8]
         
         self.logger.info(
-            f"🎯 ROLE_COMPATIBILITY_START: Starting role compatibility check",
+            f"🎯 ROLE_COMPATIBILITY_START: Starting unified role compatibility check",
             compatibility_id=compatibility_id,
             profile_name=profile.full_name,
             suggested_role=suggested_role.value,
@@ -171,181 +98,115 @@ Respond in JSON format:
         )
         
         validation_errors = []
-        total_tokens = 0
-        compatibility_scores = {}
         
         try:
-            # First, check compatibility with the suggested role
-            self.logger.info(
-                f"Checking compatibility with suggested {suggested_role.value} role",
-                compatibility_id=compatibility_id,
-                role=suggested_role.value
-            )
-            
-            suggested_compatible, suggested_score, suggested_reasoning = await self.quick_role_check(
+            # Use unified template for single AI call that evaluates all roles
+            raw_response, parsed_response = await self.llm_service.score_profile(
                 profile=profile,
-                role=suggested_role
+                prompt=settings.ROLE_COMPATIBILITY_TEMPLATE,
+                model=settings.STAGE_3_MODEL,  # Use configured model for Stage 3
+                max_tokens=300,  # Allow more tokens for comprehensive evaluation
+                temperature=0.1   # Low temperature for consistent results
             )
             
-            # Store result for suggested role
-            compatibility_scores[suggested_role] = suggested_score
-            total_tokens += 200  # Approximate tokens for quick check
+            # Extract results from AI response
+            recommended_role_str = parsed_response.get("recommended_role", "NONE")
+            passes_gate = parsed_response.get("passes_gate", False)
+            compatibility_scores_raw = parsed_response.get("compatibility_scores", {})
+            confidence = min(1.0, max(0.0, float(parsed_response.get("confidence", 0.0))))
+            key_factors = parsed_response.get("key_factors", [])
+            reasoning = parsed_response.get("reasoning", "No reasoning provided")
             
-            # If suggested role is compatible, we're done - no need to check other roles
-            if suggested_compatible:
-                self.logger.info(
-                    f"✅ SUGGESTED_ROLE_COMPATIBLE: Profile passes gate for {suggested_role.value}",
-                    compatibility_id=compatibility_id,
-                    role=suggested_role.value,
-                    score=suggested_score,
-                    stage="STAGE_3_AI_ROLE_COMPATIBILITY"
-                )
-                
-                processing_time = (datetime.now() - start_time).total_seconds() * 1000
-                
-                return RoleCompatibilityResult(
-                    is_valid=True,
-                    suggested_role=suggested_role,
-                    original_role=suggested_role,
-                    role_changed=False,
-                    compatibility_scores=compatibility_scores,
-                    confidence=suggested_score,
-                    reasoning=f"Profile is compatible with suggested {suggested_role.value} role. Score: {suggested_score:.2f}",
-                    processing_time_ms=processing_time,
-                    tokens_used=total_tokens
-                )
-            
-            # If suggested role is not compatible, check other roles
-            self.logger.info(
-                f"⚠️ SUGGESTED_ROLE_INCOMPATIBLE: Profile doesn't pass gate for {suggested_role.value}, checking others",
-                compatibility_id=compatibility_id,
-                role=suggested_role.value,
-                score=suggested_score,
-                stage="STAGE_3_AI_ROLE_COMPATIBILITY"
-            )
-            
-            # Check remaining roles
-            for role in [r for r in ExecutiveRole if r != suggested_role]:
-                self.logger.info(
-                    f"Checking alternative role: {role.value}",
-                    compatibility_id=compatibility_id,
-                    alternative_role=role.value
-                )
-                
+            # Convert compatibility scores to proper format
+            compatibility_scores = {}
+            for role_str, score in compatibility_scores_raw.items():
                 try:
-                    is_compatible, score, reasoning = await self.quick_role_check(
-                        profile=profile,
-                        role=role
-                    )
-                    
-                    compatibility_scores[role] = score
-                    total_tokens += 200  # Approximate tokens for quick check
-                    
-                    if is_compatible:
-                        self.logger.info(
-                            f"✅ ALTERNATIVE_ROLE_COMPATIBLE: Profile passes gate for {role.value}",
-                            compatibility_id=compatibility_id,
-                            alternative_role=role.value,
-                            score=score,
-                            stage="STAGE_3_AI_ROLE_COMPATIBILITY"
-                        )
-                    else:
-                        self.logger.info(
-                            f"❌ ALTERNATIVE_ROLE_INCOMPATIBLE: Profile doesn't pass gate for {role.value}",
-                            compatibility_id=compatibility_id,
-                            alternative_role=role.value,
-                            score=score,
-                            stage="STAGE_3_AI_ROLE_COMPATIBILITY"
-                        )
-                        
-                except Exception as e:
-                    self.logger.error(
-                        f"❌ ALTERNATIVE_ROLE_CHECK_ERROR: Failed to check {role.value} compatibility",
+                    role_enum = ExecutiveRole(role_str)
+                    compatibility_scores[role_enum] = min(1.0, max(0.0, float(score)))
+                except (ValueError, TypeError) as e:
+                    self.logger.warning(
+                        f"Invalid role or score in AI response",
                         compatibility_id=compatibility_id,
-                        role=role.value,
+                        role=role_str,
+                        score=score,
                         error=str(e)
                     )
-                    compatibility_scores[role] = 0.0
-                    validation_errors.append(f"Failed to check {role.value} compatibility: {str(e)}")
             
-            # Find best matching role from all checked
-            if not compatibility_scores:
-                raise ValueError("All role compatibility checks failed")
+            # Determine recommended role
+            recommended_role = None
+            if recommended_role_str and recommended_role_str != "NONE":
+                try:
+                    recommended_role = ExecutiveRole(recommended_role_str)
+                except ValueError:
+                    self.logger.warning(
+                        f"Invalid recommended role from AI: {recommended_role_str}",
+                        compatibility_id=compatibility_id
+                    )
+                    recommended_role = None
             
-            best_role = max(compatibility_scores, key=compatibility_scores.get)
-            best_score = compatibility_scores[best_role]
+            # If no valid recommended role, find the best scoring role
+            if not recommended_role and compatibility_scores:
+                recommended_role = max(compatibility_scores, key=compatibility_scores.get)
+                passes_gate = compatibility_scores[recommended_role] >= self.minimum_compatibility_score
             
-            # Determine overall validation result
-            is_valid = best_score >= self.minimum_compatibility_score
-            role_changed = best_role != suggested_role
+            # Fallback if everything failed
+            if not recommended_role:
+                recommended_role = suggested_role  # Fall back to original
+                passes_gate = False
+                compatibility_scores = {suggested_role: 0.0}
+                confidence = 0.0
+                reasoning = "Failed to determine role compatibility"
+                validation_errors.append("AI response did not contain valid role recommendation")
             
-            # Calculate confidence
-            scores_list = sorted(compatibility_scores.values(), reverse=True)
-            score_gap = scores_list[0] - (scores_list[1] if len(scores_list) > 1 else 0.0)
-            confidence = min(1.0, best_score + (score_gap * 0.3))  # Bonus for clear winner
-            
-            # Generate reasoning
-            if is_valid:
-                if role_changed:
-                    reasoning = f"Profile doesn't match suggested {suggested_role.value} role (score: {suggested_score:.2f}), " \
-                              f"but shows compatibility with {best_role.value} role (score: {best_score:.2f})."
-                else:
-                    reasoning = f"Profile shows best compatibility with original {suggested_role.value} role " \
-                              f"despite low score ({best_score:.2f})."
-            else:
-                reasoning = f"Profile doesn't show sufficient compatibility with any executive role. " \
-                          f"Best match is {best_role.value} with score {best_score:.2f}, " \
-                          f"below minimum threshold of {self.minimum_compatibility_score}."
-            
-            # Add score context
-            all_scores = ", ".join([f"{role.value}: {score:.2f}" for role, score in compatibility_scores.items()])
-            reasoning += f" All scores: {all_scores}"
-            
+            # Calculate processing metrics
             processing_time = (datetime.now() - start_time).total_seconds() * 1000
+            tokens_used = len(str(raw_response)) // 4  # Rough token estimate
+            
+            # Determine if role changed
+            role_changed = recommended_role != suggested_role
             
             # Log result
-            if is_valid:
+            if passes_gate:
                 if role_changed:
                     self.logger.info(
                         f"🔄 ROLE_CHANGED: Profile passed gate with different role",
                         compatibility_id=compatibility_id,
                         original_role=suggested_role.value,
-                        best_role=best_role.value,
-                        original_score=suggested_score,
-                        best_score=best_score,
+                        recommended_role=recommended_role.value,
+                        confidence=confidence,
                         stage="STAGE_3_AI_ROLE_COMPATIBILITY",
                         status="PASSED_WITH_CHANGE"
                     )
                 else:
                     self.logger.info(
-                        f"✅ ORIGINAL_ROLE_BEST: Profile passed gate with original role",
+                        f"✅ ORIGINAL_ROLE_CONFIRMED: Profile passed gate with original role",
                         compatibility_id=compatibility_id,
                         role=suggested_role.value,
-                        score=best_score,
+                        confidence=confidence,
                         stage="STAGE_3_AI_ROLE_COMPATIBILITY",
                         status="PASSED_ORIGINAL"
                     )
             else:
                 self.logger.info(
-                    f"❌ ALL_ROLES_FAILED: Profile failed gate for all roles",
+                    f"❌ GATE_FAILED: Profile failed compatibility gate",
                     compatibility_id=compatibility_id,
-                    best_role=best_role.value,
-                    best_score=best_score,
+                    recommended_role=recommended_role.value if recommended_role else "NONE",
+                    confidence=confidence,
                     threshold=self.minimum_compatibility_score,
                     stage="STAGE_3_AI_ROLE_COMPATIBILITY",
                     status="FAILED"
                 )
             
             return RoleCompatibilityResult(
-                is_valid=is_valid,
-                suggested_role=best_role,
+                is_valid=passes_gate,
+                suggested_role=recommended_role,
                 original_role=suggested_role,
                 role_changed=role_changed,
                 compatibility_scores=compatibility_scores,
                 confidence=confidence,
                 reasoning=reasoning,
                 processing_time_ms=processing_time,
-                tokens_used=total_tokens,
+                tokens_used=tokens_used,
                 validation_errors=validation_errors
             )
             
@@ -353,7 +214,7 @@ Respond in JSON format:
             processing_time = (datetime.now() - start_time).total_seconds() * 1000
             
             self.logger.error(
-                f"❌ ROLE_COMPATIBILITY_ERROR: Unexpected error during role compatibility check",
+                f"❌ ROLE_COMPATIBILITY_ERROR: Unexpected error during unified role compatibility check",
                 compatibility_id=compatibility_id,
                 error=str(e),
                 error_type=type(e).__name__,
@@ -370,61 +231,9 @@ Respond in JSON format:
                 confidence=0.0,
                 reasoning=f"Role compatibility check failed: {str(e)}",
                 processing_time_ms=processing_time,
-                tokens_used=total_tokens,
+                tokens_used=0,
                 validation_errors=[f"Compatibility check error: {str(e)}"]
             )
-    
-    async def quick_role_check(
-        self,
-        profile: CanonicalProfile,
-        role: ExecutiveRole
-    ) -> Tuple[bool, float, str]:
-        """
-        Quick single-role compatibility check
-        
-        Args:
-            profile: Profile to check
-            role: Single role to validate against
-            
-        Returns:
-            Tuple of (is_compatible, score, reasoning)
-        """
-        try:
-            raw_response, parsed_response = await self.llm_service.score_profile(
-                profile=profile,
-                prompt=self._compatibility_prompts[role],
-                model="gpt-3.5-turbo",  # Use faster model for quick checks
-                max_tokens=150,  # Keep responses short
-                temperature=0.1   # Low temperature for consistent results
-            )
-            
-            score = parsed_response.get("compatibility_score", 0.0)
-            # Ensure score is a float between 0 and 1
-            score = max(0.0, min(1.0, float(score)))
-            
-            reasoning = parsed_response.get("reasoning", "No reasoning provided")
-            key_indicators = parsed_response.get("key_indicators", [])
-            
-            is_compatible = score >= self.minimum_compatibility_score
-            
-            self.logger.info(
-                f"ROLE_CHECK_RESULT: {role.value} compatibility check",
-                role=role.value,
-                score=score,
-                is_compatible=is_compatible,
-                threshold=self.minimum_compatibility_score,
-                key_indicators=key_indicators
-            )
-            
-            return is_compatible, score, reasoning
-            
-        except Exception as e:
-            self.logger.error(
-                f"ROLE_CHECK_ERROR: {role.value} compatibility check failed",
-                role=role.value,
-                error=str(e)
-            )
-            return False, 0.0, f"Compatibility check failed: {str(e)}"
     
     async def health_check(self) -> Dict[str, Any]:
         """Check health of AI role compatibility service"""
@@ -437,8 +246,8 @@ Respond in JSON format:
                 company="Test Company"
             )
             
-            # Quick test with one role
-            is_compatible, score, reasoning = await self.quick_role_check(
+            # Quick test with unified compatibility check
+            result = await self.check_role_compatibility(
                 test_profile, ExecutiveRole.CTO
             )
             
@@ -448,6 +257,7 @@ Respond in JSON format:
                 "llm_service_available": bool(self.llm_service.client),
                 "test_check_successful": True,
                 "compatibility_threshold": self.minimum_compatibility_score,
+                "template_configured": bool(settings.ROLE_COMPATIBILITY_TEMPLATE),
                 "timestamp": datetime.now(timezone.utc).isoformat()
             }
             
@@ -457,5 +267,6 @@ Respond in JSON format:
                 "status": "unhealthy", 
                 "error": str(e),
                 "llm_service_available": bool(self.llm_service.client),
+                "template_configured": bool(settings.ROLE_COMPATIBILITY_TEMPLATE),
                 "timestamp": datetime.now(timezone.utc).isoformat()
             }

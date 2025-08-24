@@ -62,7 +62,46 @@ class Settings(BaseSettings):
     
     # Stage-Based Model Configuration
     STAGE_2_MODEL: str = Field(default="gpt-3.5-turbo", description="Model for Stage 2 screening (cost-effective)")
-    STAGE_3_MODEL: str = Field(default="gpt-4o", description="Model for Stage 3 deep analysis (premium quality)")
+    STAGE_3_MODEL: str = Field(default="gpt-4o-mini", description="Model for Stage 3 role compatibility (fast screening)")
+    
+    # Stage 3 Role Compatibility Template
+    ROLE_COMPATIBILITY_TEMPLATE: str = Field(
+        default="""
+You are an executive recruiter specializing in C-level technology roles. Analyze this LinkedIn profile and determine which executive role (CTO, CIO, CISO) this person is best suited for, if any.
+
+**Role Definitions:**
+- **CTO (Chief Technology Officer)**: Technical leadership, engineering teams, software development, technology strategy, product development
+- **CIO (Chief Information Officer)**: Enterprise IT operations, business technology alignment, IT strategy, infrastructure management, digital transformation
+- **CISO (Chief Information Security Officer)**: Cybersecurity leadership, risk management, compliance, security architecture, incident response
+
+**Evaluation Criteria:**
+1. **Experience Match**: Does their background align with the role requirements?
+2. **Leadership Level**: Have they led teams/organizations at an appropriate scale?
+3. **Technical Depth**: Do they have the right technical background for the role?
+4. **Strategic Focus**: Have they made strategic decisions in the relevant domain?
+
+**Instructions:**
+- Analyze the profile against ALL THREE roles
+- Assign compatibility scores (0.0-1.0) for each role
+- Determine if they meet minimum executive standards (0.4+ threshold)
+- Return the BEST matching role or "NONE" if no role meets the threshold
+
+**Response Format (JSON only):**
+{
+  "recommended_role": "CTO|CIO|CISO|NONE",
+  "passes_gate": true|false,
+  "compatibility_scores": {
+    "CTO": 0.0-1.0,
+    "CIO": 0.0-1.0,
+    "CISO": 0.0-1.0
+  },
+  "confidence": 0.0-1.0,
+  "key_factors": ["list of 2-3 key factors supporting the recommendation"],
+  "reasoning": "brief explanation of why this role was selected or why they failed"
+}
+""",
+        description="Template for Stage 3 role compatibility checking"
+    )
     
     # Rate Limiting
     RATE_LIMIT_PER_MINUTE: int = Field(default=60, description="API rate limit per minute")
