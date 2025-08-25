@@ -140,8 +140,21 @@ async function handleFormSubmit(event) {
             }, 1000);
             
         } else {
-            const error = await response.json();
-            throw new Error(error.message || 'Failed to save template');
+            let errorMessage = 'Failed to save template';
+            try {
+                const error = await response.json();
+                if (error.detail && error.detail.message) {
+                    errorMessage = error.detail.message;
+                } else if (error.message) {
+                    errorMessage = error.message;
+                } else if (typeof error === 'string') {
+                    errorMessage = error;
+                }
+            } catch (parseError) {
+                console.error('Could not parse error response:', parseError);
+                errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+            }
+            throw new Error(errorMessage);
         }
         
     } catch (error) {
@@ -218,7 +231,7 @@ function getFormData() {
         category: document.getElementById('category').value,
         description: document.getElementById('description').value.trim(),
         prompt_text: document.getElementById('prompt_text').value.trim(),
-        model: document.getElementById('model').value,
+        stage: document.getElementById('stage').value,
         version: document.getElementById('version').value.trim() || '1.0',
         is_active: document.getElementById('is_active').checked
     };
@@ -323,7 +336,7 @@ function previewTemplate() {
         <p><strong>Name:</strong> ${data.name || 'Untitled Template'}</p>
         <p><strong>Category:</strong> ${data.category || 'Uncategorized'}</p>
         <p><strong>Description:</strong> ${data.description || 'No description'}</p>
-        <p><strong>Model:</strong> ${data.model}</p>
+        <p><strong>Stage:</strong> ${data.stage || 'General Purpose'}</p>
         <p><strong>Version:</strong> ${data.version}</p>
         <p><strong>Status:</strong> ${data.is_active ? 'Active' : 'Inactive'}</p>
         <hr>
